@@ -55,6 +55,34 @@ def temperature_budget(text, continuum, meta, offset, delta_mv):
                       'nonuniform cases; this is a diagnostic, not a new conservation gate.')
 
 
+def mass_energy_sensitivity(meta, inventories, energies):
+    if meta.get('thermo_fixture') != 'consistent':
+        return dict(available=False)
+    # Keep the original energy ledger and gate. A constant common energy-zero
+    # shift changes delta E whenever mass drifts: delta E' = delta E - e0*delta M.
+    # This diagnostic exposes that sensitivity; it must not hide mass loss.
+    initial_liquid = inventories['metal1'][0]
+    e0 = float(initial_liquid['nativeSensibleEnergyJ'])/float(initial_liquid['massKg'])
+    masses = [math.fsum(float(series[index]['massKg']) for series in inventories.values())
+              for index in range(len(energies))]
+    history = []
+    for index, (time, energy) in enumerate(energies):
+        dm = masses[index]-masses[0]
+        carried = e0*dm
+        history.append(dict(time_s=time, phase_inventory_mass_change_kg=dm,
+                            initial_specific_energy_times_mass_change_j=carried,
+                            energy_change_with_common_zero_shift_j=energy-energies[0][1]-carried))
+    return dict(available=True, initial_liquid_native_specific_energy_J_per_kg=e0,
+                initial_phase_inventory_mass_kg=masses[0], final_phase_inventory_mass_kg=masses[-1],
+                history=history,
+                max_abs_energy_change_with_common_zero_shift_j=max(
+                    abs(s['energy_change_with_common_zero_shift_j']) for s in history),
+                scope='Sensitivity to subtracting the same constant native specific energy from '
+                      'all phases. The original energy gate remains unchanged. This is neither a '
+                      'mass correction nor evidence of conserved energy; both mass and energy '
+                      'residuals must be retained. Uniform synthetic fixture only.')
+
+
 def audit(report, gate=False, absolute_tolerance=1e-9, relative_tolerance=1e-4):
     if any(not math.isfinite(x) or x < 0 for x in (absolute_tolerance, relative_tolerance)):
         raise ValueError('Energy tolerances must be finite and nonnegative')
@@ -125,6 +153,7 @@ def audit(report, gate=False, absolute_tolerance=1e-9, relative_tolerance=1e-4):
             common_latent_heat_source=meta.get('commonLatentHeatSource', False), samples=len(energies),
             temperature_equation_budget=temperature_budget(
                 (report/name/'log.compressibleLaserbeamFoam').read_text(), continuum, meta, offset, delta_mv),
+            mass_energy_sensitivity=mass_energy_sensitivity(meta, inventories, energies),
             initial_reference_energy_j=energies[0][1], final_reference_energy_j=energies[-1][1],
             reference_energy_change_j=energies[-1][1]-energies[0][1],
             max_abs_reference_energy_change_j=max(abs(e-energies[0][1]) for _, e in energies),

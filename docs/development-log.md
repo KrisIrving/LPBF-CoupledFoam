@@ -1,5 +1,35 @@
 # Development and verification record
 
+## Temperature budget feedback and mass/energy sensitivity: 2026-10-09
+
+User-tested commit `6bf0a82b4f688200d392c4b7edeed7776376b615`: compilation
+and all seven diagnostic cases completed; requested gates passed. Integrated
+unrelaxed rho*T equation residuals were about 5.3--8.9e-12 J in condensation.
+Mechanical, transport and diffusion terms were negligible in this uniform
+zero-velocity fixture; laser was zero and fusion terms below 1.1e-13 J.
+Thus the observed multi-subcycle ledger residual is not a large residual
+of the reconstructed final thermal equation.
+
+Summed phase inventories at 15-digit log precision reveal final mass changes
+at deltaT 0.1 ns of -3.3177e-16, -8.4819e-15 and -1.2562e-14 kg for subcycles
+1/2/4. Initial native specific energy is about 3.04228e6 J/kg. Its product
+with these mass changes accounts for about -1.009, -25.804 and -38.216 nJ
+of the original -1.452, -26.242 and -38.650 nJ endpoint energy changes.
+After subtracting this common energy-zero sensitivity, endpoint changes are
+about -0.442, -0.437 and -0.434 nJ. This does not correct mass or establish
+conservation; it explains why an extremely small relative mass drift matters
+when energy is compared on a much smaller phase-transfer scale.
+
+Added a mass_energy_sensitivity observation based on original phase inventories.
+The original energy ledger and all gate thresholds remain unchanged. The
+pressure equation overwrites continuity rho with mixture.rho(); insufficient
+outer coupling is a hypothesis, not a demonstrated cause. Next user script
+m1-outer-energy-test.sh compares 5/7/9 outer correctors with subcycles 1/4,
+fixed deltaT 0.1 ns, ten steps and one shared equilibrium reference: seven
+small cases. It retains temperature budget diagnostics and does not change
+solver equations or defaults. Static/parser checks only were run on the
+development side; no WSL process or simulation was invoked.
+
 ## Energy refinement feedback and temperature budget diagnostics: 2026-10-09
 
 User-tested commit `5c321a132a85f5c4a43e290c2abc0625d1d6c4dd`: all 13
