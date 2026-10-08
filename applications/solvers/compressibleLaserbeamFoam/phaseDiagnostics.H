@@ -11,6 +11,13 @@ if (runTime.controlDict().lookupOrDefault<Switch>("continuumDiagnostics", false)
         );
         const scalar diagnosticAlphaVolume =
             gSum(diagnosticPhase.primitiveField()*mesh.V().field());
+        // Native sensibleInternalEnergy from each phase thermo. No latent offset.
+        const scalar diagnosticSensibleEnergy = gSum
+        (
+            diagnosticPhase.primitiveField()
+           *diagnosticPhaseRho().primitiveField()
+           *diagnosticPhase.thermo().he().primitiveField()*mesh.V().field()
+        );
         if (Pstream::master())
         {
             const int diagnosticPrecision = Info().precision();
@@ -18,7 +25,8 @@ if (runTime.controlDict().lookupOrDefault<Switch>("continuumDiagnostics", false)
             Info<< "M1_PHASE time=" << runTime.value()
                 << " phase=" << diagnosticPhase.name()
                 << " massKg=" << diagnosticPhaseMass
-                << " alphaVolumeM3=" << diagnosticAlphaVolume << nl;
+                << " alphaVolumeM3=" << diagnosticAlphaVolume
+                << " nativeSensibleEnergyJ=" << diagnosticSensibleEnergy << nl;
             Info().precision(diagnosticPrecision);
         }
     }

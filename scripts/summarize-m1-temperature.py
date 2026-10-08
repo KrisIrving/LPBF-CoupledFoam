@@ -22,12 +22,17 @@ def assess(text, tolerance=1e-8):
         if line.startswith('M1_PHASE '):
             raw = dict(token.split('=', 1) for token in line.split()[1:])
             sample = {key: float(raw[key]) for key in ('time', 'massKg', 'alphaVolumeM3')}
+            if 'nativeSensibleEnergyJ' in raw:
+                sample['nativeSensibleEnergyJ'] = float(raw['nativeSensibleEnergyJ'])
             phases.setdefault(raw['phase'], []).append(sample)
     phase_inventory = {}
     for name, samples in phases.items():
         phase_inventory[name] = dict(samples=len(samples), initial=samples[0], final=samples[-1],
                                      mass_change_kg=samples[-1]['massKg']-samples[0]['massKg'],
                                      alpha_volume_change_m3=samples[-1]['alphaVolumeM3']-samples[0]['alphaVolumeM3'])
+        if 'nativeSensibleEnergyJ' in samples[0] and 'nativeSensibleEnergyJ' in samples[-1]:
+            phase_inventory[name]['native_sensible_energy_change_j'] = (
+                samples[-1]['nativeSensibleEnergyJ']-samples[0]['nativeSensibleEnergyJ'])
     return dict(solves=solves, count=len(solves), failed_indices=failures,
                 phase_inventory=phase_inventory,
                 temperature_linear_check_passed=bool(solves) and not failures,

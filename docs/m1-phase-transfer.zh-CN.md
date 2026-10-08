@@ -89,3 +89,7 @@ BUILD_JOBS=8 bash scripts/m1-compressible-test.sh
 当前只有第一相通过 subCycle 保护全局旧时间场。v2512 的 subCycleField 会保存/恢复 oldTime 及 old-oldTime，并以时间索引保护外层迭代开始时的旧值。新增 protectAllPhaseOldTimes，默认 false；true 时，对其余相施加同类保护。只在进入子循环时更新一次保护索引，退出子循环时间对象后恢复历史，不在每子步冻结旧值。它针对可能的历史污染，尚未运行确认根因。
 
 运行 `BUILD_JOBS=8 bash scripts/m1-history-test.sh`：四组仅比较凝结、子循环 2/4、保护关/开；固定三次外层迭代、源平均开启及 1 ns 步长。原始质量率、潜热与压力公式不改。已知失败的未保护参考也参与总门槛，因此整体非零退出可能是预期的；查看摘要中的逐组结果并发送完整反馈包即可。
+
+用户反馈：保护开启后凝结子循环 2/4 的最大质量相对残差分别约 6.78e-11 和 1.99e-11，通过门槛；蒸汽质量变化与子循环 1 接近。默认仍关闭，避免将窄范围检查直接推广到所有工况。
+
+下一轮运行 `BUILD_JOBS=8 bash scripts/m1-protected-test.sh`，在保护开启情况下重复十二组方向/时间步/子循环回归。新增 nativeSensibleEnergyJ 是每相 alpha*rho*thermo.he 的体积分，不是 rho*Cv*T 的近似，也没有人为加入汽化潜热参考偏置。当前 thermo 能量类型为 sensibleInternalEnergy；该原生显能库存尚不能当作完整物理总能量，因为相间参考能、潜热与 EOS 功需要先统一。摘要记录各相显能变化，本轮只对温度收敛与封闭质量设门槛。

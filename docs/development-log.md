@@ -181,6 +181,26 @@ off/on, at three outer correctors and 1 ns. Known unprotected failures remain
 in the overall mass gate; individual case summaries must be inspected even
 if the wrapper exits nonzero. No WSL command or CFD run is used in development.
 
+## Old-time protection candidate passes targeted comparison: 2026-10-08
+
+User report for `cb915b72f894574f94e62440e8703feaeddff79b` confirms compilation
+and four normal completions with converged T solves. Protected condensation
+subcycles 2/4 have maximum relative mass residuals `6.77727e-11` and
+`1.99331e-11`, both passing the 1e-9 gate. Unprotected references remain at
+about 9.32e-8 and fail, so the overall archive status remains nonzero as intended.
+Protected vapour mass changes are approximately `-2.40491505e-9` and
+`-2.40491485e-9` kg, close to the earlier one-subcycle `-2.40491545e-9` kg.
+This supports the history-protection candidate for this test; the default
+remains false pending broader regression.
+
+Prepared a twelve-case protected regression across both directions, 1/2/4
+subcycles and two time steps. Added native per-phase thermo he inventory
+observations. The current case thermos use sensibleInternalEnergy; no latent
+or reference offsets are added, and no energy gate or conservation claim is
+made. Physical phase-reference energies must be reconciled before a total
+energy balance can be constructed. New diagnostics compilation and regression
+await user execution; no WSL command or solver was run by the developer.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed
