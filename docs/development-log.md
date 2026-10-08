@@ -78,3 +78,17 @@ M0 build and short-run execution checks now pass on v2512. This records baseline
 execution compatibility, not physical validation or field-level serial/MPI
 equivalence. Only `laserbeamFoam` was exercised; other executables were built.
 M1 conservation/source-term auditing and dedicated physical tests remain next.
+
+## M1 source audit and optional observations: 2026-10-08
+
+Added a public-source continuum audit and optional `continuumDiagnostics`
+logging to both laserbeamFoam and compressibleLaserbeamFoam. The flag defaults
+to false; smoke cases enable it. Logs report global mass, outward boundary mass
+flux, absorbed laser power, kinetic energy, temperature range and maximum speed.
+The feedback wrapper creates `m1-summary.json` with endpoint estimates; this
+does not assess full energy balance, field equivalence or physical validation.
+
+Static checks cover shell syntax, Python syntax, an analytic mass/power history
+and rejection of non-finite observations. No WSL command, OpenFOAM compilation
+or solver run was performed for this update. Compilation of these new additions
+and user-side execution remain pending. The physics equations are unchanged.

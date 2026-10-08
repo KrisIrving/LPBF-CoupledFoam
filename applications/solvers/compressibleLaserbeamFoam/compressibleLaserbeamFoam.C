@@ -93,6 +93,10 @@ int main(int argc, char *argv[])
     #include "setInitialDeltaT.H"
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+    const word diagnosticSolver("compressibleLaserbeamFoam");
+    const surfaceScalarField& diagnosticMassFlux = mixture.rhoPhi();
+    #include "../continuumDiagnostics.H"
+
     Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.run())
@@ -186,6 +190,7 @@ int main(int argc, char *argv[])
             }
         }
 
+        #include "../continuumDiagnostics.H"
         runTime.write();
 
         runTime.printExecutionTime(Info);

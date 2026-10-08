@@ -106,6 +106,10 @@ int main(int argc, char *argv[])
     }
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+    const word diagnosticSolver("laserbeamFoam");
+    const surfaceScalarField& diagnosticMassFlux = rhoPhi;
+    #include "../continuumDiagnostics.H"
+
     Info<< "\nStarting time loop\n" << endl;
 
     while (runTime.run())
@@ -190,6 +194,7 @@ int main(int argc, char *argv[])
         condition = pos(alphaMetal - 0.5) * pos(epsilon1 - 0.5);
         meltHistory += condition;
 
+        #include "../continuumDiagnostics.H"
         runTime.write();
 
         // Write ray paths to VTK files

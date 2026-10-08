@@ -23,6 +23,7 @@ foamDictionary system/controlDict -entry endTime -set 0.00002 >/dev/null
 foamDictionary system/controlDict -entry deltaT -set 0.000001 >/dev/null
 foamDictionary system/controlDict -entry maxDeltaT -set 0.000001 >/dev/null
 foamDictionary system/controlDict -entry writeInterval -set 0.00002 >/dev/null
+foamDictionary system/controlDict -entry continuumDiagnostics -set true >/dev/null
 blockMesh >log.blockMesh 2>&1
 setFields >log.setFields 2>&1
 if [ "${SMOKE_NPROCS:-1}" -gt 1 ]; then

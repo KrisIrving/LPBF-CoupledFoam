@@ -44,5 +44,8 @@ SMOKE_NPROCS=1 SMOKE_REPORT_DIR="$report_dir/serial" bash scripts/smoke.sh > "$r
 stage=parallel
 echo 'Running MPI smoke check.'
 SMOKE_NPROCS="${SMOKE_NPROCS:-2}" SMOKE_REPORT_DIR="$report_dir/parallel" bash scripts/smoke.sh > "$report_dir/log.parallel-wrapper" 2>&1
+stage=diagnostics
+python3 scripts/summarize-continuum.py "$report_dir/serial/log.laserbeamFoam" \
+    "$report_dir/parallel/log.laserbeamFoam" --output "$report_dir/m1-summary.json"
 stage=complete
 echo 'Build, serial and MPI execution checks passed. Physical validation is still pending.'

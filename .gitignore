@@ -84,3 +84,4 @@ SunOS*Gcc*/
 # Keep project documentation despite upstream scientific-time patterns.
 !docs/*.md
 !scripts/*.sh
+!scripts/*.py

@@ -60,6 +60,7 @@ workspace. Do not infer performance from its elapsed wall-clock values.
 - [中文研究路线、文献基准与可选加速](docs/research-plan.zh-CN.md)
 - [Development and verification record](docs/development-log.md)
 - [V3.0 源码入口与守恒审计清单](docs/source-map.zh-CN.md)
+- [M1 连续相源码审计与诊断检查](docs/m1-continuum-audit.zh-CN.md)
 - [Ubuntu v2512 测试与反馈流程](docs/remote-testing.zh-CN.md)
 
 Initial material target: 316L. The proposed reference is Zhang et al.,
