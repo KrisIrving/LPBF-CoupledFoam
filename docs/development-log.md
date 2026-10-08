@@ -65,6 +65,21 @@ The submitted feedback archive was inspected without invoking WSL or running
 any solver on the development side. Original reports and machine metadata
 remain outside this public repository.
 
+## Temperature linear-solver comparison prepared: 2026-10-08
+
+Added a two-case comparison of upstream smoothSolver and PBiCGStab/DILU
+using the same absolute tolerance 1e-8, zero relative tolerance, 1000-iteration
+limit and identical case physics. Only exact T/TFinal controls differ. This
+is a diagnostic candidate, not a confirmed convergence fix. Source averaging
+is disabled and alpha subcycles fixed to one to isolate the comparison.
+
+The wrapper now records individual T solve residuals and enforces a separate
+temperature convergence gate. The comparison explicitly allows upstream
+failure as a reference but requires the candidate to attain tolerance. General
+compressible tests require every case to pass the T check. Script syntax and
+synthetic convergence-log checks pass; OpenFOAM execution awaits user feedback.
+No WSL command, CFD run or tolerance loosening was used in development.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed

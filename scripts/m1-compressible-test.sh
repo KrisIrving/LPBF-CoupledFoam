@@ -20,9 +20,10 @@ printf 'version=%s\noptions=%s\n' "$WM_PROJECT_VERSION" "$WM_OPTIONS" > "$report
 BUILD_JOBS="${BUILD_JOBS:-8}" bash scripts/build.sh > "$report_dir/log.build" 2>&1
 test -x "$FOAM_USER_APPBIN/compressibleLaserbeamFoam"
 python3 scripts/check-phase-pair.py --output "$report_dir/m1-phase-pair.json"
-for mode in false true; do
-    for cycles in 1 2 4; do
-        stage="average-$mode-subcycles-$cycles"
+for temperature_solver in ${M1_T_SOLVERS:-upstream}; do
+for mode in ${M1_AVERAGING_MODES:-false true}; do
+    for cycles in ${M1_SUBCYCLES:-1 2 4}; do
+        stage="T-$temperature_solver-average-$mode-subcycles-$cycles"
         case_dir="$report_dir/$stage"
         mkdir -p "$case_dir"
         cp -a tutorials/compressiblelaserbeamFoam/Test1/{initial,constant,system} "$case_dir/"
@@ -39,7 +40,7 @@ for mode in false true; do
             foamDictionary system/controlDict -entry writeControl -set timeStep >/dev/null
             foamDictionary system/controlDict -entry writeInterval -set 10 >/dev/null
             foamDictionary system/controlDict -entry continuumDiagnostics -set true >/dev/null
-            python3 - "$cycles" "$mode" <<'PY'
+            python3 - "$cycles" "$mode" "$temperature_solver" <<'PY'
 import re
 import sys
 from pathlib import Path
@@ -50,6 +51,27 @@ text, count = re.subn(r'nAlphaSubCycles\s+\d+\s*;',
                      p.read_text())
 if count != 1:
     raise SystemExit('Expected exactly one alpha subcycle control')
+if sys.argv[3] == 'PBiCGStab':
+    # Exact T/TFinal entries override upstream regex entries, retaining tolerance.
+    text = text.replace('solvers\n{', '''solvers
+{
+    T
+    {
+        solver PBiCGStab;
+        preconditioner DILU;
+        tolerance 1e-8;
+        relTol 0;
+        maxIter 1000;
+    }
+    TFinal
+    {
+        $T;
+    }
+''', 1)
+    if 'solver PBiCGStab;' not in text:
+        raise SystemExit('Failed to insert exact T solver control')
+elif sys.argv[3] != 'upstream':
+    raise SystemExit('Unsupported temperature solver')
 p.write_text(text)
 PY
             foamDictionary constant/dynamicMeshDict -entry dynamicFvMesh -set staticFvMesh >/dev/null
@@ -64,5 +86,8 @@ PY
         echo "Completed: $stage"
     done
 done
+done
+stage=linear-convergence
+python3 scripts/summarize-m1-temperature.py "$report_dir" ${M1_REFERENCE_FLAG:-}
 stage=complete
-echo 'Six short compressible runtime checks passed; physical validation remains pending.'
+echo 'Compressible runtime and requested temperature convergence checks passed; physical validation remains pending.'
