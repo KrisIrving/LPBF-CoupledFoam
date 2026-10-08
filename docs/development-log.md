@@ -229,6 +229,34 @@ Synthetic reference-calibration and equilibrium preparation checks pass; new
 C++ diagnostic compilation and CFD execution await user feedback. No WSL
 command or solver was invoked on the development side.
 
+## Reference-energy report and common-latent candidate: 2026-10-08
+
+User report for `55dbe8077f0c9f2d06eebd25c1e51db67caea736` passes all three
+runtime/T/mass gates. Equilibrium reference energy changes by about -2e-11 J;
+evaporation by -3.25155e-7 J and condensation by +1.24748e-4 J. The fixed
+vapour offset is -921476.8488544316 J/kg. Non-equilibrium energy changes remain
+after reference calibration and need equation/EOS analysis; total reported
+energy is about 7.6 kJ, so normalization only by initial energy would hide
+the much smaller phase-transfer scale. No physical energy pass is recorded.
+
+Added optional commonLatentHeatSource, default false. For each liquid/vapour
+pair, it forms Lv times the signed mass rate implied by the original capped
+alpha sources, counts that pair once in the liquid branch, then uses the
+existing rCv operator to convert power into the temperature-source units.
+The temperature equation subtracts the resulting source, so evaporation cools
+and condensation heats. Instantaneous alpha sources and pressure formulas
+are unchanged. This isolates latent conversion; it does not supply full
+phase-energy transport, EOS-consistent caloric behavior or pressure-work closure.
+Pair molecular-weight/rate equivalence is only verified in the present synthetic
+pair, not arbitrary multi-material settings.
+
+Prepared six cases: equilibrium/evaporation/condensation with legacy/common
+latent conversion. All use the same initial equilibrium calibration offset;
+the ledger rejects differing initial reference states. Static shell checks,
+sign/unit reasoning and reproduction of the submitted ledger offset pass.
+Candidate C++ compilation and CFD runs await user feedback. No WSL command
+or solver is invoked on the development side.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed

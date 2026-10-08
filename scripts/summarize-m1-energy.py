@@ -27,8 +27,8 @@ def audit(report):
             cases.append((case.name, json.loads(meta.read_text()), phases,
                           rows(log, 'M1_CONTINUUM')))
     refs = [c for c in cases if c[1]['direction'] == 'equilibrium']
-    if len(refs) != 1:
-        raise ValueError('Exactly one equilibrium reference required')
+    if not refs:
+        raise ValueError('Equilibrium reference required')
     _, reference, phases, _ = refs[0]
     l, v = phases['metal1'][0], phases['metal1vapour'][0]
     el = float(l['nativeSensibleEnergyJ'])/float(l['massKg'])
@@ -39,6 +39,14 @@ def audit(report):
     latent = reference['latent_heat_J_per_kg']
     # Lv is an enthalpy gap: h_v-h_l = e_v-e_l + p*(v_v-v_l).
     offset = latent-(ev-el)-p*(specific_volume_v-specific_volume_l)
+    for _, ref_meta, ref_phases, _ in refs[1:]:
+        for phase in ('metal1', 'metal1vapour'):
+            for key in ('massKg', 'alphaVolumeM3', 'nativeSensibleEnergyJ'):
+                if not math.isclose(float(ref_phases[phase][0][key]),
+                                    float(phases[phase][0][key]), rel_tol=1e-12):
+                    raise ValueError('Equilibrium initial references differ')
+        if ref_meta['latent_heat_J_per_kg'] != latent or ref_meta['initial_pressure_Pa'] != p:
+            raise ValueError('Equilibrium latent/pressure references differ')
     assert math.isclose(ev+offset-el+p*(specific_volume_v-specific_volume_l),
                         latent, rel_tol=1e-8, abs_tol=1e-8)
     results = {}
@@ -56,7 +64,8 @@ def audit(report):
             energies.append((time, energy))
         mv = inventories['metal1vapour']
         delta_mv = float(mv[-1]['massKg'])-float(mv[0]['massKg'])
-        results[name] = dict(direction=meta['direction'], samples=len(energies),
+        results[name] = dict(direction=meta['direction'],
+            common_latent_heat_source=meta.get('commonLatentHeatSource', False), samples=len(energies),
             initial_reference_energy_j=energies[0][1], final_reference_energy_j=energies[-1][1],
             reference_energy_change_j=energies[-1][1]-energies[0][1],
             max_abs_reference_energy_change_j=max(abs(e-energies[0][1]) for _, e in energies),

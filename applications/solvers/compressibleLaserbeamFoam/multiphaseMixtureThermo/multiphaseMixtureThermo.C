@@ -1233,6 +1233,20 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::solveAlphas
 
     *massdotterm *= 0.0;
 
+    const Switch commonLatentHeatSource
+    (
+        mesh_.solverDict("alpha").lookupOrDefault<Switch>
+        (
+            "commonLatentHeatSource", false
+        )
+    );
+    volScalarField commonLatentPower
+    (
+        IOobject("M1CommonLatentPower", mesh_.time().timeName(), mesh_),
+        mesh_,
+        dimensionedScalar("zero", dimensionSet(1, -1, -3, 0, 0), 0)
+    );
+
     PtrList<volScalarField> Sps(phases_.size());
     PtrList<volScalarField> Sus(phases_.size());
 
@@ -1593,6 +1607,17 @@ Info<<"Liquid-Vapour State Transition: (Liquid,Vapour): ("<<alpha.name()<<","<<a
                         // divU = -condrate*alpha2*10.0;
                          massgen=pair_LHG*(((alpha.thermo().rho()/alpha.thermo().Cv())*min(condrate,maxrate)*(1.0-evapcoefffield)*alpha2*(alpha2.thermo().rho()/alpha.thermo().rho()))-((alpha2.thermo().rho()/alpha2.thermo().Cv())*min(evaprate,maxrate)*evapcoefffield*alpha*(alpha2.thermo().rho()/alpha.thermo().rho())));
 
+                        if (commonLatentHeatSource)
+                        {
+                            // Count each liquid/vapour pair once. Same capped rates
+                            // as the original alpha sources; positive for evaporation.
+                            commonLatentPower += pair_LHG*alpha2.thermo().rho()
+                               *(
+                                    min(evaprate,maxrate)*evapcoefffield*alpha
+                                  - min(condrate,maxrate)*(1.0-evapcoefffield)*alpha2
+                                );
+                        }
+
 
             }
 
@@ -1798,6 +1823,13 @@ Info<<"Liquid-Vapour State Transition: (Liquid,Vapour): ("<<alpha.name()<<","<<a
         << endl;
 
     calcAlphas();
+
+    if (commonLatentHeatSource)
+    {
+        // TEqn subtracts mass_dot. Convert W/m3 with its existing rCv operator.
+        // This candidate alone does not close native phase energy transport.
+        *massdotterm = rCv()*commonLatentPower;
+    }
 
     return tPCR;
 }
