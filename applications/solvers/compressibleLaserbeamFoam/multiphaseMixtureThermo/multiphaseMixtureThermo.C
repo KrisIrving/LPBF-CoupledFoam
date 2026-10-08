@@ -935,6 +935,17 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::solve
     if (nAlphaSubCycles > 1)
     {
         surfaceScalarField rhoPhiSum(0.0*rhoPhi_);
+        // Optional M1 candidate: use the same time weights as rhoPhi.
+        // Preserve upstream last-substep behavior unless explicitly enabled.
+        const Switch averagePhaseChangeSources
+        (
+            alphaControls.lookupOrDefault<Switch>
+            (
+                "averagePhaseChangeSources", false
+            )
+        );
+        volScalarField PCRSum(0.0*PCR);
+        volScalarField temperatureSourceSum(0.0*(*massdotterm));
         dimensionedScalar totalDeltaT = runTime.deltaT();
 
         for
@@ -945,9 +956,20 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::solve
         {
             PCR = solveAlphas(massdotterm);
             rhoPhiSum += (runTime.deltaT()/totalDeltaT)*rhoPhi_;
+            if (averagePhaseChangeSources)
+            {
+                PCRSum += (runTime.deltaT()/totalDeltaT)*PCR;
+                temperatureSourceSum +=
+                    (runTime.deltaT()/totalDeltaT)*(*massdotterm);
+            }
         }
 
         rhoPhi_ = rhoPhiSum;
+        if (averagePhaseChangeSources)
+        {
+            PCR = PCRSum;
+            *massdotterm = temperatureSourceSum;
+        }
     }
     else
     {

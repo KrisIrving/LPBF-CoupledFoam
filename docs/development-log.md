@@ -153,3 +153,20 @@ derive the mass-rate normalization and thermal source consistently, then test
 the integrated compressible solver with pressure/EOS and subcycling enabled.
 No production physical source term was changed and no WSL command was invoked
 to inspect this report. Raw user reports remain outside the public repository.
+
+## M1 phase-transfer derivation and compressible runtime gate: 2026-10-08
+
+Documented a shared signed mass-rate interface and latent-power convention,
+including why the existing rho*T temperature source cannot be replaced from
+units or signs alone. No mass-rate or instantaneous latent formula was changed.
+Added optional alpha-control averagePhaseChangeSources (default false) to time
+average PCR and temperature source with the same subcycle weights as rhoPhi.
+The one-subcycle route remains unchanged.
+
+Added a user-run wrapper for six short serial compressible runs, comparing
+source averaging off/on and 1/2/4 alpha subcycles. It copies upstream Test1,
+uses its 125-cell mesh without refinement and runs ten 1 ns steps. This is
+a runtime gate using upstream synthetic materials, not a controlled material
+validation case. Build and runtime are pending user feedback. Developer-side
+checks are limited to script syntax, source algebra and weighted-source math;
+no WSL command or CFD run is used.
