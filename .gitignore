@@ -83,3 +83,4 @@ SunOS*Gcc*/
 .runs/
 # Keep project documentation despite upstream scientific-time patterns.
 !docs/*.md
+!scripts/*.sh

@@ -16,6 +16,9 @@ See the [upstream README](README.upstream.md) for solver documentation.
 Target: Ubuntu 22.04 with **OpenCFD OpenFOAM v2506**, GCC and OpenMPI.
 WSL2 is supported by the local baseline workflow. Install these prerequisites
 before running the commands; Foundation OpenFOAM 9/10 is not interchangeable.
+**OpenCFD v2512** is a compatibility candidate awaiting remote verification.
+The scripts respect an already
+loaded OpenFOAM environment unless `OPENFOAM_BASHRC` is explicitly set.
 
 ```bash
 git clone --depth 1 https://github.com/KrisIrving/LPBF-CoupledFoam.git
@@ -29,6 +32,13 @@ SMOKE_NPROCS=2 bash scripts/smoke.sh
 
 The shallow clone is sufficient for testing on another machine. Use
 `git fetch --unshallow origin` when full development history is needed.
+
+For the Ubuntu v2512 machine, use the
+[remote testing instructions](docs/remote-testing.zh-CN.md).
+One command builds and runs serial/MPI checks, then packages logs on success or
+failure. Use a separate fresh checkout for each OpenFOAM version: intermediate
+objects in source directories are shared even though final binaries use
+version-specific directories.
 
 The wrapper places executables and libraries in ignored `.build/`, without
 replacing other user solver installations. Each smoke run copies the upstream
@@ -51,6 +61,7 @@ workspace. Do not infer performance from its elapsed wall-clock values.
 - [中文研究路线、文献基准与可选加速](docs/research-plan.zh-CN.md)
 - [Development and verification record](docs/development-log.md)
 - [V3.0 源码入口与守恒审计清单](docs/source-map.zh-CN.md)
+- [Ubuntu v2512 测试与反馈流程](docs/remote-testing.zh-CN.md)
 
 Initial material target: 316L. The proposed reference is Zhang et al.,
 Acta Materialia 288 (2025), 120816,

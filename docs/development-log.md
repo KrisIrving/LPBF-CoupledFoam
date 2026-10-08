@@ -44,3 +44,16 @@ evaporation, gas compressibility, melt-pool dimensions, moving powder, spatter,
 parallel numerical equivalence or long-time stability. Only `laserbeamFoam`
 was run; the other programs were compiled. The 316L literature reproduction,
 CFD–DEM implementation and acceleration modules are pending.
+
+## User-side Ubuntu testing setup: 2026-10-08
+
+The remote-testing workflow adds an OpenCFD v2512 compatibility candidate.
+Scripts now preserve a selected environment, separate final
+binaries by OpenFOAM version, reject recorded build-environment changes, and
+package build/serial/MPI logs on success or failure. Source intermediate objects
+still require separate checkouts per version.
+
+The v2512 route is a compatibility candidate pending the user's first report.
+No OpenFOAM compilation or simulation was run locally for this update. Heavy
+GitHub build checks are now manually triggered; lightweight shell syntax and
+diff checks are performed before pushing code.
