@@ -13,12 +13,11 @@ See the [upstream README](README.upstream.md) for solver documentation.
 
 ## Build and test
 
-Target: Ubuntu 22.04 with **OpenCFD OpenFOAM v2506**, GCC and OpenMPI.
-WSL2 is supported by the local baseline workflow. Install these prerequisites
-before running the commands; Foundation OpenFOAM 9/10 is not interchangeable.
-**OpenCFD v2512** is a compatibility candidate awaiting remote verification.
-The scripts respect an already
-loaded OpenFOAM environment unless `OPENFOAM_BASHRC` is explicitly set.
+Baseline build and short serial/MPI runs have passed with **OpenCFD OpenFOAM
+v2506 and v2512**. See the verification record for their scope. Install OpenFOAM,
+GCC and OpenMPI before running the commands; Foundation OpenFOAM 9/10 is not
+interchangeable. The scripts respect an already loaded OpenFOAM environment
+unless `OPENFOAM_BASHRC` is explicitly set.
 
 ```bash
 git clone --depth 1 https://github.com/KrisIrving/LPBF-CoupledFoam.git

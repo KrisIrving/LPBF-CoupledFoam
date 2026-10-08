@@ -57,3 +57,24 @@ The v2512 route is a compatibility candidate pending the user's first report.
 No OpenFOAM compilation or simulation was run locally for this update. Heavy
 GitHub build checks are now manually triggered; lightweight shell syntax and
 diff checks are performed before pushing code.
+
+## Reported v2512 baseline verification: 2026-10-08
+
+Tested code: `9e33b47a4c93a9edd616664f59cd04237ee4f67b`.
+The submitted feedback archive was inspected without invoking WSL or running
+any solver on the development side. Original reports and machine metadata
+remain outside this public repository.
+
+- The build completed successfully and the wrapper checked all four expected
+  executables. The run selected this project's version-specific executable.
+- Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed
+  20 time steps, reaching `2e-05` seconds.
+- Overall, serial and MPI exit statuses were all zero. Both solver logs ended
+  normally; MPI also reported `Finalising parallel run`.
+- Inspection found no fatal-error markers or NaN/Inf values in either solver
+  log. No timing comparison is used to claim a speedup.
+
+M0 build and short-run execution checks now pass on v2512. This records baseline
+execution compatibility, not physical validation or field-level serial/MPI
+equivalence. Only `laserbeamFoam` was exercised; other executables were built.
+M1 conservation/source-term auditing and dedicated physical tests remain next.
