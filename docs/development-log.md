@@ -135,3 +135,21 @@ condensation, density contrasts and rate limiting. These checks passed on the
 development side without OpenFOAM or WSL. The feedback wrapper includes the
 report. This is isolated algebra, not a full CFD or energy validation; M1.2
 source integration and thermodynamic validation remain pending.
+
+## User-side M1.2 algebra report verified: 2026-10-08
+
+The submitted phase-pair JSON has source SHA256
+`48497f9bca75c00d959098062316b5dc44648f4f46f05c405705fd78ea84942a`,
+identical to the local source bytes. All extracted expressions and eight case
+records match the development-side report exactly. Every isolated mass residual
+is zero; evaporation has positive volume source and condensation negative.
+Rate limiting halves the synthetic transfer as expected. Evaporation transfer
+relative to donor-density rate interpretation is 0.5 and 0.001 for density
+ratios 2 and 1000; condensation ratios are 1. These are synthetic algebra
+observations, not measured material properties or CFD results.
+
+M1.2 algebra checks are verified on both sides. The remaining tasks are to
+derive the mass-rate normalization and thermal source consistently, then test
+the integrated compressible solver with pressure/EOS and subcycling enabled.
+No production physical source term was changed and no WSL command was invoked
+to inspect this report. Raw user reports remain outside the public repository.
