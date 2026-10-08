@@ -1240,9 +1240,22 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::solveAlphas
             "commonLatentHeatSource", false
         )
     );
-    volScalarField commonLatentPower
+    const Switch referenceInternalEnergySource
     (
-        IOobject("M1CommonLatentPower", mesh_.time().timeName(), mesh_),
+        mesh_.solverDict("alpha").lookupOrDefault<Switch>
+        (
+            "referenceInternalEnergySource", false
+        )
+    );
+    if (referenceInternalEnergySource && !commonLatentHeatSource)
+    {
+        FatalErrorInFunction
+            << "referenceInternalEnergySource requires commonLatentHeatSource"
+            << exit(FatalError);
+    }
+    volScalarField commonPhaseChangePower
+    (
+        IOobject("M1CommonPhaseChangePower", mesh_.time().timeName(), mesh_),
         mesh_,
         dimensionedScalar("zero", dimensionSet(1, -1, -3, 0, 0), 0)
     );
@@ -1611,7 +1624,19 @@ Info<<"Liquid-Vapour State Transition: (Liquid,Vapour): ("<<alpha.name()<<","<<a
                         {
                             // Count each liquid/vapour pair once. Same capped rates
                             // as the original alpha sources; positive for evaporation.
-                            commonLatentPower += pair_LHG*alpha2.thermo().rho()
+                            dimensionedScalar pairEnergyJump(pair_LHG);
+                            if (referenceInternalEnergySource)
+                            {
+                                const dictionary& offsets =
+                                    phasedictionary.subDict("phaseEnergyOffsets");
+                                pairEnergyJump = dimensionedScalar
+                                (
+                                    "referenceEnergyJump", dimLatentHeatGas_,
+                                    offsets.get<scalar>(alpha2.name())
+                                  - offsets.get<scalar>(alpha.name())
+                                );
+                            }
+                            commonPhaseChangePower += pairEnergyJump*alpha2.thermo().rho()
                                *(
                                     min(evaprate,maxrate)*evapcoefffield*alpha
                                   - min(condrate,maxrate)*(1.0-evapcoefffield)*alpha2
@@ -1828,7 +1853,7 @@ Info<<"Liquid-Vapour State Transition: (Liquid,Vapour): ("<<alpha.name()<<","<<a
     {
         // TEqn subtracts mass_dot. Convert W/m3 with its existing rCv operator.
         // This candidate alone does not close native phase energy transport.
-        *massdotterm = rCv()*commonLatentPower;
+        *massdotterm = rCv()*commonPhaseChangePower;
     }
 
     return tPCR;

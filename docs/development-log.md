@@ -309,6 +309,35 @@ of both thermo combinations and rhoConst E=0 were checked by read-only Windows
 source inspection. Preparation/analytic/shell checks pass; runtime is pending.
 No WSL command or CFD run was performed during development.
 
+## Consistent fixture report; internal-reference energy candidate: 2026-10-08
+
+User report for `5786e340265758eb70efad1b48a483d78b5b28e0` passes all three
+runtime/T/mass gates. Equilibrium reference energy changes by 5e-11 J.
+Condensation energy change is +163.239 microjoules, compared with a latent
+transfer scale 478.762 microjoules; evaporation is -7.677e-9 J compared with
+2.267e-8 J. The roughly 34.1% ratio matches the reference p*delta-specific-volume
+fraction of Lv. This is evidence for the enthalpy/internal-energy distinction
+in this closed equal-Cv fixture, not a general energy-solver proof.
+
+Added optional referenceInternalEnergySource (default false), requiring common
+source conversion. It uses explicitly configured phase-reference energy
+differences instead of Lv in the signed mass-exchange power. For this equal-Cv
+pair, the reference difference C=Lv-p_ref*(1/rho_v-1/rho_l) is
+1318067.1651452065 J/kg. It is taken from the submitted equilibrium initial
+thermo calibration, not fitted to time-history errors. A modern SI constant
+substitution gave a slightly different value; the implementation deliberately
+uses the measured OpenCFD v2512 reference and checks it independently in the
+ledger. Other OpenFOAM constant configurations require recalibration.
+
+The consistent test case writes all phase offsets, with zero for inactive
+phases. A six-case follow-up compares reference mode off/on for equilibrium,
+evaporation and condensation. Rates, pressure equation and thermo properties
+remain unchanged. This reference term is appropriate to the equal-Cv, common
+native-energy fixture; variable or unequal Cv, species energy fluxes and general
+moving-interface flows require a fuller conservative energy treatment.
+Static preparation, energy-cancellation algebra and shell checks pass; C++
+compilation and CFD execution remain pending. No WSL command was invoked.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed

@@ -51,6 +51,11 @@ def audit(report):
                         latent, rel_tol=1e-8, abs_tol=1e-8)
     results = {}
     for name, meta, inventories, continuum in cases:
+        configured_offset = meta.get('vapour_reference_energy_offset_J_per_kg')
+        if meta.get('referenceInternalEnergySource', False) and (
+            configured_offset is None or not math.isclose(configured_offset, offset, rel_tol=1e-10)
+        ):
+            raise ValueError('Configured source offset differs from equilibrium ledger calibration')
         energies = []
         for index, sample in enumerate(continuum):
             time = float(sample['time'])
@@ -66,6 +71,7 @@ def audit(report):
         delta_mv = float(mv[-1]['massKg'])-float(mv[0]['massKg'])
         results[name] = dict(direction=meta['direction'],
             thermo_fixture=meta.get('thermo_fixture', 'legacy'),
+            reference_internal_energy_source=meta.get('referenceInternalEnergySource', False),
             common_latent_heat_source=meta.get('commonLatentHeatSource', False), samples=len(energies),
             initial_reference_energy_j=energies[0][1], final_reference_energy_j=energies[-1][1],
             reference_energy_change_j=energies[-1][1]-energies[0][1],

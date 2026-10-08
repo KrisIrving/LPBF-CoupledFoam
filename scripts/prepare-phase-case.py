@@ -61,6 +61,16 @@ def prepare(case, direction, fixture='legacy'):
             path.write_text(text)
         thermo = re.sub(r'(\bLatentHeatGas\s*\(\s*\(metal1vapour\s+metal1\)\s+)[\deE.+-]+',
                         r'\g<1>2e6', thermo)
+        # Initial equilibrium calibration of this exact v2512 fixture, not a
+        # fit to evolving energy residuals. OpenFOAM constants can differ from
+        # modern SI constants; the ledger independently checks this value.
+        offset = 1318067.1651452065
+        thermo += '\nphaseEnergyOffsets\n{\n'
+        for alpha_path in sorted((case/'0').glob('alpha.*')):
+            phase = alpha_path.name.removeprefix('alpha.')
+            value = offset if phase == 'metal1vapour' else 0
+            thermo += f'    {phase} {value:.17g};\n'
+        thermo += '}\n'
         (case/'constant/thermophysicalProperties').write_text(thermo)
     # At T=4101 K, this upstream pair has Psat=P0=100000 Pa.
     pressure = {'evaporation': 80000, 'condensation': 120000, 'equilibrium': 100000}[direction]
@@ -81,6 +91,7 @@ def prepare(case, direction, fixture='legacy'):
         direction=direction, temperature_K=4101, initial_pressure_Pa=pressure,
         initial_saturation_pressure_Pa=100000, latent_heat_J_per_kg=latent,
         thermo_fixture=fixture,
+        vapour_reference_energy_offset_J_per_kg=offset if fixture == 'consistent' else None,
         liquid_alpha=0.5, vapour_alpha=0.5,
         interpretation='Synthetic homogeneous closure test; fixture type records active EOS/caloric choices. '
                        'Remaining phases are inactive at initialization, not removed. '

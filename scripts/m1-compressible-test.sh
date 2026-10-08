@@ -26,6 +26,7 @@ for outer_correctors in ${M1_OUTER_CORRECTORS:-1}; do
 for test_delta_t in ${M1_TIME_STEPS:-1e-9}; do
 for protect_histories in ${M1_PROTECT_HISTORIES:-false}; do
 for common_latent in ${M1_COMMON_LATENT:-false}; do
+for reference_energy in ${M1_REFERENCE_ENERGY:-false}; do
 for mode in ${M1_AVERAGING_MODES:-false true}; do
     for cycles in ${M1_SUBCYCLES:-1 2 4}; do
         stage="T-$temperature_solver-average-$mode-subcycles-$cycles"
@@ -34,6 +35,7 @@ for mode in ${M1_AVERAGING_MODES:-false true}; do
         stage="$stage-dt-$test_delta_t"
         stage="$stage-history-$protect_histories"
         stage="$stage-latent-$common_latent"
+        stage="$stage-reference-$reference_energy"
         case_dir="$report_dir/$stage"
         mkdir -p "$case_dir"
         cp -a tutorials/compressiblelaserbeamFoam/Test1/{initial,constant,system} "$case_dir/"
@@ -54,7 +56,7 @@ for mode in ${M1_AVERAGING_MODES:-false true}; do
             foamDictionary system/controlDict -entry writeInterval -set 10 >/dev/null
             foamDictionary system/controlDict -entry continuumDiagnostics -set true >/dev/null
             foamDictionary system/controlDict -entry couplingDiagnostics -set true >/dev/null
-            python3 - "$cycles" "$mode" "$temperature_solver" "$outer_correctors" "$protect_histories" "$common_latent" <<'PY'
+            python3 - "$cycles" "$mode" "$temperature_solver" "$outer_correctors" "$protect_histories" "$common_latent" "$reference_energy" <<'PY'
 import re
 import json
 import sys
@@ -64,7 +66,8 @@ text, count = re.subn(r'nAlphaSubCycles\s+\d+\s*;',
                      f'nAlphaSubCycles {int(sys.argv[1])};\n'
                      f'        averagePhaseChangeSources {sys.argv[2]};\n'
                      f'        protectAllPhaseOldTimes {sys.argv[5]};\n'
-                     f'        commonLatentHeatSource {sys.argv[6]};',
+                     f'        commonLatentHeatSource {sys.argv[6]};\n'
+                     f'        referenceInternalEnergySource {sys.argv[7]};',
                      p.read_text())
 if count != 1:
     raise SystemExit('Expected exactly one alpha subcycle control')
@@ -98,6 +101,7 @@ metadata = Path('phase-case.json')
 if metadata.exists():
     settings = json.loads(metadata.read_text())
     settings['commonLatentHeatSource'] = sys.argv[6] == 'true'
+    settings['referenceInternalEnergySource'] = sys.argv[7] == 'true'
     metadata.write_text(json.dumps(settings, indent=2)+'\n')
 PY
             foamDictionary constant/dynamicMeshDict -entry dynamicFvMesh -set staticFvMesh >/dev/null
@@ -111,6 +115,7 @@ PY
         ) > "$case_dir/log.wrapper" 2>&1
         echo "Completed: $stage"
     done
+done
 done
 done
 done
