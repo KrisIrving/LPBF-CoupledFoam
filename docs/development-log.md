@@ -92,3 +92,29 @@ Static checks cover shell syntax, Python syntax, an analytic mass/power history
 and rejection of non-finite observations. No WSL command, OpenFOAM compilation
 or solver run was performed for this update. Compilation of these new additions
 and user-side execution remain pending. The physics equations are unchanged.
+
+## User-side M1.1 diagnostic verification: 2026-10-08
+
+Tested commit: `66dc771d3dd06a50af8726b0a453084cabbcfb73` on OpenCFD v2512.
+The supplied archive was read through Windows file sharing; no WSL command or
+solver was executed on the development side. Build and serial/two-rank MPI
+execution completed with zero exit statuses. Both logs have 21 diagnostic
+samples from time zero to 20 microseconds and normal termination.
+
+Both runs report initial/final mass `2.400356e-05` kg at printed precision,
+absorbed energy estimated by right-endpoint integration `0.002154103865976` J,
+and final absorbed power `110.486740967` W. Maximum endpoint mass residual
+estimates are `4.301555069e-13` kg/s (serial) and `3.96838751553e-13` kg/s (MPI).
+Final maximum temperatures are `380.334145290` K and `380.334144791` K;
+field-level equivalence has not been evaluated.
+
+Initial reported laser power is `-5e-09` W because the upstream constructor
+initializes Deposition to `-1` W/m3 before the first laser update. It is an
+initialization placeholder, not physical negative absorption; right-endpoint
+integration does not use this initial value. Restart initialization likewise
+must not be interpreted as a physical laser observation before update.
+
+M1.1 diagnostic integration passes for this baseline. The run is below melting
+and evaporation temperatures and does not validate phase-change sources,
+compressible runtime behavior, full energy balance or gas/particle coupling.
+Next is M1.2: isolated evaporation and condensation source-pair checks.
