@@ -21,8 +21,16 @@ def field(path, value, condition):
 
 
 def prepare(case, direction):
+    thermo = (case/'constant/thermophysicalProperties').read_text()
+    tables = {}
+    for name in ('boils', 'LatentHeatGas'):
+        table = re.search(r'\b'+name+r'\s*\((.*?)\);', thermo, re.S).group(1)
+        tables[name] = float(re.search(r'\(metal1vapour\s+metal1\)\s+([\deE.+-]+)', table).group(1))
+    p0 = float(re.search(r'\bP0\s+([\deE.+-]+)\s*;', thermo).group(1))
+    if (tables['boils'], tables['LatentHeatGas'], p0) != (4101, 10, 100000):
+        raise ValueError('Synthetic test requires the documented upstream pair parameters')
     # At T=4101 K, this upstream pair has Psat=P0=100000 Pa.
-    pressure = 80000 if direction == 'evaporation' else 120000
+    pressure = {'evaporation': 80000, 'condensation': 120000, 'equilibrium': 100000}[direction]
     for path in (case/'0').glob('alpha.*'):
         value = '0.5' if path.name in ('alpha.metal1', 'alpha.metal1vapour') else '0'
         field(path, value, 'type zeroGradient;')
@@ -38,7 +46,8 @@ def prepare(case, direction):
     (case/'constant/timeVsLaserPower').write_text('(\n (0 0)\n (1 0)\n)\n')
     (case/'phase-case.json').write_text(json.dumps(dict(
         direction=direction, temperature_K=4101, initial_pressure_Pa=pressure,
-        initial_saturation_pressure_Pa=100000, liquid_alpha=0.5, vapour_alpha=0.5,
+        initial_saturation_pressure_Pa=100000, latent_heat_J_per_kg=10,
+        liquid_alpha=0.5, vapour_alpha=0.5,
         interpretation='Synthetic homogeneous closure test; upstream EOS and latent parameters retained. '
                        'Remaining phases are inactive at initialization, not removed. '
                        'Initial driving direction may change as pressure and temperature evolve.'
@@ -48,6 +57,6 @@ def prepare(case, direction):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('case', type=Path)
-    parser.add_argument('direction', choices=('evaporation', 'condensation'))
+    parser.add_argument('direction', choices=('evaporation', 'condensation', 'equilibrium'))
     args = parser.parse_args()
     prepare(args.case, args.direction)

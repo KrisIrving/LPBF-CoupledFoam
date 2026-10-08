@@ -21,7 +21,7 @@ if (runTime.controlDict().lookupOrDefault<Switch>("continuumDiagnostics", false)
         if (Pstream::master())
         {
             const int diagnosticPrecision = Info().precision();
-            Info().precision(12);
+            Info().precision(15);
             Info<< "M1_PHASE time=" << runTime.value()
                 << " phase=" << diagnosticPhase.name()
                 << " massKg=" << diagnosticPhaseMass

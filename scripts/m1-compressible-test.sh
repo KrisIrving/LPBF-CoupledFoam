@@ -110,5 +110,9 @@ done
 done
 stage=linear-convergence
 python3 scripts/summarize-m1-temperature.py "$report_dir" ${M1_REFERENCE_FLAG:-}
+if [ "${M1_ENERGY_AUDIT:-false}" = true ]; then
+    stage=energy-observations
+    python3 scripts/summarize-m1-energy.py "$report_dir"
+fi
 stage=complete
 echo 'Compressible runtime and requested temperature convergence checks passed; physical validation remains pending.'

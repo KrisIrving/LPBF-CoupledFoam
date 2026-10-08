@@ -201,6 +201,34 @@ made. Physical phase-reference energies must be reconciled before a total
 energy balance can be constructed. New diagnostics compilation and regression
 await user execution; no WSL command or solver was run by the developer.
 
+## Protected regression passes; reference energy ledger prepared: 2026-10-08
+
+User report for `964fb4c5ffcb9825e6aee0243fc5db8344284efd` passes all twelve
+runtime, T convergence and closed mass gates. Maximum history-relative mass
+residual is 1.59465e-10. At fixed dt, protected subcycles give closely matching
+vapour inventory changes. Halving dt changes one-subcycle condensation vapour
+transfer by about 0.02%; this is sensitivity evidence, not a demonstrated order
+of time convergence. Native sensible energy changes are about -2.09 mJ for
+condensation and +6.23 microjoules for evaporation. These are phase-native
+energies without matched latent reference offsets, not proof of physical loss.
+
+Added a three-case equilibrium/evaporation/condensation energy observation
+wrapper, using protected histories, three outer correctors, one subcycle and
+PBiCGStab. At equilibrium T=4101 K, p=P0=100000 Pa, the active pair has no
+initial saturation-pressure driving. The other two pressures remain 80000 and
+120000 Pa. Diagnostic output precision increases to 15 digits to reduce energy
+inventory cancellation. Original energy equations and source rates are unchanged.
+
+The ledger computes a constant vapour energy offset from the equilibrium
+initial phase energies and specific volumes, interpreting Lv as a reference
+enthalpy gap. It enforces that reference relation once, then applies the same
+offset to all cases without fitting their time histories. It records shifted
+internal energy plus kinetic energy, not an energy pass/fail gate. Thermodynamic
+EOS consistency and the off-reference phase energy gap still require audit.
+Synthetic reference-calibration and equilibrium preparation checks pass; new
+C++ diagnostic compilation and CFD execution await user feedback. No WSL
+command or solver was invoked on the development side.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed
