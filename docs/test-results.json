@@ -1,0 +1,550 @@
+{
+  "schema_version": 1,
+  "updated_on": "2026-10-09",
+  "latest_user_tested_commit": "6464b2499d9ef63f2f2d1afdd5710103dee308f7",
+  "scope": "Curated results from 14 user-provided M1 compressible archives. Raw reports remain outside Git. Null means absent or not evaluated, never pass. Historical gates differ; compare their recorded scope before interpreting results.",
+  "records": [
+    {
+      "report": "m1-compressible-20261008-193210-28596.tar.gz",
+      "archive_sha256": "9484ac2e1566e01e8645a135e46c46fe7646094fa07ce4b98e8b70d4b359c0cb",
+      "tested_commit": "3753c9e0ecad7049f56d0120214d776671cffb12",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 6,
+      "temperature_mass_gate": null,
+      "max_closed_mass_history_relative_residual": null,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated"
+    },
+    {
+      "report": "m1-compressible-20261008-193737-32076.tar.gz",
+      "archive_sha256": "203a6ee446a27b2a5eb573ec4366fc2a722789cdd63f820cc8d23633e3472fbf",
+      "tested_commit": "2e3a8ee6db1a51a029abe8cc655aedd0964e7cd7",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 2,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": null,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated"
+    },
+    {
+      "report": "m1-compressible-20261008-195343-37686.tar.gz",
+      "archive_sha256": "3f8c23216d04edc74cd2ad11b2117c722684a7c1424c2de9145f1ad4359de61b",
+      "tested_commit": "fe006dd58b8b3eea79a33797502f06f3c64de80d",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 12,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": null,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated"
+    },
+    {
+      "report": "m1-compressible-20261008-203437-48996.tar.gz",
+      "archive_sha256": "28a21ae44abb4ea2bf525a84401e504b0db3b2c82d223d47c08d730dd08938df",
+      "tested_commit": "260695052802c4aad20bd580ce65fe29705b65b8",
+      "last_stage": "linear-convergence",
+      "exit_status": 1,
+      "case_count": 4,
+      "temperature_mass_gate": false,
+      "max_closed_mass_history_relative_residual": null,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated"
+    },
+    {
+      "report": "m1-compressible-20261008-204915-54448.tar.gz",
+      "archive_sha256": "552b0c8d24c2e1742f3c1ae4f857a308fbd6b093bfd39549034d5f1093064372",
+      "tested_commit": "f93862db7c4302458e5665258d0543dafd4b92fd",
+      "last_stage": "linear-convergence",
+      "exit_status": 1,
+      "case_count": 12,
+      "temperature_mass_gate": false,
+      "max_closed_mass_history_relative_residual": 9.323132135730119e-08,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated"
+    },
+    {
+      "report": "m1-compressible-20261008-210028-59288.tar.gz",
+      "archive_sha256": "6cc82129fde4b4f95dbb4ece8c6a0278e7f28e979cd637854329b60ca739d2ae",
+      "tested_commit": "cb915b72f894574f94e62440e8703feaeddff79b",
+      "last_stage": "linear-convergence",
+      "exit_status": 1,
+      "case_count": 4,
+      "temperature_mass_gate": false,
+      "max_closed_mass_history_relative_residual": 9.323132135730119e-08,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated"
+    },
+    {
+      "report": "m1-compressible-20261008-211447-64680.tar.gz",
+      "archive_sha256": "bfd97d40b13202bcca66d9b3cec1c5faa16ae86ae4c9e6ba93a4ecde2661de12",
+      "tested_commit": "964fb4c5ffcb9825e6aee0243fc5db8344284efd",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 12,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": 1.59465151444006e-10,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated"
+    },
+    {
+      "report": "m1-compressible-20261008-231804-94084.tar.gz",
+      "archive_sha256": "f92ba5cd49027091c98fd3fdfe331dd65f8bc34670eb2f4cd579b4a0230a55b6",
+      "tested_commit": "55dbe8077f0c9f2d06eebd25c1e51db67caea736",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 3,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": 1.59465151444006e-10,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated",
+      "energy_observations": [
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-3-dt-1e-9-history-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 0.00012474803588702343,
+          "reference_energy_change_j": 0.00012474803588702343,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-3-dt-1e-9-history-true",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 2.000888343900442e-11,
+          "reference_energy_change_j": -2.000888343900442e-11,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-evaporation-outer-3-dt-1e-9-history-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 3.251552698202431e-07,
+          "reference_energy_change_j": -3.251552698202431e-07,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        }
+      ]
+    },
+    {
+      "report": "m1-compressible-20261008-233927-101016.tar.gz",
+      "archive_sha256": "c68a813393fe58586370c380361182d53adb1b428a5ebc23e26a3daa29581d3b",
+      "tested_commit": "2e248420013fa7afe0a541d9d4cc73ee6b2cb9d9",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 6,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": 1.59465151444006e-10,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated",
+      "energy_observations": [
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-3-dt-1e-9-history-true-latent-false",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 0.00012474803588702343,
+          "reference_energy_change_j": 0.00012474803588702343,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-3-dt-1e-9-history-true-latent-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 0.00011064562932006083,
+          "reference_energy_change_j": 0.00011064562932006083,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-3-dt-1e-9-history-true-latent-false",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 2.000888343900442e-11,
+          "reference_energy_change_j": -2.000888343900442e-11,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-3-dt-1e-9-history-true-latent-true",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 2.000888343900442e-11,
+          "reference_energy_change_j": -2.000888343900442e-11,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-evaporation-outer-3-dt-1e-9-history-true-latent-false",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 3.251552698202431e-07,
+          "reference_energy_change_j": -3.251552698202431e-07,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-evaporation-outer-3-dt-1e-9-history-true-latent-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 3.251552698202431e-07,
+          "reference_energy_change_j": -3.251552698202431e-07,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        }
+      ]
+    },
+    {
+      "report": "m1-compressible-20261008-235424-106724.tar.gz",
+      "archive_sha256": "ff27fb24f27d6d4c33a7140075db848f8cdf1c2c3d5f4a5867e49ad3e85b1dd9",
+      "tested_commit": "5786e340265758eb70efad1b48a483d78b5b28e0",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 3,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": 0.0,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated",
+      "energy_observations": [
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-5-dt-1e-10-history-true-latent-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 0.00016323913405358326,
+          "reference_energy_change_j": 0.00016323913405358326,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-5-dt-1e-10-history-true-latent-true",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 5.002220859751105e-11,
+          "reference_energy_change_j": 5.002220859751105e-11,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-evaporation-outer-5-dt-1e-10-history-true-latent-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 7.677044777665287e-09,
+          "reference_energy_change_j": -7.677044777665287e-09,
+          "reference_internal_energy_source": null,
+          "phase_inventory_mass_change_kg": null
+        }
+      ]
+    },
+    {
+      "report": "m1-compressible-20261009-000217-110646.tar.gz",
+      "archive_sha256": "bbc726ac39fb72e9a4c4bc1117b0cd49c10b6b823816cb4a59e90a611748bab1",
+      "tested_commit": "03639c9fbae1d97782aaa7b1e7255f8aea5ffa09",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 6,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": 0.0,
+      "energy_gate": null,
+      "physical_validation": "not_evaluated",
+      "energy_observations": [
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-false",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 0.00016323913405358326,
+          "reference_energy_change_j": 0.00016323913405358326,
+          "reference_internal_energy_source": false,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.4733814168721437e-09,
+          "reference_energy_change_j": -1.4515535440295935e-09,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-5-dt-1e-10-history-true-latent-true-reference-false",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 5.002220859751105e-11,
+          "reference_energy_change_j": 5.002220859751105e-11,
+          "reference_internal_energy_source": false,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 5.002220859751105e-11,
+          "reference_energy_change_j": 5.002220859751105e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-evaporation-outer-5-dt-1e-10-history-true-latent-true-reference-false",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 7.677044777665287e-09,
+          "reference_energy_change_j": -7.677044777665287e-09,
+          "reference_internal_energy_source": false,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-evaporation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 5.820766091346741e-11,
+          "reference_energy_change_j": 5.275069270282984e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        }
+      ]
+    },
+    {
+      "report": "m1-compressible-20261009-001350-118179.tar.gz",
+      "archive_sha256": "11d679103084f1df2fc7a1ed0c47061b72e31c5cc664b2788d757c74b0991dae",
+      "tested_commit": "5c321a132a85f5c4a43e290c2abc0625d1d6c4dd",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 13,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": 3.999784626294979e-12,
+      "energy_gate": true,
+      "physical_validation": "not_evaluated",
+      "energy_observations": [
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.4733814168721437e-09,
+          "reference_energy_change_j": -1.4515535440295935e-09,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 7.394191925413907e-10,
+          "reference_energy_change_j": -7.166818249970675e-10,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 5.002220859751105e-11,
+          "reference_energy_change_j": 5.002220859751105e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-evaporation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 5.820766091346741e-11,
+          "reference_energy_change_j": 5.275069270282984e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-evaporation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 3.54702933691442e-11,
+          "reference_energy_change_j": 2.2737367544323206e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-2-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 2.62416506302543e-08,
+          "reference_energy_change_j": -2.62416506302543e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-2-condensation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.31258275359869e-08,
+          "reference_energy_change_j": -1.31258275359869e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-2-evaporation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 5.820766091346741e-11,
+          "reference_energy_change_j": 5.275069270282984e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-2-evaporation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 3.54702933691442e-11,
+          "reference_energy_change_j": 2.2737367544323206e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 3.864988684654236e-08,
+          "reference_energy_change_j": -3.864988684654236e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-condensation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.935586624313146e-08,
+          "reference_energy_change_j": -1.935586624313146e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-evaporation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 6.275513442233205e-11,
+          "reference_energy_change_j": 6.275513442233205e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-evaporation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "evaporation",
+          "max_abs_reference_energy_change_j": 3.183231456205249e-11,
+          "reference_energy_change_j": 1.2732925824820995e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        }
+      ]
+    },
+    {
+      "report": "m1-compressible-20261009-002031-122112.tar.gz",
+      "archive_sha256": "c15459805ab5137eae6a87908661149a5ad9ede1c6cd7973bc55b87582915675",
+      "tested_commit": "6bf0a82b4f688200d392c4b7edeed7776376b615",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 7,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": 3.999784626294979e-12,
+      "energy_gate": true,
+      "physical_validation": "not_evaluated",
+      "energy_observations": [
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.4733814168721437e-09,
+          "reference_energy_change_j": -1.4515535440295935e-09,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 7.394191925413907e-10,
+          "reference_energy_change_j": -7.166818249970675e-10,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 5.002220859751105e-11,
+          "reference_energy_change_j": 5.002220859751105e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-2-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 2.62416506302543e-08,
+          "reference_energy_change_j": -2.62416506302543e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-2-condensation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.31258275359869e-08,
+          "reference_energy_change_j": -1.31258275359869e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 3.864988684654236e-08,
+          "reference_energy_change_j": -3.864988684654236e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-condensation-outer-5-dt-5e-11-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.935586624313146e-08,
+          "reference_energy_change_j": -1.935586624313146e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": null
+        }
+      ]
+    },
+    {
+      "report": "m1-compressible-20261009-002707-125906.tar.gz",
+      "archive_sha256": "e646d3e651e2e5c98cb5efaf18ebc305db1ee466713324c6033331004fe3b0f5",
+      "tested_commit": "6464b2499d9ef63f2f2d1afdd5710103dee308f7",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "case_count": 7,
+      "temperature_mass_gate": true,
+      "max_closed_mass_history_relative_residual": 3.999784626294979e-12,
+      "energy_gate": true,
+      "physical_validation": "not_evaluated",
+      "energy_observations": [
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.4733814168721437e-09,
+          "reference_energy_change_j": -1.4515535440295935e-09,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": -3.3176586478056436e-16
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-7-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.483385858591646e-09,
+          "reference_energy_change_j": -1.4715624274685979e-09,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": -3.41740524767431e-16
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-condensation-outer-9-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 1.483385858591646e-09,
+          "reference_energy_change_j": -1.4715624274685979e-09,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": -3.41740524767431e-16
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-1-equilibrium-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "equilibrium",
+          "max_abs_reference_energy_change_j": 5.002220859751105e-11,
+          "reference_energy_change_j": 5.002220859751105e-11,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": 0.0
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-condensation-outer-5-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 3.864988684654236e-08,
+          "reference_energy_change_j": -3.864988684654236e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": -1.2561566370417054e-14
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-condensation-outer-7-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 3.865989128826186e-08,
+          "reference_energy_change_j": -3.865989128826186e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": -1.2571541030403921e-14
+        },
+        {
+          "case": "T-PBiCGStab-average-true-subcycles-4-condensation-outer-9-dt-1e-10-history-true-latent-true-reference-true",
+          "direction": "condensation",
+          "max_abs_reference_energy_change_j": 3.865989128826186e-08,
+          "reference_energy_change_j": -3.865989128826186e-08,
+          "reference_internal_energy_source": true,
+          "phase_inventory_mass_change_kg": -1.2571541030403921e-14
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,32 @@
 # Development and verification record
 
+## Outer-iteration feedback and milestone documentation: 2026-10-09
+
+User-tested commit `6464b2499d9ef63f2f2d1afdd5710103dee308f7`: all seven
+cases completed, with temperature/mass and synthetic energy gates passing.
+For condensation with subcycles 4, maximum energy changes at 5/7/9 outer
+correctors were 38.6499/38.6599/38.6599 nJ; final phase inventory mass changes
+were -1.25616e-14/-1.25715e-14/-1.25715e-14 kg. More outer correctors did not
+meaningfully improve these errors. The hypothesis that increasing outer
+iterations resolves this drift is not supported by this comparison.
+No general cause is established; mass/energy-zero sensitivity remains an
+explanation of the ledger's magnitude, not a mass correction.
+
+In response to the user's request to avoid endless local tests, M1-A is now
+closed as a limited foundational audit with Q01 retained. M1 remains incomplete;
+the next development package is integrated spatial-interface and laser
+verification (M1-B), not another outer/subcycle micro-test. No solver equations
+or gate thresholds are changed in this documentation update.
+
+Created a current-state handoff page, a human-readable test register and a
+curated JSON register of all 14 locally available M1 compressible feedback
+archives. Archive SHA-256 and tested commits preserve provenance; raw archives
+and host details remain outside Git. Historical failed or unevaluated gates
+are retained. Updated the research plan to v2512 and milestone packages with
+acceptance requirements, and added project instructions to maintain these
+records after feedback. The latest user result is distinguished from later
+documentation-only commits. No WSL process or CFD simulation was invoked.
+
 ## Temperature budget feedback and mass/energy sensitivity: 2026-10-09
 
 User-tested commit `6bf0a82b4f688200d392c4b7edeed7776376b615`: compilation

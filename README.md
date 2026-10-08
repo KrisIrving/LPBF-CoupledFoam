@@ -57,6 +57,8 @@ workspace. Do not infer performance from its elapsed wall-clock values.
 
 ## Research and reproducibility
 
+- [项目状态与接续入口](docs/project-status.zh-CN.md)
+- [测试台账与结论](docs/test-register.zh-CN.md) · [机器可读结果](docs/test-results.json)
 - [中文研究路线、文献基准与可选加速](docs/research-plan.zh-CN.md)
 - [Development and verification record](docs/development-log.md)
 - [V3.0 源码入口与守恒审计清单](docs/source-map.zh-CN.md)
