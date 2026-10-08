@@ -65,6 +65,7 @@ def audit(report):
         mv = inventories['metal1vapour']
         delta_mv = float(mv[-1]['massKg'])-float(mv[0]['massKg'])
         results[name] = dict(direction=meta['direction'],
+            thermo_fixture=meta.get('thermo_fixture', 'legacy'),
             common_latent_heat_source=meta.get('commonLatentHeatSource', False), samples=len(energies),
             initial_reference_energy_j=energies[0][1], final_reference_energy_j=energies[-1][1],
             reference_energy_change_j=energies[-1][1]-energies[0][1],

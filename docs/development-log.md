@@ -284,6 +284,31 @@ not the entire cause of solver energy error. No production EOS, source or
 equation is changed. User-side script reproduction is next; no CFD rerun is
 needed. No WSL command was invoked during analysis or development.
 
+## User thermo audit verified; independent active-pair fixture: 2026-10-08
+
+User thermo JSON matches the development report exactly, including both phase
+dictionary hashes and all pressure derivative values. This confirms the legacy
+liquid fixture's pressure-energy identity failure; it is not a full energy
+solver diagnosis. The legacy tutorial and default physical solver remain intact.
+
+Added an independent consistent active-pair fixture: liquid eConst/rhoConst,
+rho=5000 kg/m3, Cv=800 J/(kg K); vapour eConst/perfectGas, molecular weight
+50 kg/kmol, Cv=800 J/(kg K). The active pair reference vaporization enthalpy
+is 2e6 J/kg at 4101 K and 100000 Pa. Both active native energies are independent
+of pressure and satisfy the pressure-energy identity; the ideal gas R follows
+molecular weight. The reference offset is still measured from equilibrium
+thermo observations. Remaining upstream phases are initialized inactive.
+Constant Lv away from the reference, phase transport and solver energy closure
+are still under examination; this is not a real material model.
+
+The user wrapper prepares three closed cases at 0.1 ns steps for a total 1 ns,
+five outer correctors, one alpha subcycle, history protection and common-latent
+candidate enabled. This new benchmark changes several fixture properties and
+is not a single-parameter ablation of legacy behavior. OpenCFD v2512 registration
+of both thermo combinations and rhoConst E=0 were checked by read-only Windows
+source inspection. Preparation/analytic/shell checks pass; runtime is pending.
+No WSL command or CFD run was performed during development.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed

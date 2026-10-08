@@ -41,12 +41,12 @@ for mode in ${M1_AVERAGING_MODES:-false true}; do
             cd "$case_dir"
             cp -a initial 0
             if [ "$phase_mode" != upstream ]; then
-                python3 "$COUPLED_ROOT/scripts/prepare-phase-case.py" . "$phase_mode"
+                python3 "$COUPLED_ROOT/scripts/prepare-phase-case.py" . "$phase_mode" --fixture "${M1_THERMO_FIXTURE:-legacy}"
             fi
             foamDictionary system/controlDict -entry application -set compressibleLaserbeamFoam >/dev/null
             foamDictionary system/controlDict -entry startFrom -set startTime >/dev/null
             foamDictionary system/controlDict -entry startTime -set 0 >/dev/null
-            foamDictionary system/controlDict -entry endTime -set 1e-8 >/dev/null
+            foamDictionary system/controlDict -entry endTime -set "${M1_END_TIME:-1e-8}" >/dev/null
             foamDictionary system/controlDict -entry deltaT -set "$test_delta_t" >/dev/null
             foamDictionary system/controlDict -entry maxDeltaT -set "$test_delta_t" >/dev/null
             foamDictionary system/controlDict -entry adjustTimeStep -set false >/dev/null
