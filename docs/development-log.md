@@ -103,6 +103,31 @@ subcycles 1/2/4) with PBiCGStab at unchanged tolerance. Inventory changes includ
 EOS effects and must not be equated to raw mass source. Compilation and CFD
 execution await user feedback; preparation and parser checks are static only.
 
+## Closed-box report: mass drift detected; coupling audit prepared: 2026-10-08
+
+User report for `fe006dd58b8b3eea79a33797502f06f3c64de80d` contains twelve
+normal completions with all T solves attaining tolerance. Closed-boundary mass
+flux is zero throughout. Condensation increases mass by about `6.700058e-08`
+kg (relative `2.671065e-05` for one subcycle), while evaporation decreases it
+by `2.3107e-10` kg (relative `9.244475e-08`). Phase alpha changes have the
+expected direction. Source averaging does not materially change these drifts.
+Thus runtime and T convergence pass, but closed mass conservation fails.
+
+Added a closed-mass gate for synthetic phase cases with a diagnostic relative
+threshold 1e-9. This is a project regression threshold above printed precision,
+not a universal scientific accuracy criterion. Applying it to the supplied
+logs rejects all twelve cases. Zero-flux conserved synthetic logs pass.
+
+Added optional couplingDiagnostics checkpoints after alpha, continuity,
+temperature and each pressure correction. They report continuity-density and
+EOS-density inventories, mean pressure, volume source and temperature source
+integrals without changing equations. The suspected inconsistency is in full
+alpha/pressure/EOS coupling; the report does not identify a proven root cause.
+The next wrapper compares one versus three PIMPLE outer correctors for both
+directions (four cases), holding alpha subcycles at one and source averaging
+enabled. New C++ compilation and execution await user feedback. Reading the
+archive and static checks used Windows only, without invoking WSL.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed

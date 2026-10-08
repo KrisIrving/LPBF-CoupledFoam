@@ -163,7 +163,17 @@ int main(int argc, char *argv[])
 
             mass_dot.correctBoundaryConditions();
 
+            {
+                const word couplingStage("afterAlpha");
+                #include "couplingDiagnostics.H"
+            }
+
             solve(fvm::ddt(rho) + fvc::div(mixture.rhoPhi()));
+
+            {
+                const word couplingStage("afterContinuity");
+                #include "couplingDiagnostics.H"
+            }
 
             // rho=mixture.rho();
 
@@ -179,10 +189,19 @@ int main(int argc, char *argv[])
             #include "UEqn.H"
             #include "TEqn.H"
 
+            {
+                const word couplingStage("afterTemperature");
+                #include "couplingDiagnostics.H"
+            }
+
             // --- Pressure corrector loop
             while (pimple.correct())
             {
                 #include "pEqn.H"
+                {
+                    const word couplingStage("afterPressure");
+                    #include "couplingDiagnostics.H"
+                }
             }
 
             if (pimple.turbCorr())

@@ -22,10 +22,12 @@ test -x "$FOAM_USER_APPBIN/compressibleLaserbeamFoam"
 python3 scripts/check-phase-pair.py --output "$report_dir/m1-phase-pair.json"
 for temperature_solver in ${M1_T_SOLVERS:-upstream}; do
 for phase_mode in ${M1_PHASE_MODES:-upstream}; do
+for outer_correctors in ${M1_OUTER_CORRECTORS:-1}; do
 for mode in ${M1_AVERAGING_MODES:-false true}; do
     for cycles in ${M1_SUBCYCLES:-1 2 4}; do
         stage="T-$temperature_solver-average-$mode-subcycles-$cycles"
         if [ "$phase_mode" != upstream ]; then stage="$stage-$phase_mode"; fi
+        stage="$stage-outer-$outer_correctors"
         case_dir="$report_dir/$stage"
         mkdir -p "$case_dir"
         cp -a tutorials/compressiblelaserbeamFoam/Test1/{initial,constant,system} "$case_dir/"
@@ -45,7 +47,8 @@ for mode in ${M1_AVERAGING_MODES:-false true}; do
             foamDictionary system/controlDict -entry writeControl -set timeStep >/dev/null
             foamDictionary system/controlDict -entry writeInterval -set 10 >/dev/null
             foamDictionary system/controlDict -entry continuumDiagnostics -set true >/dev/null
-            python3 - "$cycles" "$mode" "$temperature_solver" <<'PY'
+            foamDictionary system/controlDict -entry couplingDiagnostics -set true >/dev/null
+            python3 - "$cycles" "$mode" "$temperature_solver" "$outer_correctors" <<'PY'
 import re
 import sys
 from pathlib import Path
@@ -77,6 +80,10 @@ if sys.argv[3] == 'PBiCGStab':
         raise SystemExit('Failed to insert exact T solver control')
 elif sys.argv[3] != 'upstream':
     raise SystemExit('Unsupported temperature solver')
+text, count = re.subn(r'PIMPLE\s*\{',
+                     'PIMPLE\n{\n    nOuterCorrectors '+str(int(sys.argv[4]))+';', text)
+if count != 1:
+    raise SystemExit('Expected one PIMPLE dictionary')
 p.write_text(text)
 PY
             foamDictionary constant/dynamicMeshDict -entry dynamicFvMesh -set staticFvMesh >/dev/null
@@ -90,6 +97,7 @@ PY
         ) > "$case_dir/log.wrapper" 2>&1
         echo "Completed: $stage"
     done
+done
 done
 done
 done

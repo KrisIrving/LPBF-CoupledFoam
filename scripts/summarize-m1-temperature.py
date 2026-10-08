@@ -35,6 +35,31 @@ def assess(text, tolerance=1e-8):
                 tolerance=tolerance)
 
 
+def closed_mass_check(text, relative_tolerance=1e-9):
+    samples = []
+    for line in text.splitlines():
+        if line.startswith('M1_CONTINUUM '):
+            raw = dict(token.split('=', 1) for token in line.split()[1:])
+            samples.append({key: float(raw[key]) for key in
+                            ('time', 'massKg', 'outwardMassFluxKgPerS')})
+    if len(samples) < 2:
+        raise ValueError('Closed mass check requires initial and final samples')
+    flux_integral = 0.0
+    for before, after in zip(samples, samples[1:]):
+        dt = after['time']-before['time']
+        if dt <= 0:
+            raise ValueError('Non-increasing diagnostic times')
+        flux_integral += after['outwardMassFluxKgPerS']*dt
+    delta = samples[-1]['massKg']-samples[0]['massKg']
+    residual = delta+flux_integral
+    relative = abs(residual)/abs(samples[0]['massKg'])
+    return dict(initial_mass_kg=samples[0]['massKg'], final_mass_kg=samples[-1]['massKg'],
+                inventory_change_kg=delta, right_endpoint_boundary_integral_kg=flux_integral,
+                residual_kg=residual, relative_residual=relative,
+                relative_tolerance=relative_tolerance,
+                closed_mass_check_passed=math.isfinite(relative) and relative <= relative_tolerance)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('report', type=Path)
@@ -44,7 +69,12 @@ def main():
     accepted = True
     for case in sorted(args.report.glob('T-*-average-*-subcycles-*')):
         log = case / 'log.compressibleLaserbeamFoam'
-        result = assess(log.read_text(errors='replace'))
+        text = log.read_text(errors='replace')
+        result = assess(text)
+        if (case/'phase-case.json').exists():
+            result['closed_mass_balance'] = closed_mass_check(text)
+            if not result['closed_mass_balance']['closed_mass_check_passed']:
+                accepted = False
         reference = (args.allow_upstream_reference_failure
                      and case.name.startswith('T-upstream-'))
         result['reference_only'] = reference
@@ -55,10 +85,11 @@ def main():
     accepted = accepted and bool(cases) and any(not c['reference_only'] for c in cases.values())
     summary = dict(schema_version=1, cases=cases, requested_gate_passed=accepted,
                    physical_validation='not_evaluated',
-                   scope='Only T linear residuals and normal termination; other fields and physical energy balance not assessed.')
+                   scope='T linear residuals and normal termination; closed synthetic phase cases also check mass. '
+                         'Boundary integration is a right-endpoint estimate; energy balance not assessed.')
     (args.report / 'temperature-summary.json').write_text(json.dumps(summary, indent=2, allow_nan=False)+'\n')
     if not accepted:
-        raise SystemExit('Temperature convergence gate failed; report retained.')
+        raise SystemExit('Convergence or closed mass gate failed; report retained.')
 
 
 if __name__ == '__main__':
