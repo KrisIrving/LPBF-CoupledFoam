@@ -27,22 +27,22 @@ jobs:
       - name: Allwmake
         shell: bash -l {0}
         run: |
-          source ${{ matrix.container-image.source }}
-          ./Allwmake ${{ matrix.container-image.buildflags }}
+          OPENFOAM_BASHRC=${{ matrix.container-image.source }} BUILD_JOBS=2 bash scripts/build.sh
 
       - name: Alltest
         shell: bash -l {0}
         run: |
-          source ${{ matrix.container-image.source }}
-          cd tutorials
-          ./Alltest
+          OPENFOAM_BASHRC=${{ matrix.container-image.source }} bash scripts/smoke.sh
 
       - name: Upload test logs
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: test-logs.${{ matrix.container-image.name }}
-          path: tutorialsTest/logs
+          path: |
+            .build/build.log
+            .runs/**/log.*
+          include-hidden-files: true
           retention-days: 10
 
       - name: Set job status

@@ -79,3 +79,5 @@ linuxming*/
 SiCortex*Gcc*/
 solaris*Gcc*/
 SunOS*Gcc*/
+.build/
+.runs/
