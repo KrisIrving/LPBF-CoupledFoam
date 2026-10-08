@@ -947,20 +947,51 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::solve
         volScalarField PCRSum(0.0*PCR);
         volScalarField temperatureSourceSum(0.0*(*massdotterm));
         dimensionedScalar totalDeltaT = runTime.deltaT();
-
-        for
+        const Switch protectAllPhaseOldTimes
         (
-            subCycle<volScalarField> alphaSubCycle(alpha, nAlphaSubCycles);
-            !(++alphaSubCycle).end();
-        )
+            alphaControls.lookupOrDefault<Switch>
+            (
+                "protectAllPhaseOldTimes", false
+            )
+        );
+        // The first phase is already protected by subCycle below.
+        // Other phase histories must survive each outer PIMPLE iteration.
+        PtrList<subCycleField<volScalarField>> additionalPhaseHistories
+        (
+            protectAllPhaseOldTimes ? phases_.size() - 1 : 0
+        );
+        if (protectAllPhaseOldTimes)
         {
-            PCR = solveAlphas(massdotterm);
-            rhoPhiSum += (runTime.deltaT()/totalDeltaT)*rhoPhi_;
-            if (averagePhaseChangeSources)
+            label historyi = 0;
+            for (phaseModel& phase : phases_)
             {
-                PCRSum += (runTime.deltaT()/totalDeltaT)*PCR;
-                temperatureSourceSum +=
-                    (runTime.deltaT()/totalDeltaT)*(*massdotterm);
+                if (&phase != &alpha)
+                {
+                    additionalPhaseHistories.set
+                    (
+                        historyi++, new subCycleField<volScalarField>(phase)
+                    );
+                }
+            }
+        }
+
+        {
+            subCycle<volScalarField> alphaSubCycle(alpha, nAlphaSubCycles);
+            for (auto& history : additionalPhaseHistories)
+            {
+                // Once before advancing time, not on every substep.
+                history.updateTimeIndex();
+            }
+            for (; !(++alphaSubCycle).end(); )
+            {
+                PCR = solveAlphas(massdotterm);
+                rhoPhiSum += (runTime.deltaT()/totalDeltaT)*rhoPhi_;
+                if (averagePhaseChangeSources)
+                {
+                    PCRSum += (runTime.deltaT()/totalDeltaT)*PCR;
+                    temperatureSourceSum +=
+                        (runTime.deltaT()/totalDeltaT)*(*massdotterm);
+                }
             }
         }
 

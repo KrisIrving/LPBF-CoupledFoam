@@ -155,6 +155,32 @@ submitted logs confirms the two expected passes/two failures; a synthetic
 history with transient drift and a conserved endpoint is rejected. No WSL
 command or solver was run during development; user execution remains pending.
 
+## Temporal/subcycle report; old-time protection candidate: 2026-10-08
+
+User report for `f93862db7c4302458e5665258d0543dafd4b92fd` completes all
+twelve cases with converged T solves. At one alpha subcycle, both time steps
+pass closed mass checks: condensation maximum relative residuals are
+1.59465e-10 and 4.38530e-11; evaporation is unchanged at printed precision.
+Condensation with two/four subcycles fails: maximum relative residual is
+about 9.32e-8 at 1 ns and 7.06e-8 at 0.5 ns. Evaporation residuals stay below
+1e-9, but vapour transfer also varies with subcycling. The overall failure
+is therefore real and not a temperature convergence failure.
+
+The solver only wraps the first alpha in subCycle. Other phase fields lack
+the same preservation/restoration of global old-time histories across outer
+iterations. OpenCFD v2512 subCycle.H was inspected through a Windows read-only
+share: subCycleField preserves old/old-old values and supports updateTimeIndex.
+Added optional protectAllPhaseOldTimes (default false) which wraps the remaining
+phase fields with that guard. Time indices are protected once before time
+advancement; old histories are restored after the subcycle time object ends.
+No rate, latent or pressure formula was changed. This is a hypothesis-driven
+candidate, not a confirmed fix. New C++ compilation/runtime await user feedback.
+
+The four-case follow-up compares condensation subcycles 2/4 with protection
+off/on, at three outer correctors and 1 ns. Known unprotected failures remain
+in the overall mass gate; individual case summaries must be inspected even
+if the wrapper exits nonzero. No WSL command or CFD run is used in development.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed
