@@ -21,15 +21,20 @@ BUILD_JOBS="${BUILD_JOBS:-8}" bash scripts/build.sh > "$report_dir/log.build" 2>
 test -x "$FOAM_USER_APPBIN/compressibleLaserbeamFoam"
 python3 scripts/check-phase-pair.py --output "$report_dir/m1-phase-pair.json"
 for temperature_solver in ${M1_T_SOLVERS:-upstream}; do
+for phase_mode in ${M1_PHASE_MODES:-upstream}; do
 for mode in ${M1_AVERAGING_MODES:-false true}; do
     for cycles in ${M1_SUBCYCLES:-1 2 4}; do
         stage="T-$temperature_solver-average-$mode-subcycles-$cycles"
+        if [ "$phase_mode" != upstream ]; then stage="$stage-$phase_mode"; fi
         case_dir="$report_dir/$stage"
         mkdir -p "$case_dir"
         cp -a tutorials/compressiblelaserbeamFoam/Test1/{initial,constant,system} "$case_dir/"
         (
             cd "$case_dir"
             cp -a initial 0
+            if [ "$phase_mode" != upstream ]; then
+                python3 "$COUPLED_ROOT/scripts/prepare-phase-case.py" . "$phase_mode"
+            fi
             foamDictionary system/controlDict -entry application -set compressibleLaserbeamFoam >/dev/null
             foamDictionary system/controlDict -entry startFrom -set startTime >/dev/null
             foamDictionary system/controlDict -entry startTime -set 0 >/dev/null
@@ -76,7 +81,7 @@ p.write_text(text)
 PY
             foamDictionary constant/dynamicMeshDict -entry dynamicFvMesh -set staticFvMesh >/dev/null
             blockMesh > log.blockMesh 2>&1
-            setFields > log.setFields 2>&1
+            if [ "$phase_mode" = upstream ]; then setFields > log.setFields 2>&1; fi
             compressibleLaserbeamFoam > log.compressibleLaserbeamFoam 2>&1
             grep -q '^End$' log.compressibleLaserbeamFoam
             if grep -Ei 'FOAM FATAL|SIGFPE signal|(^|[^a-z])(nan|inf)([^a-z]|$)' log.compressibleLaserbeamFoam; then
@@ -85,6 +90,7 @@ PY
         ) > "$case_dir/log.wrapper" 2>&1
         echo "Completed: $stage"
     done
+done
 done
 done
 stage=linear-convergence

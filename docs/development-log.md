@@ -80,6 +80,29 @@ compressible tests require every case to pass the T check. Script syntax and
 synthetic convergence-log checks pass; OpenFOAM execution awaits user feedback.
 No WSL command, CFD run or tolerance loosening was used in development.
 
+## Temperature candidate verified; controlled phase tests prepared: 2026-10-08
+
+User report for `2e3a8ee6db1a51a029abe8cc655aedd0964e7cd7` confirms the
+PBiCGStab/DILU T candidate reaches residuals between approximately 1.6e-17
+and 3.3e-16 in one iteration for every one of ten solves. The upstream reference
+still reaches 1000 iterations with residuals above 1e-8. Both terminate normally
+and global observations remain nearly identical. This validates the candidate
+for this small case, not universal solver behavior or a physical energy balance.
+
+Added optional per-phase EOS mass and alpha-volume observations, plus a
+controlled synthetic homogeneous pair preparation script. Initial alpha is 0.5
+for metal1 and metal1vapour, zero for other phases; all nine upstream phases
+remain in the thermo model. T=4101 K makes the active pair's initial Psat=P0.
+Initial p=80000/120000 Pa drives evaporation/condensation respectively. Zero
+laser power and gravity, no-slip velocity and insulated temperature boundaries
+make a closed box. EOS, latent values and instantaneous source formula remain
+upstream synthetic values, not 316L properties.
+
+The next user wrapper runs twelve cases (two directions, averaging off/on,
+subcycles 1/2/4) with PBiCGStab at unchanged tolerance. Inventory changes include
+EOS effects and must not be equated to raw mass source. Compilation and CFD
+execution await user feedback; preparation and parser checks are static only.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed

@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
     const word diagnosticSolver("compressibleLaserbeamFoam");
     const surfaceScalarField& diagnosticMassFlux = mixture.rhoPhi();
     #include "../continuumDiagnostics.H"
+    #include "phaseDiagnostics.H"
 
     Info<< "\nStarting time loop\n" << endl;
 
@@ -191,6 +192,7 @@ int main(int argc, char *argv[])
         }
 
         #include "../continuumDiagnostics.H"
+        #include "phaseDiagnostics.H"
         runTime.write();
 
         runTime.printExecutionTime(Info);
