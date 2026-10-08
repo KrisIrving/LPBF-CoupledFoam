@@ -257,6 +257,33 @@ sign/unit reasoning and reproduction of the submitted ledger offset pass.
 Candidate C++ compilation and CFD runs await user feedback. No WSL command
 or solver is invoked on the development side.
 
+## Common-latent comparison and thermo identity audit: 2026-10-08
+
+User report for `2e248420013fa7afe0a541d9d4cc73ee6b2cb9d9` passes all six
+runtime/T/mass gates. Common latent conversion reduces condensation reference
+energy change from +124.748 to +110.646 microjoules (about 11.3%), while the
+evaporation value remains -0.325155 microjoules at recorded precision.
+Equilibrium stays stable. The candidate does not close the energy ledger and
+remains disabled by default. A successful wrapper status still means the
+runtime/T/mass gates, not physical energy validation.
+
+Inspected OpenCFD v2512 caloric/EOS source via Windows read-only sharing.
+For the synthetic liquid hConst + adiabaticPerfectFluid, native sensible
+internal energy is Hs-p/rho, with Hs independent of pressure. The EOS has
+rho_T=0 and psi=rho/[gamma*(p+B)]. Thus the native derivative is
+-1/rho+p*psi/rho^2, while the thermodynamic pressure-energy identity requires
+p*psi/rho^2. The gap -1/rho cannot be repaired by a constant reference offset.
+The synthetic vapour eConst + perfectFluid passes this pressure derivative
+identity; that alone is not full thermodynamic validation.
+
+Added a standard-library analytic audit that reads the actual synthetic phase
+dictionaries, records their hashes and checks pressures 80/100/120 kPa.
+Finite-difference checks reproduce the differentiated native liquid pressure
+term. This establishes an incompatibility in the fixture's caloric/EOS pairing,
+not the entire cause of solver energy error. No production EOS, source or
+equation is changed. User-side script reproduction is next; no CFD rerun is
+needed. No WSL command was invoked during analysis or development.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed

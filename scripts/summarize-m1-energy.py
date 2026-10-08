@@ -75,7 +75,8 @@ def audit(report):
                 cases=results, physical_energy_validation='not_evaluated',
                 scope='Synthetic closed adiabatic zero-laser case only. Offset calibrated once from '
                       'equilibrium native thermo energies so the reference enthalpy gap equals Lv. '
-                      'Solver energies and sources are unchanged; no energy tolerance gate is imposed. '
+                      'The ledger does not modify solver states; case source modes are recorded separately. '
+                      'No energy tolerance gate is imposed. '
                       'EOS thermodynamic consistency and off-reference latent behavior remain to be audited.')
 
 

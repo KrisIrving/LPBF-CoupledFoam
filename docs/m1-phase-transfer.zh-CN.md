@@ -125,3 +125,33 @@ mass_dot = rCv*sum(latentPower)
 保留原始 alpha 源、速率限幅、压力与温度方程；温度 RHS 已减去 mass_dot，因此正蒸发质量率对应冷却。该模式只替换潜热到温度源的换算，仍使用已有 rCv，并没有解决完整相能输运、参考能、EOS 和压力功。两侧配对速率在当前相同分子量合成案例中一致；不能推广为多材料普遍验证。
 
 运行 `BUILD_JOBS=8 bash scripts/m1-latent-test.sh`，共六组：平衡/蒸发/凝结 × 原转换/共同质量率转换。其他设置不变。两组平衡初始状态必须一致，账本统一使用同一偏置；不为候选重新拟合时间历史。energy-summary.json 记录逐组结果，本轮仍只对温度和质量设门槛。根据候选是否改善、恶化或仅改变能量残差，再决定后续守恒能量方程，而不是直接将候选设为默认。
+
+## 合成热物性组合的相容性
+
+六组用户结果中，候选将凝结参考能变化从 +124.75 μJ 降到 +110.65 μJ（约 11.3%），蒸发仍约 -0.325 μJ。它没有解决能量闭合，因此保留默认关闭。
+
+对简单可压缩物质，必要的压力—内能关系为：
+
+```
+(de/dp)_T = [T*(d rho/dT)_p + p*(d rho/dp)_T]/rho²
+```
+
+直接读取 v2512 的 hConstThermoI.H、adiabaticPerfectFluidI.H 和 perfectFluidI.H 后，当前液相组合给出：
+
+```
+rho = rho0*((p+B)/(p0+B))^(1/gamma)
+psi = rho/[gamma*(p+B)]
+e_native = Hs(T) - p/rho
+(de_native/dp)_T = -1/rho + p*psi/rho²
+required = p*psi/rho²
+```
+
+差值为 -1/rho。常数参考能偏置不改变导数，故不能修复这一相容性问题。当前蒸汽 eConst + perfectFluid 的 rho=rho0+p/(R*T)，对应右侧为零，与其原生显内能的压力独立性一致；仅此一项通过不等于所有热力学关系通过。
+
+这说明上游合成物性组合不能直接作为能量闭合的物理基准，但尚不能把全部求解器能量残差归因于该项。下一步先执行：
+
+```bash
+python3 scripts/check-thermo-consistency.py --output .runs/m1-thermo-consistency.json
+```
+
+无需加载 OpenFOAM、编译或 CFD。工具从实际字典读参数，在 80/100/120 kPa 给出原生与必要导数、差值及字典哈希；有限差分验证解析导数。公式已对照 v2512 源码，但工具不是直接调用 thermo 库。后续需建立热力学一致的独立合成基准，再检验守恒能量方程，避免用调整系数掩盖物性与能量定义问题。
