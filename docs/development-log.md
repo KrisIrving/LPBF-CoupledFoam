@@ -1,5 +1,26 @@
 # Development and verification record
 
+## M1B-01 startup configuration failure and repair: 2026-10-09
+
+User-tested commit `5e1f81da2667bb4a9dc5eb46b04accd4ea73c12f` built
+successfully. All eight meshes and initial fields were prepared, but every
+solver exited during initial CorrectPhi with a missing pcorrFinal dictionary
+entry. No physical time steps were executed; spatial/laser behavior is not
+evaluated by this archive. Failure provenance and per-case scope are retained
+in the integrated test register, separately from M1-A history.
+
+The generated fvSolution had omitted upstream pcorr.* when replacing its
+solver section. Restored its PCG/GAMG controls without changing upstream
+tolerance or any integration gate. Added a generator check for startup and
+time-loop solver name coverage; the previous fixture is rejected and all eight
+repaired dictionaries satisfy the offline check. Failed-case summaries now
+include missing-entry details from the solver log. This is a configuration
+repair to the same package, not a new physics test or equation change.
+
+Updated state, plan and human/JSON registers. Repaired runtime remains pending
+user execution of the same integrated wrapper. No WSL process or CFD run was
+invoked on the development side.
+
 ## M1B-01 spatial/laser integration package prepared: 2026-10-09
 
 Prepared one user-run integration wrapper with eight synthetic cases: two

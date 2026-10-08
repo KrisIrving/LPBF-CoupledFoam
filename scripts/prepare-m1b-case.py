@@ -18,6 +18,31 @@ def dictionary(name, body):
     return f'FoamFile\n{{\n version 2.0; format ascii; class dictionary; object {name};\n}}\n'+body+'\n'
 
 
+def validate_solver_entries(text):
+    """Check generated solver coverage, including startup CorrectPhi names."""
+    start = re.search(r'\bsolvers\s*\{',text)
+    if not start:
+        raise ValueError('Missing solvers dictionary')
+    opening = text.index('{',start.start())
+    depth, ending = 1, opening+1
+    while depth and ending<len(text):
+        depth += (text[ending]=='{')-(text[ending]=='}')
+        ending += 1
+    if depth:
+        raise ValueError('Unbalanced solvers dictionary')
+    body=text[opening+1:ending-1]
+    patterns=[]
+    for match in re.finditer(r'("[^"\n]+"|[A-Za-z_][\w.]*)\s*\{',body):
+        before=body[:match.start()]
+        if before.count('{')==before.count('}'):
+            patterns.append(match.group(1).strip('"'))
+    required=('alpha','alpha.metal1','pcorr','pcorrFinal','rho','rhoFinal',
+              'p_rgh','p_rghFinal','T','TFinal','U','UFinal')
+    missing=[name for name in required if not any(re.fullmatch(pattern,name) for pattern in patterns)]
+    if missing:
+        raise ValueError('Missing solver controls: '+', '.join(missing))
+
+
 def prepare(case, family, level, profile='short'):
     if family not in FAMILIES or level not in ('coarse', 'fine') or profile not in ('short', 'verification'):
         raise ValueError('Unsupported integrated test selection')
@@ -109,6 +134,12 @@ solvers
  averagePhaseChangeSources true; protectAllPhaseOldTimes true;
  commonLatentHeatSource true; referenceInternalEnergySource true;
  phaseChangeEnabled {str(active).lower()}; }}
+ "pcorr.*"
+ {{
+  solver PCG;
+  preconditioner {{ preconditioner GAMG; tolerance 1e-5; relTol 0; smoother GaussSeidel; }}
+  tolerance 1e-5; relTol 0; maxIter 100;
+ }}
  "rho.*" {{ solver diagonal; }}
  p_rgh {{ solver GAMG; tolerance 1e-8; relTol 0; smoother GaussSeidel; maxIter 1000; }}
  p_rghFinal {{ $p_rgh; }}
@@ -122,6 +153,7 @@ MELTING {{ minTempCorrector 1; maxTempCorrector 20; epsilonTolerance 1e-6;
 PIMPLE {{ nOuterCorrectors 5; nCorrectors 3; nNonOrthogonalCorrectors 0; }}
 relaxationFactors {{ equations {{ "U.*" 1; }} }}
 '''))
+    validate_solver_entries((case/'system/fvSolution').read_text())
     path = case/'constant/dynamicMeshDict'
     path.write_text(re.sub(r'dynamicFvMesh\s+\w+;', 'dynamicFvMesh staticFvMesh;', path.read_text()))
     path = case/'constant/LaserProperties'

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "6464b2499d9ef63f2f2d1afdd5710103dee308f7",
-  "scope": "Curated results from 14 user-provided M1 compressible archives. Raw reports remain outside Git. Null means absent or not evaluated, never pass. Historical gates differ; compare their recorded scope before interpreting results.",
+  "latest_user_tested_commit": "5e1f81da2667bb4a9dc5eb46b04accd4ea73c12f",
+  "scope": "Curated results from 14 M1-A compressible archives and one M1-B integrated archive. Raw reports remain outside Git. Null means absent or not evaluated, never pass. Historical gates differ; startup failures are not physical outcomes.",
   "records": [
     {
       "report": "m1-compressible-20261008-193210-28596.tar.gz",
@@ -550,11 +550,187 @@
   "development_packages": [
     {
       "package_id": "M1B-01",
-      "status": "prepared_runtime_pending",
+      "status": "startup_configuration_fix_prepared_runtime_pending",
       "case_count": 8,
       "entrypoint": "scripts/m1b-integrated-test.sh",
       "documentation": "docs/m1b-integrated.zh-CN.md",
       "physical_validation": "not_evaluated"
+    }
+  ],
+  "integrated_records": [
+    {
+      "report": "m1b-integrated-20261009-005358-134033.tar.gz",
+      "archive_sha256": "e85759b0db2c5024cb1e12e845f1bce30ad0d43f9ddc962886d090726e3bb39a",
+      "tested_commit": "5e1f81da2667bb4a9dc5eb46b04accd4ea73c12f",
+      "last_stage": "integrated-summary",
+      "exit_status": 1,
+      "build_passed": true,
+      "case_count": 8,
+      "requested_gate_passed": false,
+      "physical_validation": "not_evaluated",
+      "cases": {
+        "laser-heat-coarse": {
+          "family": "laser-heat",
+          "level": "coarse",
+          "cells": 216,
+          "delta_t_s": 5e-10,
+          "end_time_s": 1e-08,
+          "phase_change_enabled": false,
+          "laser_power_w": 1,
+          "thresholds": {
+            "alpha_bound_tolerance": 1e-06,
+            "alpha_sum_tolerance": 1e-06,
+            "closed_mass_relative_tolerance": 1e-05,
+            "advection_mean_abs_error": 0.12,
+            "advection_phase_volume_relative_tolerance": 1e-05,
+            "minimum_active_temperature_source_kg_k_per_s": 1e-16
+          },
+          "execution_passed": false,
+          "completed_time_steps": 0,
+          "failure": "Missing pcorrFinal solver control during initial CorrectPhi"
+        },
+        "laser-phase-coarse": {
+          "family": "laser-phase",
+          "level": "coarse",
+          "cells": 216,
+          "delta_t_s": 5e-10,
+          "end_time_s": 1e-08,
+          "phase_change_enabled": true,
+          "laser_power_w": 1,
+          "thresholds": {
+            "alpha_bound_tolerance": 1e-06,
+            "alpha_sum_tolerance": 1e-06,
+            "closed_mass_relative_tolerance": 1e-05,
+            "advection_mean_abs_error": 0.12,
+            "advection_phase_volume_relative_tolerance": 1e-05,
+            "minimum_active_temperature_source_kg_k_per_s": 1e-16
+          },
+          "execution_passed": false,
+          "completed_time_steps": 0,
+          "failure": "Missing pcorrFinal solver control during initial CorrectPhi"
+        },
+        "laser-phase-fine": {
+          "family": "laser-phase",
+          "level": "fine",
+          "cells": 1728,
+          "delta_t_s": 5e-10,
+          "end_time_s": 1e-08,
+          "phase_change_enabled": true,
+          "laser_power_w": 1,
+          "thresholds": {
+            "alpha_bound_tolerance": 1e-06,
+            "alpha_sum_tolerance": 1e-06,
+            "closed_mass_relative_tolerance": 1e-05,
+            "advection_mean_abs_error": 0.12,
+            "advection_phase_volume_relative_tolerance": 1e-05,
+            "minimum_active_temperature_source_kg_k_per_s": 1e-16
+          },
+          "execution_passed": false,
+          "completed_time_steps": 0,
+          "failure": "Missing pcorrFinal solver control during initial CorrectPhi"
+        },
+        "spatial-evaporation-coarse": {
+          "family": "spatial-evaporation",
+          "level": "coarse",
+          "cells": 216,
+          "delta_t_s": 5e-10,
+          "end_time_s": 1e-08,
+          "phase_change_enabled": true,
+          "laser_power_w": 0,
+          "thresholds": {
+            "alpha_bound_tolerance": 1e-06,
+            "alpha_sum_tolerance": 1e-06,
+            "closed_mass_relative_tolerance": 1e-05,
+            "advection_mean_abs_error": 0.12,
+            "advection_phase_volume_relative_tolerance": 1e-05,
+            "minimum_active_temperature_source_kg_k_per_s": 1e-16
+          },
+          "execution_passed": false,
+          "completed_time_steps": 0,
+          "failure": "Missing pcorrFinal solver control during initial CorrectPhi"
+        },
+        "advection-coarse": {
+          "family": "advection",
+          "level": "coarse",
+          "cells": 40,
+          "delta_t_s": 1e-06,
+          "end_time_s": 2e-05,
+          "phase_change_enabled": false,
+          "laser_power_w": 0,
+          "thresholds": {
+            "alpha_bound_tolerance": 1e-06,
+            "alpha_sum_tolerance": 1e-06,
+            "closed_mass_relative_tolerance": 1e-05,
+            "advection_mean_abs_error": 0.12,
+            "advection_phase_volume_relative_tolerance": 1e-05,
+            "minimum_active_temperature_source_kg_k_per_s": 1e-16
+          },
+          "execution_passed": false,
+          "completed_time_steps": 0,
+          "failure": "Missing pcorrFinal solver control during initial CorrectPhi"
+        },
+        "spatial-evaporation-fine": {
+          "family": "spatial-evaporation",
+          "level": "fine",
+          "cells": 1728,
+          "delta_t_s": 5e-10,
+          "end_time_s": 1e-08,
+          "phase_change_enabled": true,
+          "laser_power_w": 0,
+          "thresholds": {
+            "alpha_bound_tolerance": 1e-06,
+            "alpha_sum_tolerance": 1e-06,
+            "closed_mass_relative_tolerance": 1e-05,
+            "advection_mean_abs_error": 0.12,
+            "advection_phase_volume_relative_tolerance": 1e-05,
+            "minimum_active_temperature_source_kg_k_per_s": 1e-16
+          },
+          "execution_passed": false,
+          "completed_time_steps": 0,
+          "failure": "Missing pcorrFinal solver control during initial CorrectPhi"
+        },
+        "advection-fine": {
+          "family": "advection",
+          "level": "fine",
+          "cells": 80,
+          "delta_t_s": 1e-06,
+          "end_time_s": 2e-05,
+          "phase_change_enabled": false,
+          "laser_power_w": 0,
+          "thresholds": {
+            "alpha_bound_tolerance": 1e-06,
+            "alpha_sum_tolerance": 1e-06,
+            "closed_mass_relative_tolerance": 1e-05,
+            "advection_mean_abs_error": 0.12,
+            "advection_phase_volume_relative_tolerance": 1e-05,
+            "minimum_active_temperature_source_kg_k_per_s": 1e-16
+          },
+          "execution_passed": false,
+          "completed_time_steps": 0,
+          "failure": "Missing pcorrFinal solver control during initial CorrectPhi"
+        },
+        "laser-heat-fine": {
+          "family": "laser-heat",
+          "level": "fine",
+          "cells": 1728,
+          "delta_t_s": 5e-10,
+          "end_time_s": 1e-08,
+          "phase_change_enabled": false,
+          "laser_power_w": 1,
+          "thresholds": {
+            "alpha_bound_tolerance": 1e-06,
+            "alpha_sum_tolerance": 1e-06,
+            "closed_mass_relative_tolerance": 1e-05,
+            "advection_mean_abs_error": 0.12,
+            "advection_phase_volume_relative_tolerance": 1e-05,
+            "minimum_active_temperature_source_kg_k_per_s": 1e-16
+          },
+          "execution_passed": false,
+          "completed_time_steps": 0,
+          "failure": "Missing pcorrFinal solver control during initial CorrectPhi"
+        }
+      },
+      "conclusion": "All cases failed during startup before time stepping; no physical integration outcome."
     }
   ]
 }

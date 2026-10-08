@@ -107,7 +107,13 @@ def summarize(report):
             name=family+'-'+level
             try:
                 status=(report/name/'case-result.txt').read_text().strip()
-                if status!='exit_status=0':raise ValueError('Case execution failed: '+status)
+                if status!='exit_status=0':
+                    detail=''
+                    log=report/name/'log.compressibleLaserbeamFoam'
+                    if log.exists():
+                        match=re.search(r"Entry '[^']+' not found[^\n]*",log.read_text(errors='replace'))
+                        if match:detail='; '+match.group()
+                    raise ValueError('Case execution failed: '+status+detail)
                 cases[name]=assess(report/name)
             except (OSError,ValueError,KeyError,ZeroDivisionError,IndexError) as error:
                 cases[name]=dict(passed=False,error=str(error))
