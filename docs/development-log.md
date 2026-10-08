@@ -128,6 +128,33 @@ directions (four cases), holding alpha subcycles at one and source averaging
 enabled. New C++ compilation and execution await user feedback. Reading the
 archive and static checks used Windows only, without invoking WSL.
 
+## Coupling iteration report and temporal checks: 2026-10-08
+
+The user report for `260695052802c4aad20bd580ce65fe29705b65b8` contains all
+four normal completions. Overall gate failure is expected because the two
+one-outer-corrector references retain closed mass drift. With three outer
+correctors, evaporation mass remains unchanged at logged precision and
+condensation changes by approximately `4e-13` kg, relative `1.59465e-10`.
+Both three-corrector cases satisfy the 1e-9 diagnostic gate over all logged
+times, not just at the endpoint.
+
+Checkpoints show alpha updates change EOS inventory while the continuity
+density keeps its closed-domain inventory. The first pressure/EOS correction
+overwrites rho with a different mixture inventory. Additional outer coupling
+iterations reconcile these states to the gate tolerance in these cases.
+This supports a coupling-lag explanation; it does not prove three iterations
+are sufficient for arbitrary meshes, material closures or transient regimes.
+The instantaneous phase-change formulas remain unchanged.
+
+Added a twelve-case follow-up at three outer correctors, alpha subcycles
+1/2/4 and time steps 1 ns/0.5 ns, both directions. Total duration stays 10 ns;
+cases have ten/twenty steps. Source averaging stays enabled. The closed mass
+gate now uses the maximum accumulated residual at every logged timestep,
+preventing endpoint cancellation from hiding drift. Re-analysis of the four
+submitted logs confirms the two expected passes/two failures; a synthetic
+history with transient drift and a conserved endpoint is rejected. No WSL
+command or solver was run during development; user execution remains pending.
+
 - The build completed successfully and the wrapper checked all four expected
   executables. The run selected this project's version-specific executable.
 - Serial and two-rank MPI Plate2D runs each used 3,200 cells and completed

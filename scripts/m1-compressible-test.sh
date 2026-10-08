@@ -23,11 +23,13 @@ python3 scripts/check-phase-pair.py --output "$report_dir/m1-phase-pair.json"
 for temperature_solver in ${M1_T_SOLVERS:-upstream}; do
 for phase_mode in ${M1_PHASE_MODES:-upstream}; do
 for outer_correctors in ${M1_OUTER_CORRECTORS:-1}; do
+for test_delta_t in ${M1_TIME_STEPS:-1e-9}; do
 for mode in ${M1_AVERAGING_MODES:-false true}; do
     for cycles in ${M1_SUBCYCLES:-1 2 4}; do
         stage="T-$temperature_solver-average-$mode-subcycles-$cycles"
         if [ "$phase_mode" != upstream ]; then stage="$stage-$phase_mode"; fi
         stage="$stage-outer-$outer_correctors"
+        stage="$stage-dt-$test_delta_t"
         case_dir="$report_dir/$stage"
         mkdir -p "$case_dir"
         cp -a tutorials/compressiblelaserbeamFoam/Test1/{initial,constant,system} "$case_dir/"
@@ -41,8 +43,8 @@ for mode in ${M1_AVERAGING_MODES:-false true}; do
             foamDictionary system/controlDict -entry startFrom -set startTime >/dev/null
             foamDictionary system/controlDict -entry startTime -set 0 >/dev/null
             foamDictionary system/controlDict -entry endTime -set 1e-8 >/dev/null
-            foamDictionary system/controlDict -entry deltaT -set 1e-9 >/dev/null
-            foamDictionary system/controlDict -entry maxDeltaT -set 1e-9 >/dev/null
+            foamDictionary system/controlDict -entry deltaT -set "$test_delta_t" >/dev/null
+            foamDictionary system/controlDict -entry maxDeltaT -set "$test_delta_t" >/dev/null
             foamDictionary system/controlDict -entry adjustTimeStep -set false >/dev/null
             foamDictionary system/controlDict -entry writeControl -set timeStep >/dev/null
             foamDictionary system/controlDict -entry writeInterval -set 10 >/dev/null
@@ -97,6 +99,7 @@ PY
         ) > "$case_dir/log.wrapper" 2>&1
         echo "Completed: $stage"
     done
+done
 done
 done
 done

@@ -45,19 +45,24 @@ def closed_mass_check(text, relative_tolerance=1e-9):
     if len(samples) < 2:
         raise ValueError('Closed mass check requires initial and final samples')
     flux_integral = 0.0
+    maximum_residual = 0.0
     for before, after in zip(samples, samples[1:]):
         dt = after['time']-before['time']
         if dt <= 0:
             raise ValueError('Non-increasing diagnostic times')
         flux_integral += after['outwardMassFluxKgPerS']*dt
+        maximum_residual = max(maximum_residual,
+                               abs(after['massKg']-samples[0]['massKg']+flux_integral))
     delta = samples[-1]['massKg']-samples[0]['massKg']
     residual = delta+flux_integral
     relative = abs(residual)/abs(samples[0]['massKg'])
+    maximum_relative = maximum_residual/abs(samples[0]['massKg'])
     return dict(initial_mass_kg=samples[0]['massKg'], final_mass_kg=samples[-1]['massKg'],
                 inventory_change_kg=delta, right_endpoint_boundary_integral_kg=flux_integral,
                 residual_kg=residual, relative_residual=relative,
+                samples=len(samples), max_history_relative_residual=maximum_relative,
                 relative_tolerance=relative_tolerance,
-                closed_mass_check_passed=math.isfinite(relative) and relative <= relative_tolerance)
+                closed_mass_check_passed=math.isfinite(maximum_relative) and maximum_relative <= relative_tolerance)
 
 
 def main():
