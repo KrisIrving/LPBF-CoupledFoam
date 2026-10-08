@@ -18,7 +18,7 @@ WSL2 is supported by the local baseline workflow. Install these prerequisites
 before running the commands; Foundation OpenFOAM 9/10 is not interchangeable.
 
 ```bash
-git clone https://github.com/KrisIrving/LPBF-CoupledFoam.git
+git clone --depth 1 https://github.com/KrisIrving/LPBF-CoupledFoam.git
 cd LPBF-CoupledFoam
 export OPENFOAM_BASHRC=/usr/lib/openfoam/openfoam2506/etc/bashrc
 BUILD_JOBS=4 bash scripts/build.sh
@@ -26,6 +26,9 @@ bash scripts/smoke.sh
 # Optional parallel execution check:
 SMOKE_NPROCS=2 bash scripts/smoke.sh
 ```
+
+The shallow clone is sufficient for testing on another machine. Use
+`git fetch --unshallow origin` when full development history is needed.
 
 The wrapper places executables and libraries in ignored `.build/`, without
 replacing other user solver installations. Each smoke run copies the upstream
@@ -47,6 +50,7 @@ workspace. Do not infer performance from its elapsed wall-clock values.
 
 - [中文研究路线、文献基准与可选加速](docs/research-plan.zh-CN.md)
 - [Development and verification record](docs/development-log.md)
+- [V3.0 源码入口与守恒审计清单](docs/source-map.zh-CN.md)
 
 Initial material target: 316L. The proposed reference is Zhang et al.,
 Acta Materialia 288 (2025), 120816,

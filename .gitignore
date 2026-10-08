@@ -81,3 +81,5 @@ solaris*Gcc*/
 SunOS*Gcc*/
 .build/
 .runs/
+# Keep project documentation despite upstream scientific-time patterns.
+!docs/*.md
