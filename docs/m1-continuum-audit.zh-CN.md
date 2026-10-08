@@ -58,19 +58,21 @@ Q_v=0.82L_vp_{sat}\sqrt{\frac{M_m}{2\pi RT}}.
 
 ## 需要先解决的风险
 
-### R1：凝结源项的配对与量纲换算
+### R1：蒸发系数与实际转移质量（纠正凝结判断）
 
-证据为 [multiphaseMixtureThermo.C](../applications/solvers/compressibleLaserbeamFoam/multiphaseMixtureThermo/multiphaseMixtureThermo.C) 中液相/蒸汽相两条命名匹配分支。为分析源项本身，暂取两相相同分子量、固定密度、相同限幅速率，不包含输运、压力/EOS 修正或其他相。
+M1.2 核查实际源码发现：上一版将凝结密度比转录反了。实际液相源使用 rho_v/rho_l，撤回此前的凝结质量不配对判断。
 
-对凝结，记正速率为 `c`，蒸汽体积分数为 `alpha_v`，源码的原始相源项为：
+固定密度、相同限幅速率下，蒸发源为 S_l=-e*alpha_l*rho_v/rho_l、S_v=e*alpha_l；凝结源为 S_l=c*alpha_v*rho_v/rho_l、S_v=-c*alpha_v。两者均满足 rho_l*S_l+rho_v*S_v=0，体积源分别膨胀与收缩。
 
-\[
-S_l=c\alpha_v\frac{\rho_l}{\rho_v},\qquad S_v=-c\alpha_v.
-\]
+待审计的是蒸发系数含 1/(interface_thickness*rho_l)，而实际质量率为 mdot=rho_v*S_v。相对以液相密度解释的供体速率，多一个 rho_v/rho_l 因子。需要追溯物理定义、界面分布和限幅，暂不修改生产求解器。
 
-于是 `rho_l*S_l+rho_v*S_v` 一般不为零；当液体更密时，源项体积和也为正，而物理凝结应产生体积收缩。用纯示意值 `rho_l=2, rho_v=1, alpha_v=0.5, c=0.1`，质量加权源项为 `0.15`，体积源项和为 `0.05`。这暴露了**原始凝结源项配对风险**，还不能仅凭这一代数检查断言完整求解器的实际总质量误差。
+新增 scripts/check-phase-pair.py 直接提取实际 alphagen/massgen 表达式，执行密度比 2/1000、蒸发/凝结、限幅开/关的 8 个合成检查。报告包含源码哈希、表达式、质量和体积源、温度源及潜热参考功率。温度源单位与潜热功率不同，不能直接比较。此检查不包含输运、PCR、EOS 或能量推进，不证明全局 CFD 守恒。
 
-蒸发在上述限制下的两相质量加权源项可相消，但实际转移量按蒸汽密度乘蒸发系数构造，需要核对它与界面质量通量的换算。修复应从共享的 `mdot`（kg/(m³ s)）推导两侧 `±mdot/rho_i`、体积源项和潜热项，然后验证，不能只凭直觉调整一个比值。
+```bash
+python3 scripts/check-phase-pair.py --output .runs/m1-phase-pair.json
+```
+
+此命令只需要 Python 3，无需加载 OpenFOAM 或运行仿真。
 
 ### R2：子循环的源项时间平均
 

@@ -45,6 +45,7 @@ stage=parallel
 echo 'Running MPI smoke check.'
 SMOKE_NPROCS="${SMOKE_NPROCS:-2}" SMOKE_REPORT_DIR="$report_dir/parallel" bash scripts/smoke.sh > "$report_dir/log.parallel-wrapper" 2>&1
 stage=diagnostics
+python3 scripts/check-phase-pair.py --output "$report_dir/m1-phase-pair.json"
 python3 scripts/summarize-continuum.py "$report_dir/serial/log.laserbeamFoam" \
     "$report_dir/parallel/log.laserbeamFoam" --output "$report_dir/m1-summary.json"
 stage=complete

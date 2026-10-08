@@ -118,3 +118,20 @@ M1.1 diagnostic integration passes for this baseline. The run is below melting
 and evaporation temperatures and does not validate phase-change sources,
 compressible runtime behavior, full energy balance or gas/particle coupling.
 Next is M1.2: isolated evaporation and condensation source-pair checks.
+
+## M1.2 isolated source algebra: 2026-10-08
+
+Corrected the earlier condensation audit: the actual liquid source uses
+rho_v/rho_l, not rho_l/rho_v. Both raw phase-source pairs conserve mass under
+fixed densities and identical paired rates. The earlier condensation failure
+claim is withdrawn. Evaporation rate normalization still needs physical review:
+the rate definition divides by liquid density but transferred mass uses vapour
+density. No production source term was changed.
+
+Added a standard-library Python audit which extracts actual alphagen/massgen
+assignments, restricts evaluation to scalar arithmetic and min, and records
+the source SHA256 and expressions. Eight synthetic checks cover evaporation,
+condensation, density contrasts and rate limiting. These checks passed on the
+development side without OpenFOAM or WSL. The feedback wrapper includes the
+report. This is isolated algebra, not a full CFD or energy validation; M1.2
+source integration and thermodynamic validation remain pending.
