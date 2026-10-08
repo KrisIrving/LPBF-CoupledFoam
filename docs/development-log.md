@@ -1,5 +1,37 @@
 # Development and verification record
 
+## M1B-01 spatial/laser integration package prepared: 2026-10-09
+
+Prepared one user-run integration wrapper with eight synthetic cases: two
+resolutions each for matched-density slab advection, spatial phase exchange,
+laser heating with phase exchange disabled, and laser heating with exchange
+enabled. Meshes are 40/80 cells for one-dimensional translation and 216/1728
+for the other families. Short mode runs twenty steps; one build and one archive
+collect all cases, retaining failures rather than stopping after one case.
+
+Added default-true phaseChangeEnabled to the existing liquid/vapour rate paths;
+default numerical behavior is retained. Added default-off spatialDiagnostics
+for phase bounds, sum, volumes, moments and exact cell-average translation
+error on the specified Cartesian slab. Matched-density translation fixes a
+pressure reference plane because this upstream branch lacks an all-incompressible
+pressure reference path. Actual pair compression and diffusion tables are
+controlled in generated fixtures, not merely the unused cAlpha setting.
+
+Summaries apply predeclared execution, time-history, T, mass, phase-bound and
+excitation gates, and report coarse/fine observations. Spatial reference energy
+minus absorbed laser energy remains observational; no uniform energy gate is
+reused. The existing volume-distributed phase law is not represented as a
+validated interface-localized flux. Material reproduction, melting, full
+boundary-energy balance, moving laser, restart and MPI checks remain pending.
+
+Development-side checks: generated all eight fixtures, inspected dictionary
+structure and periodic field conditions, checked shell/Python syntax and raw
+phase-pair algebra. Synthetic parser logs exercise positive and negative gates,
+including missing samples, phase bounds, source disabling, translation error
+and failed-case retention. These are not CFD tests. Compilation/runtime await
+user feedback; no WSL process or simulation was invoked. State, plan and pending
+test register are synchronized with this package.
+
 ## Outer-iteration feedback and milestone documentation: 2026-10-09
 
 User-tested commit `6464b2499d9ef63f2f2d1afdd5710103dee308f7`: all seven

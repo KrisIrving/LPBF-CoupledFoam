@@ -1233,6 +1233,14 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::solveAlphas
 
     *massdotterm *= 0.0;
 
+    const Switch phaseChangeEnabled
+    (
+        mesh_.solverDict("alpha").lookupOrDefault<Switch>
+        (
+            "phaseChangeEnabled", true
+        )
+    );
+
     const Switch commonLatentHeatSource
     (
         mesh_.solverDict("alpha").lookupOrDefault<Switch>
@@ -1606,8 +1614,8 @@ Info<<"Liquid-Vapour State Transition: (Liquid,Vapour): ("<<alpha.name()<<","<<a
 
                         // Info<<"HERE1"<<endl;
                         //NEW Compressible cond and evap rates
-                        evaprate = 1.0*Foam::sqrt((alpha.thermo().W()/1000.0)/(2.0*M_PI*gasconstant*T_))*(1.0/(int_thickness*liqdensity))*(Psat-p_);//*****************;
-                        condrate = -max(condensate,1e-6)*Foam::sqrt((alpha2.thermo().W()/1000.0)/(2.0*M_PI*gasconstant*T_))*(1.0/(int_thickness*vapdensity))*(Psat-p_);//**********************;
+                        evaprate = scalar(phaseChangeEnabled)*Foam::sqrt((alpha.thermo().W()/1000.0)/(2.0*M_PI*gasconstant*T_))*(1.0/(int_thickness*liqdensity))*(Psat-p_);
+                        condrate = -scalar(phaseChangeEnabled)*max(condensate,1e-6)*Foam::sqrt((alpha2.thermo().W()/1000.0)/(2.0*M_PI*gasconstant*T_))*(1.0/(int_thickness*vapdensity))*(Psat-p_);
                         //NEW Compressible cond and evap rates
                         // Info<<"HERE2"<<endl;
                         // evaprate=ratedummy;//L_Lee*(alpha.thermo().rho()/alpha2.thermo().rho())*((T_-pair_boil_T)/pair_boil_T);//Lee
@@ -1652,8 +1660,8 @@ Info<<"Liquid-Vapour State Transition: (Liquid,Vapour): ("<<alpha.name()<<","<<a
 
                     //NEW Compressible cond and evap rates
                     // Info<<"HERE3"<<endl;
-                        evaprate = 1.0*Foam::sqrt((alpha2.thermo().W()/1000.0)/(2.0*M_PI*gasconstant*T_))*(1.0/(int_thickness*liqdensity))*(Psat-p_);//*****************;
-                        condrate = -max(condensate,1e-6)*Foam::sqrt((alpha.thermo().W()/1000.0)/(2.0*M_PI*gasconstant*T_))*(1.0/(int_thickness*vapdensity))*(Psat-p_);//**********************;
+                        evaprate = scalar(phaseChangeEnabled)*Foam::sqrt((alpha2.thermo().W()/1000.0)/(2.0*M_PI*gasconstant*T_))*(1.0/(int_thickness*liqdensity))*(Psat-p_);
+                        condrate = -scalar(phaseChangeEnabled)*max(condensate,1e-6)*Foam::sqrt((alpha.thermo().W()/1000.0)/(2.0*M_PI*gasconstant*T_))*(1.0/(int_thickness*vapdensity))*(Psat-p_);
                         //NEW Compressible cond and evap rates
 // Info<<"HERE4"<<endl;
 

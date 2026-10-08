@@ -546,5 +546,15 @@
         }
       ]
     }
+  ],
+  "development_packages": [
+    {
+      "package_id": "M1B-01",
+      "status": "prepared_runtime_pending",
+      "case_count": 8,
+      "entrypoint": "scripts/m1b-integrated-test.sh",
+      "documentation": "docs/m1b-integrated.zh-CN.md",
+      "physical_validation": "not_evaluated"
+    }
   ]
 }
