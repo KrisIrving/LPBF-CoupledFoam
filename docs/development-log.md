@@ -1,5 +1,34 @@
 # Development and verification record
 
+## Internal-energy reference feedback and refinement gate: 2026-10-09
+
+User-tested commit `03639c9fbae1d97782aaa7b1e7255f8aea5ffa09`: all six
+uniform synthetic cases completed, with temperature convergence and closed
+mass checks passing. With referenceInternalEnergySource enabled, maximum
+absolute reference-energy change was 1.4733814168721437e-9 J for condensation
+and 5.820766091346741e-11 J for evaporation. Equilibrium gave
+5.002220859751105e-11 J in both modes. Disabled-source active controls gave
+1.6323913405358326e-4 J and 7.677044777665287e-9 J respectively.
+
+Added an optional per-sample synthetic energy regression gate:
+abs(delta E) <= 1e-9 J + 1e-4 * abs(Lv * delta vapour mass).
+The absolute floor exceeds observed printed-energy cancellation noise; the
+relative threshold is a project regression choice, not a physical accuracy
+standard. It avoids normalizing by the much larger initial energy. Retrospective
+checks accept the enabled cases and reject both disabled active controls.
+The ledger now records the full diagnostic history, and rejects non-finite or
+negative tolerances. Default observation-only behavior is retained.
+
+Prepared m1-energy-refinement-test.sh: one equilibrium reference plus twelve
+active runs, two directions, alpha subcycles 1/2/4, deltaT 0.1/0.05 ns and
+end time 1 ns. All use the same consistent synthetic fixture, five outer
+correctors, source averaging, old-time protection and the reference candidate.
+Only one equilibrium run is retained to reduce redundant work. Runtime is
+pending user feedback; this extends uniform numerical regression, not material
+validation or full M1 completion. Solver defaults and equations are unchanged
+in this update. Development-side work uses archive parsing and script checks;
+no WSL process or CFD run is invoked.
+
 ## Initial baseline: 2026-10-08
 
 - Base: LaserbeamFoam V3.0, `f42e08a0bfc1749675beadcf7c6a90334d7aa9f8`.

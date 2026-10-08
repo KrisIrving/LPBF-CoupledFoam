@@ -15,7 +15,9 @@ def rows(text, prefix):
     return result
 
 
-def audit(report):
+def audit(report, gate=False, absolute_tolerance=1e-9, relative_tolerance=1e-4):
+    if any(not math.isfinite(x) or x < 0 for x in (absolute_tolerance, relative_tolerance)):
+        raise ValueError('Energy tolerances must be finite and nonnegative')
     cases = []
     for case in sorted(report.glob('T-*-average-*-subcycles-*')):
         meta = case/'phase-case.json'
@@ -69,6 +71,14 @@ def audit(report):
             energies.append((time, energy))
         mv = inventories['metal1vapour']
         delta_mv = float(mv[-1]['massKg'])-float(mv[0]['massKg'])
+        history = []
+        for index, (time, energy) in enumerate(energies):
+            change = energy-energies[0][1]
+            transfer = abs(latent*(float(mv[index]['massKg'])-float(mv[0]['massKg'])))
+            tolerance = absolute_tolerance+relative_tolerance*transfer
+            history.append(dict(time_s=time, reference_energy_change_j=change,
+                                latent_transfer_scale_j=transfer, tolerance_j=tolerance,
+                                within_tolerance=math.isfinite(change) and abs(change) <= tolerance))
         results[name] = dict(direction=meta['direction'],
             thermo_fixture=meta.get('thermo_fixture', 'legacy'),
             reference_internal_energy_source=meta.get('referenceInternalEnergySource', False),
@@ -76,21 +86,34 @@ def audit(report):
             initial_reference_energy_j=energies[0][1], final_reference_energy_j=energies[-1][1],
             reference_energy_change_j=energies[-1][1]-energies[0][1],
             max_abs_reference_energy_change_j=max(abs(e-energies[0][1]) for _, e in energies),
-            vapour_mass_change_kg=delta_mv, latent_transfer_scale_j=abs(latent*delta_mv))
-    return dict(schema_version=1, vapour_constant_energy_offset_J_per_kg=offset,
+            vapour_mass_change_kg=delta_mv, latent_transfer_scale_j=abs(latent*delta_mv),
+            energy_history=history,
+            energy_regression_passed=all(s['within_tolerance'] for s in history) if gate else None)
+    return dict(schema_version=2, vapour_constant_energy_offset_J_per_kg=offset,
                 reference_temperature_K=reference['temperature_K'], reference_pressure_Pa=p,
                 cases=results, physical_energy_validation='not_evaluated',
+                energy_regression_gate=dict(enabled=gate, absolute_tolerance_j=absolute_tolerance,
+                    relative_transfer_tolerance=relative_tolerance,
+                    passed=all(c['energy_regression_passed'] for c in results.values()) if gate else None),
                 scope='Synthetic closed adiabatic zero-laser case only. Offset calibrated once from '
                       'equilibrium native thermo energies so the reference enthalpy gap equals Lv. '
                       'The ledger does not modify solver states; case source modes are recorded separately. '
-                      'No energy tolerance gate is imposed. '
+                      'Optional regression gate checks every logged sample against an absolute floor '
+                      'plus a tolerance relative to net Lv*delta(vapour mass), not initial total energy. '
+                      'This scale is diagnostic, not the internal-energy source. '
+                      'It is intended for monotonic uniform synthetic phase exchange only. '
                       'EOS thermodynamic consistency and off-reference latent behavior remain to be audited.')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('report', type=Path)
+    parser.add_argument('--gate', action='store_true', help='Require the synthetic energy regression gate')
+    parser.add_argument('--absolute-tolerance', type=float, default=1e-9, help='Printed-energy noise floor in J')
+    parser.add_argument('--relative-tolerance', type=float, default=1e-4, help='Fraction of net latent transfer scale')
     args = parser.parse_args()
-    result = audit(args.report)
+    result = audit(args.report, args.gate, args.absolute_tolerance, args.relative_tolerance)
     (args.report/'energy-summary.json').write_text(json.dumps(result, indent=2, allow_nan=False)+'\n')
-    print('Reference-calibrated energy observations written; physical validation pending.')
+    if args.gate and not result['energy_regression_gate']['passed']:
+        raise SystemExit('Synthetic energy regression failed; see energy-summary.json.')
+    print('Reference-calibrated energy summary written; physical validation pending.')

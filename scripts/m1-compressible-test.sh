@@ -20,6 +20,7 @@ printf 'version=%s\noptions=%s\n' "$WM_PROJECT_VERSION" "$WM_OPTIONS" > "$report
 BUILD_JOBS="${BUILD_JOBS:-8}" bash scripts/build.sh > "$report_dir/log.build" 2>&1
 test -x "$FOAM_USER_APPBIN/compressibleLaserbeamFoam"
 python3 scripts/check-phase-pair.py --output "$report_dir/m1-phase-pair.json"
+equilibrium_completed=false
 for temperature_solver in ${M1_T_SOLVERS:-upstream}; do
 for phase_mode in ${M1_PHASE_MODES:-upstream}; do
 for outer_correctors in ${M1_OUTER_CORRECTORS:-1}; do
@@ -29,6 +30,9 @@ for common_latent in ${M1_COMMON_LATENT:-false}; do
 for reference_energy in ${M1_REFERENCE_ENERGY:-false}; do
 for mode in ${M1_AVERAGING_MODES:-false true}; do
     for cycles in ${M1_SUBCYCLES:-1 2 4}; do
+        if [ "${M1_SINGLE_EQUILIBRIUM:-false}" = true ] && [ "$phase_mode" = equilibrium ] && [ "$equilibrium_completed" = true ]; then
+            continue
+        fi
         stage="T-$temperature_solver-average-$mode-subcycles-$cycles"
         if [ "$phase_mode" != upstream ]; then stage="$stage-$phase_mode"; fi
         stage="$stage-outer-$outer_correctors"
@@ -114,6 +118,7 @@ PY
             fi
         ) > "$case_dir/log.wrapper" 2>&1
         echo "Completed: $stage"
+        if [ "$phase_mode" = equilibrium ]; then equilibrium_completed=true; fi
     done
 done
 done
@@ -127,7 +132,9 @@ stage=linear-convergence
 python3 scripts/summarize-m1-temperature.py "$report_dir" ${M1_REFERENCE_FLAG:-}
 if [ "${M1_ENERGY_AUDIT:-false}" = true ]; then
     stage=energy-observations
-    python3 scripts/summarize-m1-energy.py "$report_dir"
+    energy_options=()
+    if [ "${M1_ENERGY_GATE:-false}" = true ]; then energy_options+=(--gate); fi
+    python3 scripts/summarize-m1-energy.py "$report_dir" "${energy_options[@]}"
 fi
 stage=complete
 echo 'Compressible runtime and requested temperature convergence checks passed; physical validation remains pending.'
