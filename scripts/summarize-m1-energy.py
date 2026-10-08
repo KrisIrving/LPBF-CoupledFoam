@@ -15,6 +15,46 @@ def rows(text, prefix):
     return result
 
 
+def temperature_budget(text, continuum, meta, offset, delta_mv):
+    cv = meta.get('common_constant_cv_J_per_kg_K')
+    budget_rows = rows(text, 'M1_T_BUDGET')
+    if not budget_rows:
+        return dict(available=False)
+    if meta.get('thermo_fixture') != 'consistent' or cv is None or not math.isfinite(cv) or cv <= 0:
+        raise ValueError('Temperature-budget energy conversion requires common constant Cv metadata')
+    # PIMPLE repeatedly solves the same time interval. Only its final thermal
+    # correction contributes once to this diagnostic integral.
+    final_by_time = {float(r['time']): r for r in budget_rows}
+    times = [float(r['time']) for r in continuum]
+    if set(final_by_time) != set(times[1:]):
+        raise ValueError('Temperature budget and continuum times are not aligned')
+    keys = ('storage', 'transport', 'diffusion', 'mechanical', 'laser', 'fusion', 'phaseChange', 'residual')
+    integrals = {k: 0.0 for k in keys}
+    history = []
+    for before, after in zip(times, times[1:]):
+        if after <= before:
+            raise ValueError('Non-increasing temperature budget times')
+        sample = final_by_time[after]
+        for key in keys:
+            value = float(sample[key+'KgKPerS'])
+            if not math.isfinite(value):
+                raise ValueError('Non-finite temperature budget term')
+            integrals[key] += cv*value*(after-before)
+        history.append(dict(time_s=after, inventory_kg_k=float(sample['inventoryKgK']),
+                            old_inventory_kg_k=float(sample['oldInventoryKgK']),
+                            terms_kg_k_per_s={k: float(sample[k+'KgKPerS']) for k in keys}))
+    return dict(available=True, constant_cv_J_per_kg_K=cv,
+                final_outer_temperature_samples=history,
+                integrated_signed_equation_terms_j=integrals,
+                reference_offset_inventory_change_j=offset*delta_mv,
+                phase_source_inventory_mismatch_j=offset*delta_mv-integrals['phaseChange'],
+                scope='Unrelaxed rho*T equation terms evaluated before mixture.correct and pressure '
+                      'correction. Last thermal solve per time is integrated once. Constant Cv conversion '
+                      'is restricted to this fixture; EOS native energy after pressure is a separate ledger. '
+                      'Reconstructed explicit transport can differ from implicit matrix transport in '
+                      'nonuniform cases; this is a diagnostic, not a new conservation gate.')
+
+
 def audit(report, gate=False, absolute_tolerance=1e-9, relative_tolerance=1e-4):
     if any(not math.isfinite(x) or x < 0 for x in (absolute_tolerance, relative_tolerance)):
         raise ValueError('Energy tolerances must be finite and nonnegative')
@@ -83,6 +123,8 @@ def audit(report, gate=False, absolute_tolerance=1e-9, relative_tolerance=1e-4):
             thermo_fixture=meta.get('thermo_fixture', 'legacy'),
             reference_internal_energy_source=meta.get('referenceInternalEnergySource', False),
             common_latent_heat_source=meta.get('commonLatentHeatSource', False), samples=len(energies),
+            temperature_equation_budget=temperature_budget(
+                (report/name/'log.compressibleLaserbeamFoam').read_text(), continuum, meta, offset, delta_mv),
             initial_reference_energy_j=energies[0][1], final_reference_energy_j=energies[-1][1],
             reference_energy_change_j=energies[-1][1]-energies[0][1],
             max_abs_reference_energy_change_j=max(abs(e-energies[0][1]) for _, e in energies),

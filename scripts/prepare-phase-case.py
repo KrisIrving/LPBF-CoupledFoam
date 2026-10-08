@@ -91,6 +91,7 @@ def prepare(case, direction, fixture='legacy'):
         direction=direction, temperature_K=4101, initial_pressure_Pa=pressure,
         initial_saturation_pressure_Pa=100000, latent_heat_J_per_kg=latent,
         thermo_fixture=fixture,
+        common_constant_cv_J_per_kg_K=800 if fixture == 'consistent' else None,
         vapour_reference_energy_offset_J_per_kg=offset if fixture == 'consistent' else None,
         liquid_alpha=0.5, vapour_alpha=0.5,
         interpretation='Synthetic homogeneous closure test; fixture type records active EOS/caloric choices. '

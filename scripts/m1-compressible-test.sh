@@ -60,6 +60,7 @@ for mode in ${M1_AVERAGING_MODES:-false true}; do
             foamDictionary system/controlDict -entry writeInterval -set 10 >/dev/null
             foamDictionary system/controlDict -entry continuumDiagnostics -set true >/dev/null
             foamDictionary system/controlDict -entry couplingDiagnostics -set true >/dev/null
+            foamDictionary system/controlDict -entry temperatureBudgetDiagnostics -set "${M1_T_BUDGET:-false}" >/dev/null
             python3 - "$cycles" "$mode" "$temperature_solver" "$outer_correctors" "$protect_histories" "$common_latent" "$reference_energy" <<'PY'
 import re
 import json

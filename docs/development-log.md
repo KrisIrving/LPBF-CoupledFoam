@@ -1,5 +1,39 @@
 # Development and verification record
 
+## Energy refinement feedback and temperature budget diagnostics: 2026-10-09
+
+User-tested commit `5c321a132a85f5c4a43e290c2abc0625d1d6c4dd`: all 13
+cases completed with temperature, mass and synthetic energy gates passing.
+Maximum closed-mass relative residual was 3.999784626294979e-12.
+Condensation maximum energy residuals at deltaT 0.1 ns were 1.4734, 26.2417,
+and 38.6499 nJ for subcycles 1/2/4; at 0.05 ns they were 0.7394, 13.1258,
+and 19.3559 nJ. Halving deltaT approximately halves each residual, consistent
+with a first-order temporal contribution, but two steps do not establish an
+asymptotic convergence order. Evaporation stayed below 6.28e-11 J.
+
+Archive-only integration of the final outer temperature source, multiplied by
+the fixture's common Cv=800 J/(kg K), gives a condensation reference-inventory
+versus source mismatch of about -0.453 nJ at 0.1 ns for every subcycle count.
+The much larger ledger residual for subcycles 2/4 therefore needs additional
+equation-term diagnostics; source averaging alone does not explain it. This
+comparison does not isolate pressure work, fusion or transport effects.
+
+Added default-off temperatureBudgetDiagnostics before mixture.correct in
+TEqn.H. It records integrated storage, transport, diffusion, mechanical,
+laser, fusion and phase-source terms of the existing rho*T equation, plus
+current/old rho*T inventories and the reconstructed unrelaxed residual.
+It does not alter the equation or solver defaults. Energy summaries integrate
+only the final thermal solve per time, without counting PIMPLE iterations
+as additional physical steps, and convert units only with explicit common
+constant-Cv fixture metadata. Explicit reconstruction is a diagnostic for
+this uniform case, not a general implicit-matrix conservation measurement.
+
+Prepared m1-temperature-budget-test.sh: one equilibrium reference and six
+condensation cases at subcycles 1/2/4 and deltaT 0.1/0.05 ns. This focuses
+the next user run on the identified residual. Compilation and runtime of the
+new C++ diagnostic await user feedback. Development-side checks are static
+and archive/parser checks only; no WSL process or CFD run was invoked.
+
 ## Internal-energy reference feedback and refinement gate: 2026-10-09
 
 User-tested commit `03639c9fbae1d97782aaa7b1e7255f8aea5ffa09`: all six
