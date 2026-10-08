@@ -170,3 +170,30 @@ a runtime gate using upstream synthetic materials, not a controlled material
 validation case. Build and runtime are pending user feedback. Developer-side
 checks are limited to script syntax, source algebra and weighted-source math;
 no WSL command or CFD run is used.
+
+## User-side compressible runtime gate: 2026-10-08
+
+Tested commit `3753c9e0ecad7049f56d0120214d776671cffb12`. Build and all six
+serial cases completed normally, with overall exit status zero. Archived
+dictionaries confirm source averaging false/true and alpha subcycles 1/2/4.
+Each case has 11 continuum observations, reaching 10 ns. No WSL command or
+solver was invoked to inspect the user archive.
+
+All cases report final mass `0.00384063832621` kg, versus initial
+`0.00384063832664` kg at printed precision. Final maximum speed is
+`0.0014733850156` m/s; internal temperature range is approximately
+`949.999949468` to `950.000000002` K. Post-update absorbed laser power is zero.
+Within each subcycle count, averaging on/off continuum histories are identical
+at logged precision. This is not evidence that averaging is unnecessary:
+vapour fractions remain essentially unchanged and phase-change excitation is
+too weak for an informative source-averaging validation.
+
+**Numerical qualification:** every one of the 60 T linear solves reports
+1000 iterations with final residual above the configured `1e-8` tolerance.
+For example, the final residual is `2.74518e-08`. Thus the runtime gate passes,
+but linear convergence does not. The current wrapper checks termination and
+fatal/non-finite errors, not attainment of every linear solver tolerance.
+No source-accuracy, energy-conservation or subcycle convergence claim follows.
+Next work must resolve the T solve and provide controlled nonzero phase change
+before changing mass-rate or latent formulas. Raw fields and host information
+remain outside this public repository.
