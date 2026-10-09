@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-09: M1C feedback reviewed; implementation paused for platform discussion
+
+Reviewed user archive at tested commit 98befc42; build and all seven solver runs complete. Original summary fails all cases because diagnostic timestamp strings use different precision. Separate offline step-aligned review preserves thresholds: off, half-dt, kinetic and condensation pass their limited gates; prescribed coarse/fine and open fail inventory checks, with open also failing the initial-area threshold. Original failure retained. Detailed evidence and archive SHA are in the register and machine-readable record; no universal mass/energy or plume validation claimed.
+
+User explicitly requests a detailed plan before further implementation. Added conditional OF10 versus v2512 platform plan and PUBLIC/extended-CFDEM distinction. PUBLIC supports OF6; OF10 LaserbeamFoam is a candidate, not proven drop-in compatibility. Corrected the resolved-force contract to permit validated equivalent IB volume integration as well as geometric traction integration. No source/script changes, WSL, compilation or CFD execution. Subsequent coding and migration await plan agreement.
+
 ## M1C-01 first interface-source package prepared: 2026-10-09
 
 Added default-legacy interfacePhaseChangeModel with opt-in prescribed or pure-vapour kinetic flux. Evaluate geometry and flux once before all phase updates, map paired liquid/vapour volume sources and shared reference-energy source, bypass the legacy volume-distributed pair closure. Joint occupancy limiter logs requested/actual flux; existing pressure vDot uses the sum of paired volume sources. Restricted to equal constant Cv, reference source and one alpha subcycle, with explicit errors for active extra phases. No new Knudsen exit momentum, shielding-gas partial-pressure transport or low-Mach solver.

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "a7395edddbe02701a968679e6b5744b8079c7ade",
-  "scope": "Curated evidence: 14 M1-A archives, three spatial M1-B archives, two restart/MPI archives. Historical failures preserved; raw files stay outside Git.",
+  "latest_user_tested_commit": "98befc42ae4187d9217fd4793ef427d3fcee58b6",
+  "scope": "Curated evidence including first M1C interface archive. Historical failures preserved; separate offline step-aligned interpretation does not replace original summary. Raw files stay outside Git.",
   "records": [
     {
       "report": "m1-compressible-20261008-193210-28596.tar.gz",
@@ -4829,5 +4829,642 @@
   "design_constraints": {
     "particle_representation": "User requires resolved particles with mesh smaller than particle diameter. Surface stress/torque and resolved thermal exchange; empirical force production candidate superseded.",
     "gas_formulation": "Evaluate source-driven variable-density low-Mach mode for normal conditions; current compressible branch retained as engineering baseline. New mode not implemented."
-  }
+  },
+  "interface_records": [
+    {
+      "report": "m1c-interface-20261009-161324-352226.tar.gz",
+      "archive_sha256": "8635af01b50bb19c110babedf5bda9752c872f361ef76976db562a92be32a56d",
+      "tested_commit": "98befc42ae4187d9217fd4793ef427d3fcee58b6",
+      "build_pass": true,
+      "solver_cases_completed": 7,
+      "original_exit_status": 1,
+      "original_last_stage": "interface-summary",
+      "original_summary": {
+        "package": "M1C-01",
+        "revision": 1,
+        "cases": {
+          "off": {
+            "passed": false,
+            "error": "Incomplete source, phase, boundary or pressure diagnostics"
+          },
+          "prescribed-coarse": {
+            "passed": false,
+            "error": "Incomplete source, phase, boundary or pressure diagnostics"
+          },
+          "prescribed-fine": {
+            "passed": false,
+            "error": "Incomplete source, phase, boundary or pressure diagnostics"
+          },
+          "prescribed-half-dt": {
+            "passed": false,
+            "error": "Incomplete source, phase, boundary or pressure diagnostics"
+          },
+          "kinetic": {
+            "passed": false,
+            "error": "Incomplete source, phase, boundary or pressure diagnostics"
+          },
+          "condensation": {
+            "passed": false,
+            "error": "Incomplete source, phase, boundary or pressure diagnostics"
+          },
+          "open": {
+            "passed": false,
+            "error": "Incomplete source, phase, boundary or pressure diagnostics"
+          }
+        },
+        "resolution_differences": {},
+        "requested_gate_passed": false,
+        "physical_validation": "not_evaluated",
+        "scope": "Paired interface mass/energy and gas response on synthetic pure vapour; no explicit exit momentum, shielding gas, material or resolved-particle validation."
+      },
+      "offline_reanalysis_method": "Validate numeric timestamps against integer timestep within dt*1e-6; align to timestep and preserve original thresholds. No production script or raw log modified. Interpretive review only.",
+      "offline_cases": [
+        {
+          "case": "condensation",
+          "offline_analysis": {
+            "metadata": {
+              "package": "M1C-01",
+              "revision": 1,
+              "selection": "condensation",
+              "model": "kinetic",
+              "enabled": true,
+              "open_boundary": false,
+              "mesh_cells": [
+                6,
+                18,
+                6
+              ],
+              "delta_t_s": 1e-09,
+              "end_time_s": 1e-07,
+              "initial_pressure_Pa": 120000,
+              "initial_temperature_K": 4101,
+              "expected_planar_area_m2": 9.99998e-09,
+              "prescribed_mass_flux_kg_m2_s": 1,
+              "accommodation": 0.1,
+              "molar_mass_kg_mol": 0.05,
+              "gas_constant_J_mol_K": 8.314,
+              "reference_pressure_Pa": 100000,
+              "boiling_temperature_K": 4101,
+              "latent_heat_J_kg": 2000000.0,
+              "energy_jump_J_kg": 1318067.1651452065,
+              "comparison_mass_scale_kg": 9.99998e-16,
+              "thresholds": {
+                "alpha_bound": 1e-06,
+                "alpha_sum": 1e-06,
+                "initial_area_relative": 1e-06,
+                "max_area_relative": 0.05,
+                "mass_balance_signal_fraction": 0.05,
+                "mass_balance_absolute_kg": 1e-22,
+                "source_pair_relative": 1e-12,
+                "source_energy_relative": 1e-12,
+                "limiter_fraction": 0.0001,
+                "required_pressure_rise_Pa": 1,
+                "minimum_speed_m_s": 1e-05
+              },
+              "scope": "Interface source code verification, pure vapour and equal Cv synthetic fixture. No Knudsen exit momentum, shielding gas, resolved particles, general energy closure or material validation."
+            },
+            "gates": {
+              "normal_end": true,
+              "temperature_linear": true,
+              "alpha_bounds": true,
+              "alpha_sum": true,
+              "initial_area": true,
+              "area_history": true,
+              "initial_closure": true,
+              "paired_mass_source": true,
+              "shared_energy_source": true,
+              "limiter_inactive": true,
+              "total_inventory_balance": true,
+              "liquid_inventory_balance": true,
+              "vapour_inventory_balance": true,
+              "transfer_direction": true,
+              "gas_velocity_response": true,
+              "pressure_response": true
+            },
+            "passed": true,
+            "observations": {
+              "transferred_mass_kg": -7.223117191694077e-16,
+              "gas_outward_mass_kg": 0.0,
+              "initial_area_relative_error": 8.881784197001252e-16,
+              "max_area_relative_error": 9.095355690824647e-08,
+              "max_inventory_residual_kg": {
+                "total": 1.8200000068667364e-17,
+                "liquid": 1.8187839367296478e-17,
+                "vapour": 1.9451300100801152e-20
+              },
+              "mass_balance_budget_kg": 5.0000000000000005e-17,
+              "max_pair_source_residual_kg_s": 1.82989083314996e-25,
+              "max_energy_source_error_w": 8.500145032286355e-17,
+              "pressure_mean_rise_pa": -8884.485475156995,
+              "max_speed_m_s": 0.317114780039
+            },
+            "physical_validation": "not_evaluated"
+          }
+        },
+        {
+          "case": "kinetic",
+          "offline_analysis": {
+            "metadata": {
+              "package": "M1C-01",
+              "revision": 1,
+              "selection": "kinetic",
+              "model": "kinetic",
+              "enabled": true,
+              "open_boundary": false,
+              "mesh_cells": [
+                6,
+                18,
+                6
+              ],
+              "delta_t_s": 1e-09,
+              "end_time_s": 1e-07,
+              "initial_pressure_Pa": 80000,
+              "initial_temperature_K": 4101,
+              "expected_planar_area_m2": 9.99998e-09,
+              "prescribed_mass_flux_kg_m2_s": 1,
+              "accommodation": 0.1,
+              "molar_mass_kg_mol": 0.05,
+              "gas_constant_J_mol_K": 8.314,
+              "reference_pressure_Pa": 100000,
+              "boiling_temperature_K": 4101,
+              "latent_heat_J_kg": 2000000.0,
+              "energy_jump_J_kg": 1318067.1651452065,
+              "comparison_mass_scale_kg": 9.99998e-16,
+              "thresholds": {
+                "alpha_bound": 1e-06,
+                "alpha_sum": 1e-06,
+                "initial_area_relative": 1e-06,
+                "max_area_relative": 0.05,
+                "mass_balance_signal_fraction": 0.05,
+                "mass_balance_absolute_kg": 1e-22,
+                "source_pair_relative": 1e-12,
+                "source_energy_relative": 1e-12,
+                "limiter_fraction": 0.0001,
+                "required_pressure_rise_Pa": 1,
+                "minimum_speed_m_s": 1e-05
+              },
+              "scope": "Interface source code verification, pure vapour and equal Cv synthetic fixture. No Knudsen exit momentum, shielding gas, resolved particles, general energy closure or material validation."
+            },
+            "gates": {
+              "normal_end": true,
+              "temperature_linear": true,
+              "alpha_bounds": true,
+              "alpha_sum": true,
+              "initial_area": true,
+              "area_history": true,
+              "initial_closure": true,
+              "paired_mass_source": true,
+              "shared_energy_source": true,
+              "limiter_inactive": true,
+              "total_inventory_balance": true,
+              "liquid_inventory_balance": true,
+              "vapour_inventory_balance": true,
+              "transfer_direction": true,
+              "gas_velocity_response": true,
+              "pressure_response": true
+            },
+            "passed": true,
+            "observations": {
+              "transferred_mass_kg": 7.22096588238968e-16,
+              "gas_outward_mass_kg": 0.0,
+              "initial_area_relative_error": 8.881784197001252e-16,
+              "max_area_relative_error": 1.8102349108595206e-07,
+              "max_inventory_residual_kg": {
+                "total": 1.3450000187094389e-17,
+                "liquid": 1.343449822496059e-17,
+                "vapour": 7.812325940477603e-21
+              },
+              "mass_balance_budget_kg": 5.0000000000000005e-17,
+              "max_pair_source_residual_kg_s": 1.40112995076613e-25,
+              "max_energy_source_error_w": 6.591949208711867e-17,
+              "pressure_mean_rise_pa": 8891.560077408998,
+              "max_speed_m_s": 0.324229462407
+            },
+            "physical_validation": "not_evaluated"
+          }
+        },
+        {
+          "case": "off",
+          "offline_analysis": {
+            "metadata": {
+              "package": "M1C-01",
+              "revision": 1,
+              "selection": "off",
+              "model": "prescribed",
+              "enabled": false,
+              "open_boundary": false,
+              "mesh_cells": [
+                6,
+                18,
+                6
+              ],
+              "delta_t_s": 1e-09,
+              "end_time_s": 1e-07,
+              "initial_pressure_Pa": 80000,
+              "initial_temperature_K": 4101,
+              "expected_planar_area_m2": 9.99998e-09,
+              "prescribed_mass_flux_kg_m2_s": 1,
+              "accommodation": 0.1,
+              "molar_mass_kg_mol": 0.05,
+              "gas_constant_J_mol_K": 8.314,
+              "reference_pressure_Pa": 100000,
+              "boiling_temperature_K": 4101,
+              "latent_heat_J_kg": 2000000.0,
+              "energy_jump_J_kg": 1318067.1651452065,
+              "comparison_mass_scale_kg": 9.99998e-16,
+              "thresholds": {
+                "alpha_bound": 1e-06,
+                "alpha_sum": 1e-06,
+                "initial_area_relative": 1e-06,
+                "max_area_relative": 0.05,
+                "mass_balance_signal_fraction": 0.05,
+                "mass_balance_absolute_kg": 1e-22,
+                "source_pair_relative": 1e-12,
+                "source_energy_relative": 1e-12,
+                "limiter_fraction": 0.0001,
+                "required_pressure_rise_Pa": 1,
+                "minimum_speed_m_s": 1e-05
+              },
+              "scope": "Interface source code verification, pure vapour and equal Cv synthetic fixture. No Knudsen exit momentum, shielding gas, resolved particles, general energy closure or material validation."
+            },
+            "gates": {
+              "normal_end": true,
+              "temperature_linear": true,
+              "alpha_bounds": true,
+              "alpha_sum": true,
+              "initial_area": true,
+              "area_history": true,
+              "initial_closure": true,
+              "paired_mass_source": true,
+              "shared_energy_source": true,
+              "limiter_inactive": true,
+              "total_inventory_balance": true,
+              "liquid_inventory_balance": true,
+              "vapour_inventory_balance": true,
+              "prescribed_flux": true,
+              "disabled_source": true
+            },
+            "passed": true,
+            "observations": {
+              "transferred_mass_kg": 0.0,
+              "gas_outward_mass_kg": 0.0,
+              "initial_area_relative_error": 8.881784197001252e-16,
+              "max_area_relative_error": 8.881784197001252e-16,
+              "max_inventory_residual_kg": {
+                "total": 0.0,
+                "liquid": 0.0,
+                "vapour": 2.0194839173657902e-28
+              },
+              "mass_balance_budget_kg": 5.0000000000000005e-17,
+              "max_pair_source_residual_kg_s": 0.0,
+              "max_energy_source_error_w": 0.0,
+              "pressure_mean_rise_pa": 2.0372681319713593e-10,
+              "max_speed_m_s": 5.75078150811e-12
+            },
+            "physical_validation": "not_evaluated"
+          }
+        },
+        {
+          "case": "open",
+          "offline_analysis": {
+            "metadata": {
+              "package": "M1C-01",
+              "revision": 1,
+              "selection": "open",
+              "model": "prescribed",
+              "enabled": true,
+              "open_boundary": true,
+              "mesh_cells": [
+                6,
+                36,
+                6
+              ],
+              "delta_t_s": 1e-09,
+              "end_time_s": 1e-07,
+              "initial_pressure_Pa": 80000,
+              "initial_temperature_K": 4101,
+              "expected_planar_area_m2": 9.99998e-09,
+              "prescribed_mass_flux_kg_m2_s": 1,
+              "accommodation": 0.1,
+              "molar_mass_kg_mol": 0.05,
+              "gas_constant_J_mol_K": 8.314,
+              "reference_pressure_Pa": 100000,
+              "boiling_temperature_K": 4101,
+              "latent_heat_J_kg": 2000000.0,
+              "energy_jump_J_kg": 1318067.1651452065,
+              "comparison_mass_scale_kg": 9.99998e-16,
+              "thresholds": {
+                "alpha_bound": 1e-06,
+                "alpha_sum": 1e-06,
+                "initial_area_relative": 1e-06,
+                "max_area_relative": 0.05,
+                "mass_balance_signal_fraction": 0.05,
+                "mass_balance_absolute_kg": 1e-22,
+                "source_pair_relative": 1e-12,
+                "source_energy_relative": 1e-12,
+                "limiter_fraction": 0.0001,
+                "required_pressure_rise_Pa": 1,
+                "minimum_speed_m_s": 1e-05
+              },
+              "scope": "Interface source code verification, pure vapour and equal Cv synthetic fixture. No Knudsen exit momentum, shielding gas, resolved particles, general energy closure or material validation."
+            },
+            "gates": {
+              "normal_end": true,
+              "temperature_linear": true,
+              "alpha_bounds": true,
+              "alpha_sum": true,
+              "initial_area": false,
+              "area_history": true,
+              "initial_closure": true,
+              "paired_mass_source": true,
+              "shared_energy_source": true,
+              "limiter_inactive": true,
+              "total_inventory_balance": false,
+              "liquid_inventory_balance": false,
+              "vapour_inventory_balance": true,
+              "prescribed_flux": true,
+              "transfer_direction": true,
+              "gas_velocity_response": true,
+              "outlet_mass_response": true
+            },
+            "passed": false,
+            "observations": {
+              "transferred_mass_kg": 9.999981632192639e-16,
+              "gas_outward_mass_kg": 3.1931459836777856e-18,
+              "initial_area_relative_error": 1.0000020018718914e-06,
+              "max_area_relative_error": 2.8908630800295043e-07,
+              "max_inventory_residual_kg": {
+                "total": 5.913924508404317e-17,
+                "liquid": 5.917577210397139e-17,
+                "vapour": 4.2366546484954694e-20
+              },
+              "mass_balance_budget_kg": 5.0000000000000005e-17,
+              "max_pair_source_residual_kg_s": 1.18426618925576e-25,
+              "max_energy_source_error_w": 1.5612511283791264e-16,
+              "pressure_mean_rise_pa": 15907.383747122207,
+              "max_speed_m_s": 0.153154820608
+            },
+            "physical_validation": "not_evaluated"
+          }
+        },
+        {
+          "case": "prescribed-coarse",
+          "offline_analysis": {
+            "metadata": {
+              "package": "M1C-01",
+              "revision": 1,
+              "selection": "prescribed-coarse",
+              "model": "prescribed",
+              "enabled": true,
+              "open_boundary": false,
+              "mesh_cells": [
+                6,
+                18,
+                6
+              ],
+              "delta_t_s": 1e-09,
+              "end_time_s": 1e-07,
+              "initial_pressure_Pa": 80000,
+              "initial_temperature_K": 4101,
+              "expected_planar_area_m2": 9.99998e-09,
+              "prescribed_mass_flux_kg_m2_s": 1,
+              "accommodation": 0.1,
+              "molar_mass_kg_mol": 0.05,
+              "gas_constant_J_mol_K": 8.314,
+              "reference_pressure_Pa": 100000,
+              "boiling_temperature_K": 4101,
+              "latent_heat_J_kg": 2000000.0,
+              "energy_jump_J_kg": 1318067.1651452065,
+              "comparison_mass_scale_kg": 9.99998e-16,
+              "thresholds": {
+                "alpha_bound": 1e-06,
+                "alpha_sum": 1e-06,
+                "initial_area_relative": 1e-06,
+                "max_area_relative": 0.05,
+                "mass_balance_signal_fraction": 0.05,
+                "mass_balance_absolute_kg": 1e-22,
+                "source_pair_relative": 1e-12,
+                "source_energy_relative": 1e-12,
+                "limiter_fraction": 0.0001,
+                "required_pressure_rise_Pa": 1,
+                "minimum_speed_m_s": 1e-05
+              },
+              "scope": "Interface source code verification, pure vapour and equal Cv synthetic fixture. No Knudsen exit momentum, shielding gas, resolved particles, general energy closure or material validation."
+            },
+            "gates": {
+              "normal_end": true,
+              "temperature_linear": true,
+              "alpha_bounds": true,
+              "alpha_sum": true,
+              "initial_area": true,
+              "area_history": true,
+              "initial_closure": true,
+              "paired_mass_source": true,
+              "shared_energy_source": true,
+              "limiter_inactive": true,
+              "total_inventory_balance": false,
+              "liquid_inventory_balance": false,
+              "vapour_inventory_balance": true,
+              "prescribed_flux": true,
+              "transfer_direction": true,
+              "gas_velocity_response": true,
+              "pressure_response": true
+            },
+            "passed": false,
+            "observations": {
+              "transferred_mass_kg": 9.99998232543326e-16,
+              "gas_outward_mass_kg": 0.0,
+              "initial_area_relative_error": 8.881784197001252e-16,
+              "max_area_relative_error": 3.821809642090557e-07,
+              "max_inventory_residual_kg": {
+                "total": 9.043000010939388e-17,
+                "liquid": 9.038593238537419e-17,
+                "vapour": 3.640951927600577e-20
+              },
+              "mass_balance_budget_kg": 5.0000000000000005e-17,
+              "max_pair_source_residual_kg_s": 1.55879507593212e-25,
+              "max_energy_source_error_w": 7.28583859910259e-17,
+              "pressure_mean_rise_pa": 23214.0562937091,
+              "max_speed_m_s": 0.344661935791
+            },
+            "physical_validation": "not_evaluated"
+          }
+        },
+        {
+          "case": "prescribed-fine",
+          "offline_analysis": {
+            "metadata": {
+              "package": "M1C-01",
+              "revision": 1,
+              "selection": "prescribed-fine",
+              "model": "prescribed",
+              "enabled": true,
+              "open_boundary": false,
+              "mesh_cells": [
+                6,
+                36,
+                6
+              ],
+              "delta_t_s": 1e-09,
+              "end_time_s": 1e-07,
+              "initial_pressure_Pa": 80000,
+              "initial_temperature_K": 4101,
+              "expected_planar_area_m2": 9.99998e-09,
+              "prescribed_mass_flux_kg_m2_s": 1,
+              "accommodation": 0.1,
+              "molar_mass_kg_mol": 0.05,
+              "gas_constant_J_mol_K": 8.314,
+              "reference_pressure_Pa": 100000,
+              "boiling_temperature_K": 4101,
+              "latent_heat_J_kg": 2000000.0,
+              "energy_jump_J_kg": 1318067.1651452065,
+              "comparison_mass_scale_kg": 9.99998e-16,
+              "thresholds": {
+                "alpha_bound": 1e-06,
+                "alpha_sum": 1e-06,
+                "initial_area_relative": 1e-06,
+                "max_area_relative": 0.05,
+                "mass_balance_signal_fraction": 0.05,
+                "mass_balance_absolute_kg": 1e-22,
+                "source_pair_relative": 1e-12,
+                "source_energy_relative": 1e-12,
+                "limiter_fraction": 0.0001,
+                "required_pressure_rise_Pa": 1,
+                "minimum_speed_m_s": 1e-05
+              },
+              "scope": "Interface source code verification, pure vapour and equal Cv synthetic fixture. No Knudsen exit momentum, shielding gas, resolved particles, general energy closure or material validation."
+            },
+            "gates": {
+              "normal_end": true,
+              "temperature_linear": true,
+              "alpha_bounds": true,
+              "alpha_sum": true,
+              "initial_area": true,
+              "area_history": true,
+              "initial_closure": true,
+              "paired_mass_source": true,
+              "shared_energy_source": true,
+              "limiter_inactive": true,
+              "total_inventory_balance": false,
+              "liquid_inventory_balance": false,
+              "vapour_inventory_balance": true,
+              "prescribed_flux": true,
+              "transfer_direction": true,
+              "gas_velocity_response": true,
+              "pressure_response": true
+            },
+            "passed": false,
+            "observations": {
+              "transferred_mass_kg": 9.999981631896968e-16,
+              "gas_outward_mass_kg": 0.0,
+              "initial_area_relative_error": 1.9984014443252818e-15,
+              "max_area_relative_error": 2.889568668784648e-07,
+              "max_inventory_residual_kg": {
+                "total": 5.914000002315347e-17,
+                "liquid": 5.917577314217052e-17,
+                "vapour": 4.237236469444292e-20
+              },
+              "mass_balance_budget_kg": 5.0000000000000005e-17,
+              "max_pair_source_residual_kg_s": 1.22435198092582e-25,
+              "max_energy_source_error_w": 1.0408340855860843e-16,
+              "pressure_mean_rise_pa": 15909.9194985067,
+              "max_speed_m_s": 0.153145040237
+            },
+            "physical_validation": "not_evaluated"
+          }
+        },
+        {
+          "case": "prescribed-half-dt",
+          "offline_analysis": {
+            "metadata": {
+              "package": "M1C-01",
+              "revision": 1,
+              "selection": "prescribed-half-dt",
+              "model": "prescribed",
+              "enabled": true,
+              "open_boundary": false,
+              "mesh_cells": [
+                6,
+                18,
+                6
+              ],
+              "delta_t_s": 5e-10,
+              "end_time_s": 1e-07,
+              "initial_pressure_Pa": 80000,
+              "initial_temperature_K": 4101,
+              "expected_planar_area_m2": 9.99998e-09,
+              "prescribed_mass_flux_kg_m2_s": 1,
+              "accommodation": 0.1,
+              "molar_mass_kg_mol": 0.05,
+              "gas_constant_J_mol_K": 8.314,
+              "reference_pressure_Pa": 100000,
+              "boiling_temperature_K": 4101,
+              "latent_heat_J_kg": 2000000.0,
+              "energy_jump_J_kg": 1318067.1651452065,
+              "comparison_mass_scale_kg": 9.99998e-16,
+              "thresholds": {
+                "alpha_bound": 1e-06,
+                "alpha_sum": 1e-06,
+                "initial_area_relative": 1e-06,
+                "max_area_relative": 0.05,
+                "mass_balance_signal_fraction": 0.05,
+                "mass_balance_absolute_kg": 1e-22,
+                "source_pair_relative": 1e-12,
+                "source_energy_relative": 1e-12,
+                "limiter_fraction": 0.0001,
+                "required_pressure_rise_Pa": 1,
+                "minimum_speed_m_s": 1e-05
+              },
+              "scope": "Interface source code verification, pure vapour and equal Cv synthetic fixture. No Knudsen exit momentum, shielding gas, resolved particles, general energy closure or material validation."
+            },
+            "gates": {
+              "normal_end": true,
+              "temperature_linear": true,
+              "alpha_bounds": true,
+              "alpha_sum": true,
+              "initial_area": true,
+              "area_history": true,
+              "initial_closure": true,
+              "paired_mass_source": true,
+              "shared_energy_source": true,
+              "limiter_inactive": true,
+              "total_inventory_balance": true,
+              "liquid_inventory_balance": true,
+              "vapour_inventory_balance": true,
+              "prescribed_flux": true,
+              "transfer_direction": true,
+              "gas_velocity_response": true,
+              "pressure_response": true
+            },
+            "passed": true,
+            "observations": {
+              "transferred_mass_kg": 9.999982321837417e-16,
+              "gas_outward_mass_kg": 0.0,
+              "initial_area_relative_error": 8.881784197001252e-16,
+              "max_area_relative_error": 3.8277422742538647e-07,
+              "max_inventory_residual_kg": {
+                "total": 2.902999996408987e-17,
+                "liquid": 2.8987222282241466e-17,
+                "vapour": 3.718359345943875e-20
+              },
+              "mass_balance_budget_kg": 5.0000000000000005e-17,
+              "max_pair_source_residual_kg_s": 2.27806199767412e-25,
+              "max_energy_source_error_w": 9.020562075079397e-17,
+              "pressure_mean_rise_pa": 23192.0924376981,
+              "max_speed_m_s": 0.343712980907
+            },
+            "physical_validation": "not_evaluated"
+          }
+        }
+      ],
+      "offline_pass_count": 4,
+      "offline_fail_count": 3,
+      "physical_validation": "not_complete",
+      "issues": [
+        "Q09 diagnostic timestamp string mismatch",
+        "Q10 prescribed-case total/liquid inventory drift; open initial-area reference pending"
+      ],
+      "next_action": "Discuss and agree platform and coupling plan before implementation; no new run requested."
+    }
+  ]
 }
