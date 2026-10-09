@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "6a16c10b228043577250b0d3df95cf321245ab3c",
+  "latest_user_tested_commit": "a7395edddbe02701a968679e6b5744b8079c7ade",
   "scope": "Curated evidence: 14 M1-A archives, three spatial M1-B archives, two restart/MPI archives. Historical failures preserved; raw files stay outside Git.",
   "records": [
     {
@@ -559,14 +559,15 @@
       "tested_commit": "4438d4aada380e670974584262890309137c8f36"
     },
     {
-      "status": "revision_3_field_read_fix_prepared_runtime_pending",
+      "status": "short_portability_passed",
       "scope": "Forty-step fine laser-phase continuous serial, split restart, two-rank MPI; full global diagnostic histories and temperature equation budget.",
       "physical_validation": "not_evaluated",
       "package_id": "M1B-02",
       "case_count": 3,
       "entrypoint": "scripts/m1b-portability-test.sh",
       "documentation": "docs/m1b-portability.zh-CN.md",
-      "revision": 3
+      "revision": 3,
+      "tested_commit": "a7395edddbe02701a968679e6b5744b8079c7ade"
     },
     {
       "package_id": "M1C-01",
@@ -2664,6 +2665,2164 @@
         "common_cv_J_per_kg_K": 800,
         "inferred_spurious_fusion_energy_J": 0.000675
       }
+    },
+    {
+      "report": "m1b-portability-20261009-103305-275258.tar.gz",
+      "archive_sha256": "56ac454b587b7fc526b5c4421945498f199cfd14b630f885453d41b68c5e9375",
+      "tested_commit": "a7395edddbe02701a968679e6b5744b8079c7ade",
+      "exit_status": 0,
+      "last_stage": "complete",
+      "build_passed": true,
+      "case_count": 3,
+      "package": "M1B-02",
+      "thresholds": {
+        "mass_relative": 1e-08,
+        "phase_volume_domain_relative": 1e-08,
+        "temperature_absolute_K": 0.0001,
+        "absorbed_absolute_J": 1e-14,
+        "energy_change_absolute_J": 1e-13,
+        "energy_signal_relative": 1e-05
+      },
+      "cases": {
+        "continuous": {
+          "metadata": {
+            "family": "laser-phase",
+            "level": "fine",
+            "profile": "verification",
+            "package_revision": 2,
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 2e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "condensed_phase_optics": true,
+            "checkpoint_continuum_state": true,
+            "expected_checkpoint_epsilon_range": [
+              1.0,
+              1.0
+            ],
+            "thermo_fixture": "consistent",
+            "common_constant_cv_J_per_kg_K": 800,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": true,
+            "temperature_response": true,
+            "active_phase_source_observed": true
+          },
+          "passed": true,
+          "temperature_equation_budget": {
+            "available": true,
+            "constant_cv_J_per_kg_K": 800,
+            "final_outer_temperature_samples": [
+              {
+                "time_s": 5e-10,
+                "inventory_kg_k": 1.025280084169e-05,
+                "old_inventory_kg_k": 1.02528006806182e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143589683445,
+                  "transport": 1.38829447066401e-26,
+                  "diffusion": -5.28415443598928e-24,
+                  "mechanical": 3.54115253821258e-25,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.24398323318921e-13,
+                  "phaseChange": 5.3750545910363e-15,
+                  "residual": 5.11218586034172e-12
+                }
+              },
+              {
+                "time_s": 1e-09,
+                "inventory_kg_k": 1.02528010027585e-05,
+                "old_inventory_kg_k": 1.02528008416867e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143587877755,
+                  "transport": -6.65561452697842e-26,
+                  "diffusion": 4.19204737094752e-25,
+                  "mechanical": 8.13262779671269e-19,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.31925565265172e-13,
+                  "phaseChange": 9.07737501037988e-15,
+                  "residual": 3.30267171436938e-12
+                }
+              },
+              {
+                "time_s": 1.5e-09,
+                "inventory_kg_k": 1.02528011638303e-05,
+                "old_inventory_kg_k": 1.02528010027585e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143587205782,
+                  "transport": -4.64246614874829e-26,
+                  "diffusion": 3.59235176890741e-23,
+                  "mechanical": 6.49603862799918e-18,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.29315481105311e-13,
+                  "phaseChange": 1.29026079830762e-14,
+                  "residual": 2.63713982956811e-12
+                }
+              },
+              {
+                "time_s": 2e-09,
+                "inventory_kg_k": 1.02528013249021e-05,
+                "old_inventory_kg_k": 1.02528011638303e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143586027239,
+                  "transport": -1.0154766076853e-25,
+                  "diffusion": 2.31916066420709e-23,
+                  "mechanical": 1.99398367831362e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.30431286007609e-13,
+                  "phaseChange": 1.79503376529401e-14,
+                  "residual": 1.46254209549013e-12
+                }
+              },
+              {
+                "time_s": 2.5e-09,
+                "inventory_kg_k": 1.02528014859738e-05,
+                "old_inventory_kg_k": 1.02528013249021e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143586538841,
+                  "transport": -3.66799120290943e-26,
+                  "diffusion": -2.08596893265003e-24,
+                  "mechanical": 4.44556178653752e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.30465352184907e-13,
+                  "phaseChange": 2.33244887519884e-14,
+                  "residual": 1.9795084577803e-12
+                }
+              },
+              {
+                "time_s": 3e-09,
+                "inventory_kg_k": 1.02528016470456e-05,
+                "old_inventory_kg_k": 1.02528014859738e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355956331,
+                  "transport": -1.31105847478854e-26,
+                  "diffusion": -1.93177412903745e-23,
+                  "mechanical": 8.37655479715504e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.31163157496344e-13,
+                  "phaseChange": 2.84626389044098e-14,
+                  "residual": -2.49915434041144e-11
+                }
+              },
+              {
+                "time_s": 3.5e-09,
+                "inventory_kg_k": 1.02528018081174e-05,
+                "old_inventory_kg_k": 1.02528016470456e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559223034,
+                  "transport": -2.46275965115145e-26,
+                  "diffusion": -1.28030196892014e-23,
+                  "mechanical": 1.40043904208144e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.37048294387432e-13,
+                  "phaseChange": 3.37803084413475e-14,
+                  "residual": -2.53323297184869e-11
+                }
+              },
+              {
+                "time_s": 4e-09,
+                "inventory_kg_k": 1.02528019691892e-05,
+                "old_inventory_kg_k": 1.02528018081174e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559226282,
+                  "transport": 7.72230854522808e-26,
+                  "diffusion": 3.99699830649827e-23,
+                  "mechanical": 2.15624978698402e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.31993288097701e-13,
+                  "phaseChange": 3.91005885495254e-14,
+                  "residual": -2.53186314066404e-11
+                }
+              },
+              {
+                "time_s": 4.5e-09,
+                "inventory_kg_k": 1.0252802130261e-05,
+                "old_inventory_kg_k": 1.02528019691892e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559214949,
+                  "transport": 2.18836128780371e-25,
+                  "diffusion": -7.61551316754991e-23,
+                  "mechanical": 3.12312412162914e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.27053542864262e-13,
+                  "phaseChange": 4.44168259517165e-14,
+                  "residual": -2.53196114990093e-11
+                }
+              },
+              {
+                "time_s": 5e-09,
+                "inventory_kg_k": 1.02528022913328e-05,
+                "old_inventory_kg_k": 1.0252802130261e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355926628,
+                  "transport": -1.59156040287186e-25,
+                  "diffusion": 2.87731609941419e-24,
+                  "mechanical": 4.31454503933834e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.2225769107034e-13,
+                  "phaseChange": 4.97378221655065e-14,
+                  "residual": -2.52580443247972e-11
+                }
+              },
+              {
+                "time_s": 5.5e-09,
+                "inventory_kg_k": 1.02528024524045e-05,
+                "old_inventory_kg_k": 1.02528022913328e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558855525,
+                  "transport": 1.05686160662788e-25,
+                  "diffusion": -2.96108821565693e-23,
+                  "mechanical": 5.73987762309075e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.27057587022003e-13,
+                  "phaseChange": 5.50442234744238e-14,
+                  "residual": -2.56681504440709e-11
+                }
+              },
+              {
+                "time_s": 6e-09,
+                "inventory_kg_k": 1.02528026134763e-05,
+                "old_inventory_kg_k": 1.02528024524045e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355915163,
+                  "transport": 1.8959364666946e-25,
+                  "diffusion": -3.81123392316673e-23,
+                  "mechanical": 7.40426826856549e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.21735247093776e-13,
+                  "phaseChange": 6.03106802796444e-14,
+                  "residual": -2.53612901222291e-11
+                }
+              },
+              {
+                "time_s": 6.5e-09,
+                "inventory_kg_k": 1.02528027745481e-05,
+                "old_inventory_kg_k": 1.02528026134763e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559011585,
+                  "transport": -3.44033938095088e-25,
+                  "diffusion": -2.0706328088941e-23,
+                  "mechanical": 9.3083157379546e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.18366504599387e-13,
+                  "phaseChange": 6.55551636000081e-14,
+                  "residual": -2.54925319293509e-11
+                }
+              },
+              {
+                "time_s": 7e-09,
+                "inventory_kg_k": 1.02528029356199e-05,
+                "old_inventory_kg_k": 1.02528027745481e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558986651,
+                  "transport": -8.59211323533395e-25,
+                  "diffusion": 5.74307389358601e-23,
+                  "mechanical": 1.14489050378876e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.17430156146294e-13,
+                  "phaseChange": 7.07753323252478e-14,
+                  "residual": -2.55110947880244e-11
+                }
+              },
+              {
+                "time_s": 7.5e-09,
+                "inventory_kg_k": 1.02528030966917e-05,
+                "old_inventory_kg_k": 1.02528029356199e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558910147,
+                  "transport": 5.19038292575683e-25,
+                  "diffusion": 7.81183694220551e-23,
+                  "mechanical": 1.38190458160798e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.09635159627492e-13,
+                  "phaseChange": 7.59967927186681e-14,
+                  "residual": -2.55743458824143e-11
+                }
+              },
+              {
+                "time_s": 8e-09,
+                "inventory_kg_k": 1.02528032577635e-05,
+                "old_inventory_kg_k": 1.02528030966917e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559044768,
+                  "transport": 5.13351480591606e-25,
+                  "diffusion": 2.27511029516395e-23,
+                  "mechanical": 1.64087678387575e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.08851763809783e-13,
+                  "phaseChange": 8.12148848466197e-14,
+                  "residual": -2.54334639521501e-11
+                }
+              },
+              {
+                "time_s": 8.5e-09,
+                "inventory_kg_k": 1.02528034188352e-05,
+                "old_inventory_kg_k": 1.02528032577635e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559103646,
+                  "transport": -3.84531135718477e-25,
+                  "diffusion": 7.57584770326478e-23,
+                  "mechanical": 1.92052191432432e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.05185501960725e-13,
+                  "phaseChange": 8.64252192851679e-14,
+                  "residual": -2.53654302495656e-11
+                }
+              },
+              {
+                "time_s": 9e-09,
+                "inventory_kg_k": 1.0252803579907e-05,
+                "old_inventory_kg_k": 1.02528034188352e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558848066,
+                  "transport": 1.10017776171834e-24,
+                  "diffusion": -1.26486561903035e-22,
+                  "mechanical": 2.21930254903747e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.02150898223538e-13,
+                  "phaseChange": 9.16257565782855e-14,
+                  "residual": -2.56124756600073e-11
+                }
+              },
+              {
+                "time_s": 9.5e-09,
+                "inventory_kg_k": 1.02528037409788e-05,
+                "old_inventory_kg_k": 1.0252803579907e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355924854,
+                  "transport": -1.31682085718215e-26,
+                  "diffusion": 8.81726948349383e-23,
+                  "mechanical": 2.53546870548969e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.06005532751792e-14,
+                  "phaseChange": 9.68155526920178e-14,
+                  "residual": -2.51949453865263e-11
+                }
+              },
+              {
+                "time_s": 1e-08,
+                "inventory_kg_k": 1.02528039020506e-05,
+                "old_inventory_kg_k": 1.02528037409788e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558888567,
+                  "transport": -3.36127715257884e-26,
+                  "diffusion": 7.14675150389441e-23,
+                  "mechanical": 2.86709702654113e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.3268770588623e-14,
+                  "phaseChange": 1.01994192091901e-13,
+                  "residual": -2.55520765886468e-11
+                }
+              },
+              {
+                "time_s": 1.05e-08,
+                "inventory_kg_k": 1.02528040631224e-05,
+                "old_inventory_kg_k": 1.02528039020506e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558760275,
+                  "transport": -6.77172597753237e-25,
+                  "diffusion": 1.20128014002652e-22,
+                  "mechanical": 3.21212916072987e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -8.8303825885073e-14,
+                  "phaseChange": 1.07161529352984e-13,
+                  "residual": -2.56698912761078e-11
+                }
+              },
+              {
+                "time_s": 1.1e-08,
+                "inventory_kg_k": 1.02528042241942e-05,
+                "old_inventory_kg_k": 1.02528040631224e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558662229,
+                  "transport": -4.362860440609e-25,
+                  "diffusion": 9.82877260126472e-23,
+                  "mechanical": 3.5684097642744e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -8.26013238860246e-14,
+                  "phaseChange": 1.12316640941126e-13,
+                  "residual": -2.57567227719265e-11
+                }
+              },
+              {
+                "time_s": 1.15e-08,
+                "inventory_kg_k": 1.02528043852659e-05,
+                "old_inventory_kg_k": 1.02528042241942e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558612299,
+                  "transport": -4.11161157030305e-25,
+                  "diffusion": -1.06444867396885e-22,
+                  "mechanical": 3.93373294501317e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.7342036234557e-14,
+                  "phaseChange": 1.17446980142074e-13,
+                  "residual": -2.5795898314751e-11
+                }
+              },
+              {
+                "time_s": 1.2e-08,
+                "inventory_kg_k": 1.02528045463377e-05,
+                "old_inventory_kg_k": 1.02528043852659e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559102735,
+                  "transport": 1.86783655099734e-24,
+                  "diffusion": -7.05136350511582e-23,
+                  "mechanical": 4.30583511770088e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.08101709899887e-14,
+                  "phaseChange": 1.22570315454204e-13,
+                  "residual": -2.52934354701015e-11
+                }
+              },
+              {
+                "time_s": 1.25e-08,
+                "inventory_kg_k": 1.02528047074095e-05,
+                "old_inventory_kg_k": 1.02528045463377e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558603025,
+                  "transport": 1.74507066426798e-24,
+                  "diffusion": 6.82572017725521e-23,
+                  "mechanical": 4.68248675496947e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.78867358365646e-14,
+                  "phaseChange": 1.27669413077556e-13,
+                  "residual": -2.5794746259411e-11
+                }
+              },
+              {
+                "time_s": 1.3e-08,
+                "inventory_kg_k": 1.02528048684813e-05,
+                "old_inventory_kg_k": 1.02528047074095e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559195442,
+                  "transport": -2.83956211936627e-24,
+                  "diffusion": -4.95886518616071e-24,
+                  "mechanical": 5.0614552836008e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.62956548089502e-14,
+                  "phaseChange": 1.32762006340847e-13,
+                  "residual": -2.51852666989569e-11
+                }
+              },
+              {
+                "time_s": 1.35e-08,
+                "inventory_kg_k": 1.02528050295531e-05,
+                "old_inventory_kg_k": 1.02528048684813e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558967501,
+                  "transport": 5.26114954215243e-25,
+                  "diffusion": -1.56161642989882e-23,
+                  "mechanical": 5.44058037478704e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.48347721820307e-14,
+                  "phaseChange": 1.37845752877252e-13,
+                  "residual": -2.54062832580025e-11
+                }
+              },
+              {
+                "time_s": 1.4e-08,
+                "inventory_kg_k": 1.02528051906249e-05,
+                "old_inventory_kg_k": 1.02528050295531e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559072619,
+                  "transport": 1.6343733140086e-24,
+                  "diffusion": 5.08468739428931e-23,
+                  "mechanical": 5.81777169583814e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.29110844641985e-14,
+                  "phaseChange": 1.42924957026071e-13,
+                  "residual": -2.52937852179285e-11
+                }
+              },
+              {
+                "time_s": 1.45e-08,
+                "inventory_kg_k": 1.02528053516966e-05,
+                "old_inventory_kg_k": 1.02528051906249e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558949195,
+                  "transport": -1.98854617316961e-24,
+                  "diffusion": 4.38358750741049e-22,
+                  "mechanical": 6.19103891750309e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -5.64656134620612e-14,
+                  "phaseChange": 1.47997759279004e-13,
+                  "residual": -2.54053176028779e-11
+                }
+              },
+              {
+                "time_s": 1.5e-08,
+                "inventory_kg_k": 1.02528055127684e-05,
+                "old_inventory_kg_k": 1.02528053516966e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559156205,
+                  "transport": 9.77863842983881e-25,
+                  "diffusion": -1.265209903629e-24,
+                  "mechanical": 6.55850197569339e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -5.20075456327355e-14,
+                  "phaseChange": 1.53061895293613e-13,
+                  "residual": -2.51884176642579e-11
+                }
+              },
+              {
+                "time_s": 1.55e-08,
+                "inventory_kg_k": 1.02528056738402e-05,
+                "old_inventory_kg_k": 1.02528055127684e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355916087,
+                  "transport": 1.40145971585557e-24,
+                  "diffusion": -1.60198013826721e-22,
+                  "mechanical": 6.91840829728876e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -4.79003651696684e-14,
+                  "phaseChange": 1.58109459730379e-13,
+                  "residual": -2.51742387807009e-11
+                }
+              },
+              {
+                "time_s": 1.6e-08,
+                "inventory_kg_k": 1.0252805834912e-05,
+                "old_inventory_kg_k": 1.02528056738402e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559044861,
+                  "transport": 1.86157940490474e-24,
+                  "diffusion": -4.24989189324334e-23,
+                  "mechanical": 7.26912066722403e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -4.61755052127582e-14,
+                  "phaseChange": 1.63148499105054e-13,
+                  "residual": -2.5283133069691e-11
+                }
+              },
+              {
+                "time_s": 1.65e-08,
+                "inventory_kg_k": 1.02528059959838e-05,
+                "old_inventory_kg_k": 1.0252805834912e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559199397,
+                  "transport": -8.89939575855484e-25,
+                  "diffusion": -5.49189196706418e-23,
+                  "mechanical": 7.60914073497311e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -4.59457311992044e-14,
+                  "phaseChange": 1.68183805922634e-13,
+                  "residual": -2.51229919853449e-11
+                }
+              },
+              {
+                "time_s": 1.7e-08,
+                "inventory_kg_k": 1.02528061570556e-05,
+                "old_inventory_kg_k": 1.02528059959838e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558852583,
+                  "transport": 9.32924606580929e-25,
+                  "diffusion": -1.19810836088356e-22,
+                  "mechanical": 7.93711817630903e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -4.15721817047479e-14,
+                  "phaseChange": 1.73211513268777e-13,
+                  "residual": -2.54600768603908e-11
+                }
+              },
+              {
+                "time_s": 1.75e-08,
+                "inventory_kg_k": 1.02528063181273e-05,
+                "old_inventory_kg_k": 1.02528061570556e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559177621,
+                  "transport": -1.75155224128813e-25,
+                  "diffusion": -8.59265461331687e-23,
+                  "mechanical": 8.25184014933657e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -4.26610798807833e-14,
+                  "phaseChange": 1.78232291403775e-13,
+                  "residual": -2.51307914667701e-11
+                }
+              },
+              {
+                "time_s": 1.8e-08,
+                "inventory_kg_k": 1.02528064791991e-05,
+                "old_inventory_kg_k": 1.02528063181273e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559141746,
+                  "transport": 5.27561281381159e-25,
+                  "diffusion": 1.0094150800536e-22,
+                  "mechanical": 8.55223386114285e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.94977566618664e-14,
+                  "phaseChange": 1.83248574872375e-13,
+                  "residual": -2.51581867559763e-11
+                }
+              },
+              {
+                "time_s": 1.85e-08,
+                "inventory_kg_k": 1.02528066402709e-05,
+                "old_inventory_kg_k": 1.02528064791991e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559260636,
+                  "transport": -7.90274050925102e-25,
+                  "diffusion": 1.56652515589319e-22,
+                  "mechanical": 8.83737097603801e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.85970887555132e-14,
+                  "phaseChange": 1.88259855865979e-13,
+                  "residual": -2.50330995211172e-11
+                }
+              },
+              {
+                "time_s": 1.9e-08,
+                "inventory_kg_k": 1.02528068013427e-05,
+                "old_inventory_kg_k": 1.02528066402709e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355905025,
+                  "transport": 7.89719185885892e-25,
+                  "diffusion": -4.10792246283446e-22,
+                  "mechanical": 9.10645304907804e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.74299058301861e-14,
+                  "phaseChange": 1.93266157716755e-13,
+                  "residual": -2.52370427910655e-11
+                }
+              },
+              {
+                "time_s": 1.95e-08,
+                "inventory_kg_k": 1.02528069624145e-05,
+                "old_inventory_kg_k": 1.02528068013427e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559080084,
+                  "transport": 2.04508970139978e-24,
+                  "diffusion": 3.44884228400091e-22,
+                  "mechanical": 9.358829411082e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.40653605616413e-14,
+                  "phaseChange": 1.98267773107811e-13,
+                  "residual": -2.519859029117e-11
+                }
+              },
+              {
+                "time_s": 2e-08,
+                "inventory_kg_k": 1.02528071234863e-05,
+                "old_inventory_kg_k": 1.02528069624145e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559139514,
+                  "transport": 1.89032820800035e-24,
+                  "diffusion": -3.67984952483468e-22,
+                  "mechanical": 9.59390910593872e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.08672091811582e-14,
+                  "phaseChange": 2.03265004117823e-13,
+                  "residual": -2.51307297995547e-11
+                }
+              }
+            ],
+            "integrated_signed_equation_terms_j": {
+              "storage": 5.154297001626052e-09,
+              "transport": 3.4587816043211405e-30,
+              "diffusion": 4.11784169025195e-29,
+              "mechanical": 5.976663229981308e-20,
+              "laser": -5.154297351235778e-09,
+              "fusion": -1.397802028673804e-18,
+              "phaseChange": 1.6635344123160016e-18,
+              "residual": -3.4928422530183485e-16
+            },
+            "reference_offset_inventory_change_j": -1.077467455511083e-15,
+            "phase_source_inventory_mismatch_j": -1.0791309899233991e-15,
+            "scope": "Unrelaxed rho*T equation terms evaluated before mixture.correct and pressure correction. Last thermal solve per time is integrated once. Constant Cv conversion is restricted to this fixture; EOS native energy after pressure is a separate ledger. Reconstructed explicit transport can differ from implicit matrix transport in nonuniform cases; this is a diagnostic, not a new conservation gate."
+          },
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 41,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "alpha_min": -3.28329176838189e-39,
+          "alpha_max": 1.0,
+          "alpha_sum_max_error": 1.9984014443252818e-15,
+          "observations": {
+            "absorbed_laser_energy_j": 5.154297351240001e-09,
+            "configured_incident_energy_j": 2e-08,
+            "reference_energy_change_j": 5.154293514567088e-09,
+            "energy_change_minus_absorbed_j": -3.836672913048165e-15,
+            "vapour_mass_change_kg": -8.1746020537002195e-22,
+            "max_abs_temperature_source_kg_k_per_s": 2.03267241474662e-13,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.11544962,
+            "final_condensed_weighted_resistivity_ohm_m": 9.99999999999999e-07
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "restart": {
+          "metadata": {
+            "family": "laser-phase",
+            "level": "fine",
+            "profile": "verification",
+            "package_revision": 2,
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 2e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "condensed_phase_optics": true,
+            "checkpoint_continuum_state": true,
+            "expected_checkpoint_epsilon_range": [
+              1.0,
+              1.0
+            ],
+            "thermo_fixture": "consistent",
+            "common_constant_cv_J_per_kg_K": 800,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": true,
+            "temperature_response": true,
+            "active_phase_source_observed": true
+          },
+          "passed": true,
+          "temperature_equation_budget": {
+            "available": true,
+            "constant_cv_J_per_kg_K": 800,
+            "final_outer_temperature_samples": [
+              {
+                "time_s": 5e-10,
+                "inventory_kg_k": 1.025280084169e-05,
+                "old_inventory_kg_k": 1.02528006806182e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143589683445,
+                  "transport": 1.38829447066401e-26,
+                  "diffusion": -5.28415443598928e-24,
+                  "mechanical": 3.54115253821258e-25,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.24398323318921e-13,
+                  "phaseChange": 5.3750545910363e-15,
+                  "residual": 5.11218586034172e-12
+                }
+              },
+              {
+                "time_s": 1e-09,
+                "inventory_kg_k": 1.02528010027585e-05,
+                "old_inventory_kg_k": 1.02528008416867e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143587877755,
+                  "transport": -6.65561452697842e-26,
+                  "diffusion": 4.19204737094752e-25,
+                  "mechanical": 8.13262779671269e-19,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.31925565265172e-13,
+                  "phaseChange": 9.07737501037988e-15,
+                  "residual": 3.30267171436938e-12
+                }
+              },
+              {
+                "time_s": 1.5e-09,
+                "inventory_kg_k": 1.02528011638303e-05,
+                "old_inventory_kg_k": 1.02528010027585e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143587205782,
+                  "transport": -4.64246614874829e-26,
+                  "diffusion": 3.59235176890741e-23,
+                  "mechanical": 6.49603862799918e-18,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.29315481105311e-13,
+                  "phaseChange": 1.29026079830762e-14,
+                  "residual": 2.63713982956811e-12
+                }
+              },
+              {
+                "time_s": 2e-09,
+                "inventory_kg_k": 1.02528013249021e-05,
+                "old_inventory_kg_k": 1.02528011638303e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143586027239,
+                  "transport": -1.0154766076853e-25,
+                  "diffusion": 2.31916066420709e-23,
+                  "mechanical": 1.99398367831362e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.30431286007609e-13,
+                  "phaseChange": 1.79503376529401e-14,
+                  "residual": 1.46254209549013e-12
+                }
+              },
+              {
+                "time_s": 2.5e-09,
+                "inventory_kg_k": 1.02528014859738e-05,
+                "old_inventory_kg_k": 1.02528013249021e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143586538841,
+                  "transport": -3.66799120290943e-26,
+                  "diffusion": -2.08596893265003e-24,
+                  "mechanical": 4.44556178653752e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.30465352184907e-13,
+                  "phaseChange": 2.33244887519884e-14,
+                  "residual": 1.9795084577803e-12
+                }
+              },
+              {
+                "time_s": 3e-09,
+                "inventory_kg_k": 1.02528016470456e-05,
+                "old_inventory_kg_k": 1.02528014859738e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355956331,
+                  "transport": -1.31105847478854e-26,
+                  "diffusion": -1.93177412903745e-23,
+                  "mechanical": 8.37655479715504e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.31163157496344e-13,
+                  "phaseChange": 2.84626389044098e-14,
+                  "residual": -2.49915434041144e-11
+                }
+              },
+              {
+                "time_s": 3.5e-09,
+                "inventory_kg_k": 1.02528018081174e-05,
+                "old_inventory_kg_k": 1.02528016470456e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559223034,
+                  "transport": -2.46275965115145e-26,
+                  "diffusion": -1.28030196892014e-23,
+                  "mechanical": 1.40043904208144e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.37048294387432e-13,
+                  "phaseChange": 3.37803084413475e-14,
+                  "residual": -2.53323297184869e-11
+                }
+              },
+              {
+                "time_s": 4e-09,
+                "inventory_kg_k": 1.02528019691892e-05,
+                "old_inventory_kg_k": 1.02528018081174e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559226282,
+                  "transport": 7.72230854522808e-26,
+                  "diffusion": 3.99699830649827e-23,
+                  "mechanical": 2.15624978698402e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.31993288097701e-13,
+                  "phaseChange": 3.91005885495254e-14,
+                  "residual": -2.53186314066404e-11
+                }
+              },
+              {
+                "time_s": 4.5e-09,
+                "inventory_kg_k": 1.0252802130261e-05,
+                "old_inventory_kg_k": 1.02528019691892e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559214949,
+                  "transport": 2.18836128780371e-25,
+                  "diffusion": -7.61551316754991e-23,
+                  "mechanical": 3.12312412162914e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.27053542864262e-13,
+                  "phaseChange": 4.44168259517165e-14,
+                  "residual": -2.53196114990093e-11
+                }
+              },
+              {
+                "time_s": 5e-09,
+                "inventory_kg_k": 1.02528022913328e-05,
+                "old_inventory_kg_k": 1.0252802130261e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355926628,
+                  "transport": -1.59156040287186e-25,
+                  "diffusion": 2.87731609941419e-24,
+                  "mechanical": 4.31454503933834e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.2225769107034e-13,
+                  "phaseChange": 4.97378221655065e-14,
+                  "residual": -2.52580443247972e-11
+                }
+              },
+              {
+                "time_s": 5.5e-09,
+                "inventory_kg_k": 1.02528024524045e-05,
+                "old_inventory_kg_k": 1.02528022913328e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558855525,
+                  "transport": 1.05686160662788e-25,
+                  "diffusion": -2.96108821565693e-23,
+                  "mechanical": 5.73987762309075e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.27057587022003e-13,
+                  "phaseChange": 5.50442234744238e-14,
+                  "residual": -2.56681504440709e-11
+                }
+              },
+              {
+                "time_s": 6e-09,
+                "inventory_kg_k": 1.02528026134763e-05,
+                "old_inventory_kg_k": 1.02528024524045e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355915163,
+                  "transport": 1.8959364666946e-25,
+                  "diffusion": -3.81123392316673e-23,
+                  "mechanical": 7.40426826856549e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.21735247093776e-13,
+                  "phaseChange": 6.03106802796444e-14,
+                  "residual": -2.53612901222291e-11
+                }
+              },
+              {
+                "time_s": 6.5e-09,
+                "inventory_kg_k": 1.02528027745481e-05,
+                "old_inventory_kg_k": 1.02528026134763e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559011585,
+                  "transport": -3.44033938095088e-25,
+                  "diffusion": -2.0706328088941e-23,
+                  "mechanical": 9.3083157379546e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.18366504599387e-13,
+                  "phaseChange": 6.55551636000081e-14,
+                  "residual": -2.54925319293509e-11
+                }
+              },
+              {
+                "time_s": 7e-09,
+                "inventory_kg_k": 1.02528029356199e-05,
+                "old_inventory_kg_k": 1.02528027745481e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558986651,
+                  "transport": -8.59211323533395e-25,
+                  "diffusion": 5.74307389358601e-23,
+                  "mechanical": 1.14489050378876e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.17430156146294e-13,
+                  "phaseChange": 7.07753323252478e-14,
+                  "residual": -2.55110947880244e-11
+                }
+              },
+              {
+                "time_s": 7.5e-09,
+                "inventory_kg_k": 1.02528030966917e-05,
+                "old_inventory_kg_k": 1.02528029356199e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558910147,
+                  "transport": 5.19038292575683e-25,
+                  "diffusion": 7.81183694220551e-23,
+                  "mechanical": 1.38190458160798e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.09635159627492e-13,
+                  "phaseChange": 7.59967927186681e-14,
+                  "residual": -2.55743458824143e-11
+                }
+              },
+              {
+                "time_s": 8e-09,
+                "inventory_kg_k": 1.02528032577635e-05,
+                "old_inventory_kg_k": 1.02528030966917e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559044768,
+                  "transport": 5.13351480591606e-25,
+                  "diffusion": 2.27511029516395e-23,
+                  "mechanical": 1.64087678387575e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.08851763809783e-13,
+                  "phaseChange": 8.12148848466197e-14,
+                  "residual": -2.54334639521501e-11
+                }
+              },
+              {
+                "time_s": 8.5e-09,
+                "inventory_kg_k": 1.02528034188352e-05,
+                "old_inventory_kg_k": 1.02528032577635e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559103646,
+                  "transport": -3.84531135718477e-25,
+                  "diffusion": 7.57584770326478e-23,
+                  "mechanical": 1.92052191432432e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.05185501960725e-13,
+                  "phaseChange": 8.64252192851679e-14,
+                  "residual": -2.53654302495656e-11
+                }
+              },
+              {
+                "time_s": 9e-09,
+                "inventory_kg_k": 1.0252803579907e-05,
+                "old_inventory_kg_k": 1.02528034188352e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558848066,
+                  "transport": 1.10017776171834e-24,
+                  "diffusion": -1.26486561903035e-22,
+                  "mechanical": 2.21930254903747e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.02150898223538e-13,
+                  "phaseChange": 9.16257565782855e-14,
+                  "residual": -2.56124756600073e-11
+                }
+              },
+              {
+                "time_s": 9.5e-09,
+                "inventory_kg_k": 1.02528037409788e-05,
+                "old_inventory_kg_k": 1.0252803579907e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355924854,
+                  "transport": -1.31682085718215e-26,
+                  "diffusion": 8.81726948349383e-23,
+                  "mechanical": 2.53546870548969e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.06005532751792e-14,
+                  "phaseChange": 9.68155526920178e-14,
+                  "residual": -2.51949453865263e-11
+                }
+              },
+              {
+                "time_s": 1e-08,
+                "inventory_kg_k": 1.02528039020506e-05,
+                "old_inventory_kg_k": 1.02528037409788e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558888567,
+                  "transport": -3.36127715257884e-26,
+                  "diffusion": 7.14675150389441e-23,
+                  "mechanical": 2.86709702654113e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.3268770588623e-14,
+                  "phaseChange": 1.01994192091901e-13,
+                  "residual": -2.55520765886468e-11
+                }
+              },
+              {
+                "time_s": 1.05e-08,
+                "inventory_kg_k": 1.02528040631224e-05,
+                "old_inventory_kg_k": 1.02528039020506e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559961262,
+                  "transport": 1.70301802091016e-25,
+                  "diffusion": -5.24181543034505e-24,
+                  "mechanical": -1.42018866087335e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.07762540700494e-13,
+                  "phaseChange": 1.08983763983351e-13,
+                  "residual": -2.44898944551681e-11
+                }
+              },
+              {
+                "time_s": 1.1e-08,
+                "inventory_kg_k": 1.02528042241892e-05,
+                "old_inventory_kg_k": 1.02528040631174e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559146607,
+                  "transport": 1.22370223681566e-25,
+                  "diffusion": 4.31870538371484e-23,
+                  "mechanical": 3.29345779823508e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.09735108188713e-13,
+                  "phaseChange": 1.13241134619134e-13,
+                  "residual": -2.52988293957436e-11
+                }
+              },
+              {
+                "time_s": 1.15e-08,
+                "inventory_kg_k": 1.0252804385261e-05,
+                "old_inventory_kg_k": 1.02528042241892e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559287483,
+                  "transport": -4.38538328226968e-25,
+                  "diffusion": -9.28750959728597e-23,
+                  "mechanical": 3.63000674500337e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.07769454784829e-13,
+                  "phaseChange": 1.17955273990852e-13,
+                  "residual": -2.5150937365752e-11
+                }
+              },
+              {
+                "time_s": 1.2e-08,
+                "inventory_kg_k": 1.02528045463328e-05,
+                "old_inventory_kg_k": 1.0252804385261e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559371879,
+                  "transport": 1.16090487817388e-24,
+                  "diffusion": -2.16606734553572e-22,
+                  "mechanical": 3.9729102335074e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.06914785050332e-13,
+                  "phaseChange": 1.2287383283152e-13,
+                  "residual": -2.50604249553595e-11
+                }
+              },
+              {
+                "time_s": 1.25e-08,
+                "inventory_kg_k": 1.02528047074045e-05,
+                "old_inventory_kg_k": 1.02528045463328e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559196836,
+                  "transport": 2.99880345523884e-25,
+                  "diffusion": 4.81722839935197e-23,
+                  "mechanical": 4.3210182496041e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.01959888486242e-13,
+                  "phaseChange": 1.27884987679863e-13,
+                  "residual": -2.52251534726538e-11
+                }
+              },
+              {
+                "time_s": 1.3e-08,
+                "inventory_kg_k": 1.02528048684763e-05,
+                "old_inventory_kg_k": 1.02528047074045e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559205952,
+                  "transport": -2.45003251443326e-24,
+                  "diffusion": -1.00504397484557e-22,
+                  "mechanical": 4.67278164843489e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.98216146102446e-14,
+                  "phaseChange": 1.32935786523445e-13,
+                  "residual": -2.52084969839337e-11
+                }
+              },
+              {
+                "time_s": 1.35e-08,
+                "inventory_kg_k": 1.02528050295481e-05,
+                "old_inventory_kg_k": 1.02528048684763e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559319251,
+                  "transport": -3.08357937849454e-25,
+                  "diffusion": -1.06607861941892e-22,
+                  "mechanical": 5.02648008192445e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.47529270684728e-14,
+                  "phaseChange": 1.37999429367825e-13,
+                  "residual": -2.50847118597742e-11
+                }
+              },
+              {
+                "time_s": 1.4e-08,
+                "inventory_kg_k": 1.02528051906199e-05,
+                "old_inventory_kg_k": 1.02528050295481e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355911714,
+                  "transport": -2.36034479805406e-25,
+                  "diffusion": -8.72697626521811e-23,
+                  "mechanical": 5.38033053037625e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.5000788380285e-14,
+                  "phaseChange": 1.43070047610768e-13,
+                  "residual": -2.52816469298681e-11
+                }
+              },
+              {
+                "time_s": 1.45e-08,
+                "inventory_kg_k": 1.02528053516917e-05,
+                "old_inventory_kg_k": 1.02528051906199e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355879818,
+                  "transport": 5.19375666198133e-25,
+                  "diffusion": 7.9502722303995e-23,
+                  "mechanical": 5.73256335546849e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.25558876280779e-14,
+                  "phaseChange": 1.48142982948919e-13,
+                  "residual": -2.55927362136313e-11
+                }
+              },
+              {
+                "time_s": 1.5e-08,
+                "inventory_kg_k": 1.02528055127635e-05,
+                "old_inventory_kg_k": 1.02528053516917e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355913874,
+                  "transport": 1.56858522343775e-24,
+                  "diffusion": 3.15476258937596e-22,
+                  "mechanical": 6.08146074428479e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -8.59949972358049e-14,
+                  "phaseChange": 1.53212647264032e-13,
+                  "residual": -2.52401970966936e-11
+                }
+              },
+              {
+                "time_s": 1.55e-08,
+                "inventory_kg_k": 1.02528056738353e-05,
+                "old_inventory_kg_k": 1.02528055127635e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559003643,
+                  "transport": -1.58825053972888e-24,
+                  "diffusion": 3.92385105826733e-23,
+                  "mechanical": 6.42538082395717e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -8.12179976260245e-14,
+                  "phaseChange": 1.58271476598497e-13,
+                  "residual": -2.5365114478943e-11
+                }
+              },
+              {
+                "time_s": 1.6e-08,
+                "inventory_kg_k": 1.0252805834907e-05,
+                "old_inventory_kg_k": 1.02528056738353e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558997616,
+                  "transport": 1.81096727251711e-24,
+                  "diffusion": -2.47482183741437e-22,
+                  "mechanical": 6.76276501764036e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.84622633308795e-14,
+                  "phaseChange": 1.63318914447891e-13,
+                  "residual": -2.53630008203289e-11
+                }
+              },
+              {
+                "time_s": 1.65e-08,
+                "inventory_kg_k": 1.02528059959788e-05,
+                "old_inventory_kg_k": 1.0252805834907e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559165268,
+                  "transport": -1.45911149504997e-24,
+                  "diffusion": -4.6163235177512e-23,
+                  "mechanical": 7.09214918245827e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.77852395793224e-14,
+                  "phaseChange": 1.68360185509327e-13,
+                  "residual": -2.51893013366612e-11
+                }
+              },
+              {
+                "time_s": 1.7e-08,
+                "inventory_kg_k": 1.02528061570506e-05,
+                "old_inventory_kg_k": 1.02528059959788e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214355879583,
+                  "transport": 3.74715832512901e-24,
+                  "diffusion": -1.06633135849678e-22,
+                  "mechanical": 7.41217914756069e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.4395014349739e-14,
+                  "phaseChange": 1.73397805395949e-13,
+                  "residual": -2.55499912053699e-11
+                }
+              },
+              {
+                "time_s": 1.75e-08,
+                "inventory_kg_k": 1.02528063181224e-05,
+                "old_inventory_kg_k": 1.02528061570506e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558996938,
+                  "transport": 2.92478680586944e-24,
+                  "diffusion": 1.2416773977864e-22,
+                  "mechanical": 7.72162120931862e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.51374799916394e-14,
+                  "phaseChange": 1.78426115187204e-13,
+                  "residual": -2.53442875399967e-11
+                }
+              },
+              {
+                "time_s": 1.8e-08,
+                "inventory_kg_k": 1.02528064791942e-05,
+                "old_inventory_kg_k": 1.02528063181224e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.0003221435588021,
+                  "transport": -1.2826708220761e-24,
+                  "diffusion": 1.16863919712639e-23,
+                  "mechanical": 8.01934731835223e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.10234859220377e-14,
+                  "phaseChange": 1.83450294257382e-13,
+                  "residual": -2.5529690256331e-11
+                }
+              },
+              {
+                "time_s": 1.85e-08,
+                "inventory_kg_k": 1.02528066402659e-05,
+                "old_inventory_kg_k": 1.02528064791942e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143559012756,
+                  "transport": -1.58382892505121e-24,
+                  "diffusion": 2.62927592472291e-22,
+                  "mechanical": 8.30435137099924e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.97070283040779e-14,
+                  "phaseChange": 1.88469932257525e-13,
+                  "residual": -2.53124128160262e-11
+                }
+              },
+              {
+                "time_s": 1.9e-08,
+                "inventory_kg_k": 1.02528068013377e-05,
+                "old_inventory_kg_k": 1.02528066402659e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558884166,
+                  "transport": -2.13206072873192e-24,
+                  "diffusion": -1.22191278892908e-22,
+                  "mechanical": 8.57574907430796e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.95330791454874e-14,
+                  "phaseChange": 1.9348474640658e-13,
+                  "residual": -2.54355421445477e-11
+                }
+              },
+              {
+                "time_s": 1.95e-08,
+                "inventory_kg_k": 1.02528069624095e-05,
+                "old_inventory_kg_k": 1.02528068013377e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558836959,
+                  "transport": 1.40220656991759e-24,
+                  "diffusion": -5.47363495854122e-24,
+                  "mechanical": 8.83278092285963e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.65923801709886e-14,
+                  "phaseChange": 1.98494864143362e-13,
+                  "residual": -2.54745415102935e-11
+                }
+              },
+              {
+                "time_s": 2e-08,
+                "inventory_kg_k": 1.02528071234813e-05,
+                "old_inventory_kg_k": 1.02528069624095e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143558741386,
+                  "transport": -3.42955227506481e-24,
+                  "diffusion": -1.82458562484298e-22,
+                  "mechanical": 9.07467837984735e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.72920638053405e-14,
+                  "phaseChange": 2.03500620846949e-13,
+                  "residual": -2.55655666237455e-11
+                }
+              }
+            ],
+            "integrated_signed_equation_terms_j": {
+              "storage": 5.154297002262412e-09,
+              "transport": -2.107085643469935e-31,
+              "diffusion": -9.185229848714428e-29,
+              "mechanical": 5.496008291962574e-20,
+              "laser": -5.154297351235778e-09,
+              "fusion": -1.6494992594015325e-18,
+              "phaseChange": 1.6661442751057147e-18,
+              "residual": -3.4890175794372227e-16
+            },
+            "reference_offset_inventory_change_j": -2.6684860180617483e-15,
+            "phase_source_inventory_mismatch_j": -2.670152162336854e-15,
+            "scope": "Unrelaxed rho*T equation terms evaluated before mixture.correct and pressure correction. Last thermal solve per time is integrated once. Constant Cv conversion is restricted to this fixture; EOS native energy after pressure is a separate ledger. Reconstructed explicit transport can differ from implicit matrix transport in nonuniform cases; this is a diagnostic, not a new conservation gate."
+          },
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 41,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "alpha_min": -8.00701060826751e-39,
+          "alpha_max": 1.0,
+          "alpha_sum_max_error": 2.9976021664879227e-15,
+          "observations": {
+            "absorbed_laser_energy_j": 5.154297351240001e-09,
+            "configured_incident_energy_j": 2e-08,
+            "reference_energy_change_j": 5.15428825575287e-09,
+            "energy_change_minus_absorbed_j": -9.095487130471856e-15,
+            "vapour_mass_change_kg": -2.024544794549807e-21,
+            "max_abs_temperature_source_kg_k_per_s": 2.03502957482929e-13,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.11544963,
+            "final_condensed_weighted_resistivity_ohm_m": 1e-06
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "mpi2": {
+          "metadata": {
+            "family": "laser-phase",
+            "level": "fine",
+            "profile": "verification",
+            "package_revision": 2,
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 2e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "condensed_phase_optics": true,
+            "checkpoint_continuum_state": true,
+            "expected_checkpoint_epsilon_range": [
+              1.0,
+              1.0
+            ],
+            "thermo_fixture": "consistent",
+            "common_constant_cv_J_per_kg_K": 800,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": true,
+            "temperature_response": true,
+            "active_phase_source_observed": true
+          },
+          "passed": true,
+          "temperature_equation_budget": {
+            "available": true,
+            "constant_cv_J_per_kg_K": 800,
+            "final_outer_temperature_samples": [
+              {
+                "time_s": 5e-10,
+                "inventory_kg_k": 1.02528008416899e-05,
+                "old_inventory_kg_k": 1.02528006806181e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143587704363,
+                  "transport": 7.7644563690621e-22,
+                  "diffusion": -2.69978853211325e-24,
+                  "mechanical": 3.58848673537254e-25,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.2261699013033e-13,
+                  "phaseChange": 5.37505456257968e-15,
+                  "residual": 3.13488493084766e-12
+                }
+              },
+              {
+                "time_s": 1e-09,
+                "inventory_kg_k": 1.02528010027584e-05,
+                "old_inventory_kg_k": 1.02528008416866e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143586070458,
+                  "transport": -2.58838090177156e-22,
+                  "diffusion": 1.26729090637102e-24,
+                  "mechanical": 8.13262760313334e-19,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.31266468969333e-13,
+                  "phaseChange": 9.0773749823502e-15,
+                  "residual": 1.49603355173963e-12
+                }
+              },
+              {
+                "time_s": 1.5e-09,
+                "inventory_kg_k": 1.02528011638302e-05,
+                "old_inventory_kg_k": 1.02528010027584e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143585154176,
+                  "transport": -7.21878701106792e-25,
+                  "diffusion": -7.46507156891211e-24,
+                  "mechanical": 6.49603835870315e-18,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.31023666882838e-13,
+                  "phaseChange": 1.29026079285572e-14,
+                  "residual": 5.83825146200399e-13
+                }
+              },
+              {
+                "time_s": 2e-09,
+                "inventory_kg_k": 1.0252801324902e-05,
+                "old_inventory_kg_k": 1.02528011638302e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583669163,
+                  "transport": 1.30342226458095e-21,
+                  "diffusion": -6.0855487698206e-24,
+                  "mechanical": 1.99503741022198e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.3144513579346e-13,
+                  "phaseChange": 1.79494969235729e-14,
+                  "residual": -8.96548081202342e-13
+                }
+              },
+              {
+                "time_s": 2.5e-09,
+                "inventory_kg_k": 1.02528014859738e-05,
+                "old_inventory_kg_k": 1.0252801324902e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583860336,
+                  "transport": 1.55299375784369e-21,
+                  "diffusion": -2.69010672011952e-24,
+                  "mechanical": 4.44861684648991e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.35439971529377e-13,
+                  "phaseChange": 2.33244300789398e-14,
+                  "residual": -7.03970828018875e-13
+                }
+              },
+              {
+                "time_s": 3e-09,
+                "inventory_kg_k": 1.02528016470456e-05,
+                "old_inventory_kg_k": 1.02528014859738e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214358429964,
+                  "transport": 1.32540683612415e-21,
+                  "diffusion": -3.6519053275684e-24,
+                  "mechanical": 8.3797752953133e-17,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.37100609215465e-13,
+                  "phaseChange": 2.84645853643915e-14,
+                  "residual": -2.61148087159287e-13
+                }
+              },
+              {
+                "time_s": 3.5e-09,
+                "inventory_kg_k": 1.02528018081174e-05,
+                "old_inventory_kg_k": 1.02528016470456e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583849004,
+                  "transport": 1.5556671561632e-21,
+                  "diffusion": 3.57939673557964e-23,
+                  "mechanical": 1.40080417875234e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.34908914462762e-13,
+                  "phaseChange": 3.37831802080493e-14,
+                  "residual": -7.04217150037704e-13
+                }
+              },
+              {
+                "time_s": 4e-09,
+                "inventory_kg_k": 1.02528019691892e-05,
+                "old_inventory_kg_k": 1.02528018081174e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583917805,
+                  "transport": 2.07396972549191e-21,
+                  "diffusion": -4.13760611793339e-24,
+                  "mechanical": 2.15667424472814e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.33937870872475e-13,
+                  "phaseChange": 3.91036407961306e-14,
+                  "residual": -6.29049805498393e-13
+                }
+              },
+              {
+                "time_s": 4.5e-09,
+                "inventory_kg_k": 1.02528021302609e-05,
+                "old_inventory_kg_k": 1.02528019691892e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214358408623,
+                  "transport": 2.36418216661825e-21,
+                  "diffusion": -2.74159265339403e-23,
+                  "mechanical": 3.1236093032626e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.30325907599767e-13,
+                  "phaseChange": 4.44200886228188e-14,
+                  "residual": -4.5159929708045e-13
+                }
+              },
+              {
+                "time_s": 5e-09,
+                "inventory_kg_k": 1.02528022913328e-05,
+                "old_inventory_kg_k": 1.02528021302609e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583848338,
+                  "transport": 1.06290104707868e-21,
+                  "diffusion": -9.49522678830658e-24,
+                  "mechanical": 4.31509230899348e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.26550010259131e-13,
+                  "phaseChange": 4.97411369724215e-14,
+                  "residual": -6.80274826710186e-13
+                }
+              },
+              {
+                "time_s": 5.5e-09,
+                "inventory_kg_k": 1.02528024524046e-05,
+                "old_inventory_kg_k": 1.02528022913328e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583855024,
+                  "transport": 1.10915855436376e-21,
+                  "diffusion": 2.37115992976452e-23,
+                  "mechanical": 5.74047978877586e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.19180028790569e-13,
+                  "phaseChange": 5.50474866530115e-14,
+                  "residual": -6.60770786589915e-13
+                }
+              },
+              {
+                "time_s": 6e-09,
+                "inventory_kg_k": 1.02528026134763e-05,
+                "old_inventory_kg_k": 1.02528024524046e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583858688,
+                  "transport": 2.40582366590283e-21,
+                  "diffusion": -6.10875386461443e-23,
+                  "mechanical": 7.40492036046939e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.16496405904269e-13,
+                  "phaseChange": 6.03138082834866e-14,
+                  "residual": -6.48989976326989e-13
+                }
+              },
+              {
+                "time_s": 6.5e-09,
+                "inventory_kg_k": 1.02528027745481e-05,
+                "old_inventory_kg_k": 1.02528026134763e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214358388339,
+                  "transport": 2.13352397538649e-21,
+                  "diffusion": -1.89904325362137e-23,
+                  "mechanical": 9.309008030961e-16,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.13515149795473e-13,
+                  "phaseChange": 6.55582139096689e-14,
+                  "residual": -6.15872008493698e-13
+                }
+              },
+              {
+                "time_s": 7e-09,
+                "inventory_kg_k": 1.02528029356199e-05,
+                "old_inventory_kg_k": 1.02528027745481e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583558997,
+                  "transport": 8.74589082196934e-22,
+                  "diffusion": 3.64624138207351e-23,
+                  "mechanical": 1.14496243651499e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.12462211062087e-13,
+                  "phaseChange": 7.07783174228297e-14,
+                  "residual": -9.33778017905531e-13
+                }
+              },
+              {
+                "time_s": 7.5e-09,
+                "inventory_kg_k": 1.02528030966917e-05,
+                "old_inventory_kg_k": 1.02528029356199e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583662205,
+                  "transport": -1.76377375760912e-22,
+                  "diffusion": 3.22702572470561e-23,
+                  "mechanical": 1.38197823115541e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.10176684349382e-13,
+                  "phaseChange": 7.59997614162404e-14,
+                  "residual": -8.22825962669858e-13
+                }
+              },
+              {
+                "time_s": 8e-09,
+                "inventory_kg_k": 1.02528032577635e-05,
+                "old_inventory_kg_k": 1.02528030966917e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583948939,
+                  "transport": -1.46827066970575e-21,
+                  "diffusion": -1.17268850797529e-22,
+                  "mechanical": 1.64095081596263e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -1.0153770035432e-13,
+                  "phaseChange": 8.12178081751003e-14,
+                  "residual": -5.21975304268377e-13
+                }
+              },
+              {
+                "time_s": 8.5e-09,
+                "inventory_kg_k": 1.02528034188353e-05,
+                "old_inventory_kg_k": 1.02528032577635e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583779732,
+                  "transport": -2.76792942865587e-21,
+                  "diffusion": 2.67997960700703e-23,
+                  "mechanical": 1.92059505706029e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -9.43351278827279e-14,
+                  "phaseChange": 8.64280823493626e-14,
+                  "residual": -6.78490046553579e-13
+                }
+              },
+              {
+                "time_s": 9e-09,
+                "inventory_kg_k": 1.02528035799071e-05,
+                "old_inventory_kg_k": 1.02528034188353e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583494222,
+                  "transport": -1.74752300523596e-21,
+                  "diffusion": 3.80669548496837e-23,
+                  "mechanical": 2.21937357196262e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -8.9193222559076e-14,
+                  "phaseChange": 9.16285510844884e-14,
+                  "residual": -9.53358709140468e-13
+                }
+              },
+              {
+                "time_s": 9.5e-09,
+                "inventory_kg_k": 1.02528037409789e-05,
+                "old_inventory_kg_k": 1.02528035799071e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583938039,
+                  "transport": -1.49259423587173e-21,
+                  "diffusion": 1.46379382517523e-24,
+                  "mechanical": 2.53553628200244e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -8.37033563217232e-14,
+                  "phaseChange": 9.68182734583925e-14,
+                  "residual": -4.98546271541706e-13
+                }
+              },
+              {
+                "time_s": 1e-08,
+                "inventory_kg_k": 1.02528039020507e-05,
+                "old_inventory_kg_k": 1.02528037409789e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583626163,
+                  "transport": -4.81651744092633e-22,
+                  "diffusion": 5.38802279742811e-23,
+                  "mechanical": 2.86716000912546e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -8.31500970827427e-14,
+                  "phaseChange": 1.01996835438182e-13,
+                  "residual": -8.04358860384473e-13
+                }
+              },
+              {
+                "time_s": 1.05e-08,
+                "inventory_kg_k": 1.02528040631225e-05,
+                "old_inventory_kg_k": 1.02528039020507e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583550468,
+                  "transport": -9.73598254935387e-22,
+                  "diffusion": -3.37173353530872e-23,
+                  "mechanical": 3.21218607811049e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.84974792764006e-14,
+                  "phaseChange": 1.07164092360253e-13,
+                  "residual": -8.69888542978805e-13
+                }
+              },
+              {
+                "time_s": 1.1e-08,
+                "inventory_kg_k": 1.02528042241943e-05,
+                "old_inventory_kg_k": 1.02528040631225e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583658149,
+                  "transport": 2.86828907397304e-22,
+                  "diffusion": -9.34758657772426e-23,
+                  "mechanical": 3.56845979328592e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.00746676967842e-14,
+                  "phaseChange": 1.12319093631536e-13,
+                  "residual": -7.48273832557438e-13
+                }
+              },
+              {
+                "time_s": 1.15e-08,
+                "inventory_kg_k": 1.02528043852661e-05,
+                "old_inventory_kg_k": 1.02528042241943e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583560972,
+                  "transport": -2.35974871700564e-22,
+                  "diffusion": -8.63496672165461e-23,
+                  "mechanical": 3.93377482708641e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -7.12109942096037e-14,
+                  "phaseChange": 1.17449334269162e-13,
+                  "residual": -8.4109120354962e-13
+                }
+              },
+              {
+                "time_s": 1.2e-08,
+                "inventory_kg_k": 1.02528045463379e-05,
+                "old_inventory_kg_k": 1.02528043852661e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583916714,
+                  "transport": -1.53454574304605e-21,
+                  "diffusion": -1.23840538708615e-22,
+                  "mechanical": 4.30586780610768e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.51295706406957e-14,
+                  "phaseChange": 1.22572599389329e-13,
+                  "residual": -4.73773155573343e-13
+                }
+              },
+              {
+                "time_s": 1.25e-08,
+                "inventory_kg_k": 1.02528047074097e-05,
+                "old_inventory_kg_k": 1.02528045463379e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583595627,
+                  "transport": -3.08309696441302e-21,
+                  "diffusion": 1.07366177271557e-23,
+                  "mechanical": 4.68250934455185e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -6.10466699396883e-14,
+                  "phaseChange": 1.27671548789922e-13,
+                  "residual": -7.85300801757951e-13
+                }
+              },
+              {
+                "time_s": 1.3e-08,
+                "inventory_kg_k": 1.02528048684815e-05,
+                "old_inventory_kg_k": 1.02528047074097e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583785807,
+                  "transport": -3.86082369601201e-21,
+                  "diffusion": 2.33172610135707e-22,
+                  "mechanical": 5.06146690813213e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -5.9153056843909e-14,
+                  "phaseChange": 1.32764085345577e-13,
+                  "residual": -5.87756091422093e-13
+                }
+              },
+              {
+                "time_s": 1.35e-08,
+                "inventory_kg_k": 1.02528050295533e-05,
+                "old_inventory_kg_k": 1.02528048684815e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583654532,
+                  "transport": -4.12132130064814e-21,
+                  "diffusion": -6.30026858665222e-23,
+                  "mechanical": 5.44058033866643e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -5.57645630032921e-14,
+                  "phaseChange": 1.37847739227996e-13,
+                  "residual": -7.10180051453993e-13
+                }
+              },
+              {
+                "time_s": 1.4e-08,
+                "inventory_kg_k": 1.0252805190625e-05,
+                "old_inventory_kg_k": 1.02528050295533e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583948529,
+                  "transport": -3.61115268704628e-21,
+                  "diffusion": -4.26279828504369e-23,
+                  "mechanical": 5.81775941748083e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -4.78627484635931e-14,
+                  "phaseChange": 1.42926865586095e-13,
+                  "residual": -4.02824885039659e-13
+                }
+              },
+              {
+                "time_s": 1.45e-08,
+                "inventory_kg_k": 1.02528053516968e-05,
+                "old_inventory_kg_k": 1.0252805190625e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583582199,
+                  "transport": -4.60070710144813e-21,
+                  "diffusion": -1.1654235043155e-22,
+                  "mechanical": 6.19101363776034e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -4.54328603740293e-14,
+                  "phaseChange": 1.47999580643941e-13,
+                  "residual": -7.61279437964099e-13
+                }
+              },
+              {
+                "time_s": 1.5e-08,
+                "inventory_kg_k": 1.02528055127686e-05,
+                "old_inventory_kg_k": 1.02528053516968e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214358381957,
+                  "transport": -7.18194256898223e-21,
+                  "diffusion": 1.43654346398537e-23,
+                  "mechanical": 6.55846353430841e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.91673856470378e-14,
+                  "phaseChange": 1.53063596815834e-13,
+                  "residual": -5.12211461483347e-13
+                }
+              },
+              {
+                "time_s": 1.55e-08,
+                "inventory_kg_k": 1.02528056738404e-05,
+                "old_inventory_kg_k": 1.02528055127686e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583862189,
+                  "transport": -6.3798173156262e-21,
+                  "diffusion": -1.90783731968578e-23,
+                  "mechanical": 6.91835627024422e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.90134205443471e-14,
+                  "phaseChange": 1.58111078219245e-13,
+                  "residual": -4.6403028929601e-13
+                }
+              },
+              {
+                "time_s": 1.6e-08,
+                "inventory_kg_k": 1.02528058349122e-05,
+                "old_inventory_kg_k": 1.02528056738404e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583916413,
+                  "transport": -6.1265595824289e-21,
+                  "diffusion": 3.06916356914478e-23,
+                  "mechanical": 7.26905505282416e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.74455693004339e-14,
+                  "phaseChange": 1.63150009768985e-13,
+                  "residual": -4.02849105948126e-13
+                }
+              },
+              {
+                "time_s": 1.65e-08,
+                "inventory_kg_k": 1.0252805995984e-05,
+                "old_inventory_kg_k": 1.02528058349122e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.00032214358407888,
+                  "transport": -7.61019507693061e-21,
+                  "diffusion": -7.80899851620609e-24,
+                  "mechanical": 7.60906113191172e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.51086868510595e-14,
+                  "phaseChange": 1.68185228571982e-13,
+                  "residual": -2.32670279129465e-13
+                }
+              },
+              {
+                "time_s": 1.7e-08,
+                "inventory_kg_k": 1.02528061570558e-05,
+                "old_inventory_kg_k": 1.0252805995984e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583452801,
+                  "transport": -8.0993952095526e-21,
+                  "diffusion": -4.22316601547078e-23,
+                  "mechanical": 7.93702483818229e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.77210507326742e-14,
+                  "phaseChange": 1.73212827419812e-13,
+                  "residual": -8.5600623114108e-13
+                }
+              },
+              {
+                "time_s": 1.75e-08,
+                "inventory_kg_k": 1.02528063181276e-05,
+                "old_inventory_kg_k": 1.02528061570558e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583837595,
+                  "transport": -7.04293049422893e-21,
+                  "diffusion": 1.69581529781883e-22,
+                  "mechanical": 8.25173318214443e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.73995915288723e-14,
+                  "phaseChange": 1.78233514658217e-13,
+                  "residual": -4.65554876720826e-13
+                }
+              },
+              {
+                "time_s": 1.8e-08,
+                "inventory_kg_k": 1.02528064791994e-05,
+                "old_inventory_kg_k": 1.02528063181276e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583905497,
+                  "transport": -6.293796245443e-21,
+                  "diffusion": -4.5130284043529e-23,
+                  "mechanical": 8.55211374318867e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.20326852460279e-14,
+                  "phaseChange": 1.83249702381039e-13,
+                  "residual": -3.86969502953873e-13
+                }
+              },
+              {
+                "time_s": 1.85e-08,
+                "inventory_kg_k": 1.02528066402712e-05,
+                "old_inventory_kg_k": 1.02528064791994e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583742174,
+                  "transport": -6.27964439043124e-21,
+                  "diffusion": 2.79005218343543e-23,
+                  "mechanical": 8.83723790988285e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -3.01774015385727e-14,
+                  "phaseChange": 1.8826088525486e-13,
+                  "residual": -5.431405343713e-13
+                }
+              },
+              {
+                "time_s": 1.9e-08,
+                "inventory_kg_k": 1.0252806801343e-05,
+                "old_inventory_kg_k": 1.02528066402712e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583568587,
+                  "transport": -5.21073410848443e-21,
+                  "diffusion": -1.99476815714321e-22,
+                  "mechanical": 9.10630727741613e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -2.94761997303014e-14,
+                  "phaseChange": 1.93267087907672e-13,
+                  "residual": -7.10751087118535e-13
+                }
+              },
+              {
+                "time_s": 1.95e-08,
+                "inventory_kg_k": 1.02528069624148e-05,
+                "old_inventory_kg_k": 1.0252806801343e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583631223,
+                  "transport": -6.98943013449827e-21,
+                  "diffusion": 1.07535026008809e-22,
+                  "mechanical": 9.35867145132461e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -2.83240692173895e-14,
+                  "phaseChange": 1.98268603734954e-13,
+                  "residual": -6.41709269545275e-13
+                }
+              },
+              {
+                "time_s": 2e-08,
+                "inventory_kg_k": 1.02528071234866e-05,
+                "old_inventory_kg_k": 1.02528069624148e-05,
+                "terms_kg_k_per_s": {
+                  "storage": 0.000322143583615865,
+                  "transport": -7.72480582907622e-21,
+                  "diffusion": -5.09891838893641e-23,
+                  "mechanical": 9.59373947075356e-15,
+                  "laser": -0.000322143584452236,
+                  "fusion": -2.69629899849438e-14,
+                  "phaseChange": 2.03265736412111e-13,
+                  "residual": -6.50474539529564e-13
+                }
+              }
+            ],
+            "integrated_signed_equation_terms_j": {
+              "storage": 5.154297343499482e-09,
+              "transport": -3.461178609083159e-26,
+              "diffusion": -1.3662402675662514e-28,
+              "mechanical": 5.976661633429576e-20,
+              "laser": -5.154297351235778e-09,
+              "fusion": -1.3061468762347857e-18,
+              "phaseChange": 1.6635647780076386e-18,
+              "residual": -7.319106228131419e-18
+            },
+            "reference_offset_inventory_change_j": -1.077467971237825e-15,
+            "phase_source_inventory_mismatch_j": -1.0791315360158327e-15,
+            "scope": "Unrelaxed rho*T equation terms evaluated before mixture.correct and pressure correction. Last thermal solve per time is integrated once. Constant Cv conversion is restricted to this fixture; EOS native energy after pressure is a separate ledger. Reconstructed explicit transport can differ from implicit matrix transport in nonuniform cases; this is a diagnostic, not a new conservation gate."
+          },
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 41,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "alpha_min": -1.22115761828469e-39,
+          "alpha_max": 1.0,
+          "alpha_sum_max_error": 2.9976021664879227e-15,
+          "observations": {
+            "absorbed_laser_energy_j": 5.154297351240001e-09,
+            "configured_incident_energy_j": 2e-08,
+            "reference_energy_change_j": 5.154293826817313e-09,
+            "energy_change_minus_absorbed_j": -3.52442268737234e-15,
+            "vapour_mass_change_kg": -8.174605966450309e-22,
+            "max_abs_temperature_source_kg_k_per_s": 2.03267973499673e-13,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.11544962,
+            "final_condensed_weighted_resistivity_ohm_m": 9.99999999999999e-07
+          },
+          "physical_validation": "not_evaluated"
+        }
+      },
+      "comparisons": {
+        "restart": {
+          "max_history_differences": {
+            "mass_relative": 0.0,
+            "phase_volume_domain_relative": 1.009741958682895e-15,
+            "temperature_absolute_K": 9.999894245993346e-09,
+            "absorbed_absolute_J": 0.0,
+            "energy_change_absolute_J": 5.2735593669694936e-15
+          },
+          "gates": {
+            "mass_relative": true,
+            "phase_volume_domain_relative": true,
+            "temperature_absolute_K": true,
+            "absorbed_absolute_J": true,
+            "energy_change_absolute_J": true
+          },
+          "passed": true
+        },
+        "mpi2": {
+          "max_history_differences": {
+            "mass_relative": 0.0,
+            "phase_volume_domain_relative": 3.029225876048685e-15,
+            "temperature_absolute_K": 9.999894245993346e-09,
+            "absorbed_absolute_J": 0.0,
+            "energy_change_absolute_J": 3.209238430557093e-16
+          },
+          "gates": {
+            "mass_relative": true,
+            "phase_volume_domain_relative": true,
+            "temperature_absolute_K": true,
+            "absorbed_absolute_J": true,
+            "energy_change_absolute_J": true
+          },
+          "passed": true
+        }
+      },
+      "requested_gate_passed": true,
+      "physical_validation": "not_evaluated",
+      "scope": "Synthetic weak-phase laser fixture only; global inventories and temperature extrema. No fieldwise equivalence, strong evaporation, full energy closure or material validation.",
+      "changed_hypotheses": "Strict header validation plus READ_IF_PRESENT restores epsilon1; combined checkpoint candidate passes original restart gates and MPI still passes. The previous false fusion regression is absent. Combined changes do not isolate each contribution to the original restart mismatch; validation remains limited to this fixed-mesh synthetic fixture."
     }
-  ]
+  ],
+  "design_constraints": {
+    "particle_representation": "User requires resolved particles with mesh smaller than particle diameter. Surface stress/torque and resolved thermal exchange; empirical force production candidate superseded.",
+    "gas_formulation": "Evaluate source-driven variable-density low-Mach mode for normal conditions; current compressible branch retained as engineering baseline. New mode not implemented."
+  }
 }

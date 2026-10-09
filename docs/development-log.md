@@ -1,5 +1,13 @@
 # Development and verification record
 
+## M1B-02 accepted; resolved particles and gas formulation clarified: 2026-10-09
+
+User tested a7395edddbe02701a968679e6b5744b8079c7ade. Build and all three forty-step trajectories complete; independent integration gates, restart and two-rank history comparisons pass unchanged thresholds. Restart maximum temperature difference is 9.999894e-9 K and reference-energy-change difference 5.273559e-15 J; MPI energy difference 3.209238e-16 J. The prior spurious fusion regression is absent. Q08 is closed for this fixed-mesh fully-liquid synthetic fixture only; combined checkpoint changes do not isolate each cause of the original mismatch. Earlier failures preserved, no strong-evaporation or material validation claim.
+
+User explicitly selects resolved particles with mesh below diameter. Superseded prior geometry-aware empirical-force first candidate across canonical plan, decisions, communication and continuity instructions. Documented paired evaporation mass flux, source-driven volume constraint, variable-density low-Mach versus compressible pressure closures, moving solid geometric conservation, surface stress/torque and internal conduction contracts. Current compressible branch remains engineering baseline; low-Mach variable-density mode is prioritized for evaluation, not implemented or promised faster. Next package remains M1C-01 interface evaporation/gas response, then M1C-02 material energy and M2 resolved boundaries.
+
+Read-only feedback archive analysis and local upstream source review; private archive/manuscripts remain outside Git. Offline reanalysis and JSON/document consistency checks only; no WSL, compilation or CFD execution. This commit changes curated records and design documentation, not solver equations.
+
 ## Checkpoint read-constructor regression; literature decisions and staged closeout: 2026-10-09
 
 User tested `6a16c10b228043577250b0d3df95cf321245ab3c`: build and three 40-step runs complete, MPI comparison passes, restart comparison fails. New candidate causes 337.5 K cooling and about 0.000675 J false fusion uptake. Archive has saved epsilon1=1; restart warnings identify MUST_READ with default-value constructors. Direct read-only inspection of installed v2512 GeometricField.C confirms readIfPresent warns and does not read required-mode fields in these constructors. This regression was introduced by our prior candidate, not evidence that checkpoint serialization was missing.

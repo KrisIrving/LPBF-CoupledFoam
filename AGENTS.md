@@ -25,3 +25,9 @@ Keep raw reports, machine details, credentials and private manuscripts out of
 the public repository. Curated result values and project-authored documentation
 may be committed. Do not alter numerical acceptance thresholds after observing
 results merely to make a test pass.
+
+The user fixed resolved particles on 2026-10-09: mesh is smaller than particle
+diameter. Target moving solid boundaries, surface stress/torque, geometric
+conservation and internal conduction; the previous empirical-force first
+candidate is superseded. See docs/resolved-gas-formulation.zh-CN.md. M1B-02
+passes its limited fixture; proceed to M1C-01, not more uniform micro-tests.
