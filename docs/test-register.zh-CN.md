@@ -1,5 +1,9 @@
 # 测试台账与阶段结论
 
+## M2A-01 开发端检查：集中包准备，用户运行待反馈
+
+2026-10-09，非用户仿真反馈，没有新归档 SHA 或用户测试提交。新增实验性单球机械求解器、八组集中入口及独立 CSV 收支分析。七项离线测试通过，覆盖错误流体/边界收支、错误力分解、重复/非有限历史、重启证据和并行覆盖；Windows Git Bash `-n` 语法通过。未调用 WSL、未编译应用、未运行 CFD/DEM；运行、Stokes 参考、并行和共同重启全部待验证，不能标为通过。最新用户已测提交仍为 026247c9。范围和预设门槛见 [M2A](m2a-resolved-coupling.zh-CN.md)，全局角动量/GCL/接触/热及 M1C 问题保留。
+
 ## 通信 demo 第三次反馈：构建、串行及双进程全部通过
 
 报告 `dem-communication-20261009-205042-439489.tar.gz`，提交 `026247c9a232da011132792b25429261f75ad19c`，SHA-256 `e713559bbbfb90884508050045c4703abbcedb7b00a3d08fb3239c02a0b2edbe`。构建成功，串行和双进程均 DEMO_PASS / exit_status=0；整包 last_stage=complete、exit_status=0。固定版本 LIGGGHTS-PUBLIC 3.8.0（提交 3d5c00f20519e6bb6eb6756f51f1ad36564e649d）与 v2512/SystemOpenMPI 完成当前最小嵌入通信验证。

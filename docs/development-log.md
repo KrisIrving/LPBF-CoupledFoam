@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-09: M2A-01 experimental resolved mechanical package implemented
+
+User requested the next stage. Added standalone v2512 resolvedParticleFoam and eight-case integrated user-side runner, generator and independent CSV-ledger analysis. Audited pinned DEM coupling/external-force contracts; implemented noncontact spherical external half-kicks around native NVE/sphere steps, stable sparse IDs and local-owner state collection without rebuilding DEM. Actual Cartesian CFD uses subcell coverage, implicit volume constraint and a shared pressure correction; force/torque candidates include virtual-fluid momentum and moving-centre angular corrections. Exported fluid/particle/boundary quantities permit independent balance recomputation.
+
+Fixed/rotating two-resolution references, prescribed translation, free motion, representative two-rank coverage and serial common restart are prepared. Fixed thresholds precede user execution. Seven offline generation/analysis tests pass, including deliberately corrupted fluid/boundary/force ledgers, duplicate/nonfinite histories, missing restart evidence and false parallel coverage. Windows Git Bash syntax check passes. No WSL, native build or CFD/DEM run; all runtime gates remain pending. Frozen per-window geometry, single noncontact sphere, homogeneous global state replication, no complete fluid angular ledger, no GCL/contact/thermal/LPBF validation. P1 result stays unchanged and M1C failures remain open.
+
 ## 2026-10-09: communication package accepted within scope; M2A specification prepared
 
 User tested 026247c9; archive SHA e713559bbbfb90884508050045c4703abbcedb7b00a3d08fb3239c02a0b2edbe. Build, serial and two-rank runs complete with exit 0; both trajectories pass independent gates and compare identically at CSV precision. Twenty coupling windows/two hundred DEM steps each; two ownership changes at window 13. Position error 1.02535e-16 m, velocity 5.50775e-16 m/s, impulse ledger residual 7.21672e-19 kg m/s, clock 2.77556e-17 s. Recomputed archived histories locally without simulation; original summary matches exactly.

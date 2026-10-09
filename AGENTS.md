@@ -47,3 +47,10 @@ Do not ask to repeat it without backend changes. Next bounded scope is
 docs/m2a-resolved-coupling.zh-CN.md: actual CFD geometry/constraints/forces
 and representative MPI/common restart, not more communication micro-tests.
 Communication pass does not close M1C failures or validate resolved physics.
+
+M2A-01 implementation and eight-case user-side entry are prepared; native
+build/runtime remain untested. Read the fixed scope/limits in the M2A document
+before changing it. Keep this experimental isothermal noncontact single-sphere
+solver separate from production LPBF. No full angular-fluid ledger, moving-mask
+GCL, contact validation or coupled thermal model is claimed. Evaluate the full
+returned package before requesting additional runs; preserve failed gates.

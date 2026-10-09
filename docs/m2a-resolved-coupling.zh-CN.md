@@ -1,6 +1,6 @@
 # M2A：解析颗粒机械耦合集中包
 
-2026-10-09。前置证据：通信包在 `026247c9a232da011132792b25429261f75ad19c` 下构建、串行和双进程通过。M2A 为下一开发包规格，不是已完成的 CFD–DEM 求解器或可运行测试入口。
+2026-10-09。前置证据：通信包在 `026247c9a232da011132792b25429261f75ad19c` 下构建、串行和双进程通过。M2A-01 实验性机械候选与八组运行入口现已实现；原生编译、CFD/DEM 运行及物理门槛待用户反馈。下文设计契约为目标，并非所有契约已获得运行证据；实现边界和暂缺项见后半页。
 
 ## 交付边界
 
@@ -36,4 +36,67 @@
 
 本包不包含颗粒内部导热、激光吸收、蒸发组分或部分熔化。M2 的热模块后续用内部导热参考与热交换账本验证；M3 再处理固液表示及润湿。M1C 收支失败和通用材料能量仍独立收束，未通过不能由机械包通过抵消。完整 LPBF 联合验证须在这些前置模块成立后开展，M4 文献基准及 M5 加速仍按主计划执行。
 
-当前用户无新的运行任务。M2A 实现及集中入口准备完毕后再给运行命令，避免用户提前测试未完成模块。
+## M2A-01 当前实现与运行
+
+独立应用 `applications/solvers/resolvedParticleFoam`，生成器 `scripts/prepare-m2a.py`，执行入口 `scripts/m2a-mechanical-test.sh`，独立账本分析器 `scripts/summarize-m2a.py`。不修改现有 LaserbeamFoam 热/相变方程，不要求重装 LIGGGHTS 或安装全 CFDEM，不重跑旧通信包。
+
+```bash
+cd ~/LPBF-CoupledFoam
+git pull --ff-only
+export OPENFOAM_BASHRC="$HOME/OpenFOAM/OpenFOAM-v2512/etc/bashrc"
+source .build/demo-liggghts.env
+bash scripts/m2a-mechanical-test.sh
+```
+
+入口自行加载指定环境，只构建新应用，核对依赖符号及应用/DEM 的 libmpi 路径。环境/编译失败立即归档；算例失败继续收集剩余组。返回 `.runs/m2a-mechanical-*.tar.gz`。完整网格和场保留在用户 `.runs`；反馈包省略 CFD 网格/场，保留配置、日志、逐窗 CSV、检查点字典及 DEM 二进制。重启实际使用场的检查在归档前执行。
+
+## 审查结论与离散实现
+
+这是依据解析壁面思路重构的体积约束候选，不是完整 CFDEM IBM 移植。固定版本 [fix_cfd_coupling_force.cpp](https://github.com/CFDEMproject/LIGGGHTS-PUBLIC/blob/3d5c00f20519e6bb6eb6756f51f1ad36564e649d/src/fix_cfd_coupling_force.cpp) 依赖父级 couple/cfd，通过 dragforce/hdtorque 属性施加作用，不能孤立启用。审查 [fix_external.cpp](https://github.com/CFDEMproject/LIGGGHTS-PUBLIC/blob/3d5c00f20519e6bb6eb6756f51f1ad36564e649d/src/fix_external.cpp) 后，首包不使用尚未核实的 C API 私有力数组/转矩通道，也不要求重新定制 DEM 库。
+
+新 MechanicalBackend 通过 C API 读取本地拥有粒子的稳定 ID、位置、速度、角速度、质量及半径，采用“流体半步冲量—一个原生 nve/sphere 子步—半步冲量”的外力分裂。球的转动惯量 I=0.4mR²。它直接更新本地 v/omega，**不是注册 CFDEM force fix**；无接触球之外的接触/非球/变质量积分尚未验证。流体压力迭代不会重复推进 DEM。
+
+全局状态以 MPI Allgatherv 汇集，按稀疏 ID 排序，拒绝重复 ID/非有限状态并支持空 DEM rank。这仍是同构 ABI 的全局状态复制，不代表生产并行扩展性。CFD 覆盖分区与 DEM 所有者分别记录。
+
+首包只支持单球、均匀轴对齐立方网格、单相等温恒密度流体。实际半径不放大；4³ 子单元采样形成覆盖率 χ 和刚体速度 Ub。每个 CFD 窗口按 DEM 起始状态冻结几何，先求流体再推进 DEM，窗口末流场与粒子位置存在滞后，**没有证明连续移动边界/GCL**。
+
+方程：`ddt(U)+div(phi_adv,U)−nu laplacian(U)+lambda U=lambda Ub−grad(p)`，其中 lambda=1000χ/dt。约束进入对角矩阵，同一压力校正使用含约束的 rAU，八次修正，不叠加独立 IB 投影。p 为运动学压力 [m²/s²]，力/边界动量乘密度转换为 SI。部分覆盖单元和强惩罚可能引起有效边界偏移，须由受力/网格检查暴露。
+
+约束施加给虚拟全域流体的积分 C=Σrho lambda(Ub−U)V，内部流体动量 Pi=ΣrhoχUV；候选受力 `Fh=−C+(Pi_new−Pi_previous)/dt`。力矩同样扣除约束积分、加内部角动量差分；原点随映射中心改变时额外包含 `(r_current−r_previous)×Pi_previous`。这是冻结掩膜账本的候选修正，不是适用于任意变密度/蒸发/运动积分域的普适证明。
+
+真实流体动量为 `Pfluid=rhoΣUV−Pi`。边界作用按实际 Gauss-linear 对流/压力和黏性通量计算；规定运动球计入外支撑 −Fh，自由球计入实测 mΔv。CSV 独立输出新旧流体动量、边界作用、约束力和惯性修正，由分析器重算，不能只相信程序自报残差。
+
+**暂缺：完整流体+颗粒角动量边界账本、窗口减半检查、运动几何局部 GCL、多球接触、热/熔化/蒸发。** 当前角向门槛只检查 DEM 的 IΔomega−Th dt。共同重启首包为串行，不声称 MPI 共同重启/跨进程数重启。八组通过也不能直接关闭完整 M2 或 M1C。
+
+## 八组矩阵及预设门槛
+
+公共参数：域边长0.12 m，R=0.01 m，流体rho=1 kg/m³、nu=0.1 m²/s，颗粒密度1000 kg/m³；CFD dt=1e−4 s，DEM dt=1e−5 s，40窗至0.004 s。这是数值验证环境，不是 LPBF 材料参数。
+
+| 算例 | 网格 | 主要检查 |
+|---|---|---|
+| fixed-coarse / fixed-fine | 36³ / 48³ | 固定球，U∞=0.01 m/s；滑移、散度、阻力 |
+| rotate-coarse / rotate-fine | 36³ / 48³ | 规定omega_z=0.1 s−1；滑移、转矩 |
+| translate | 36³ | vx=0.3 m/s，从x=−0.0005 m穿过x=0；几何和支撑动量账本 |
+| free | 36³ | 初始vx=0.01 m/s，真实受力回传、减速和线动量 |
+| free-restart | 36³ | 20+20窗，CFD/DEM/耦合检查点恢复与连续历史比较 |
+| free-mpi2 | 36³，2 rank | 同时覆盖两 CFD 分区、空 DEM rank，串并行全历史比较 |
+
+MPI 自由球不预期更换 DEM 所有者；此前通信包的所有者迁移证据独立保留。粗/细网格仅 dp/Δx=6/8，不代表已达到解析精度要求。
+
+固定/转动球使用 Stokes 速度初始化及外边界，降低均匀远场有限盒的影响；参考 `F=6pi rho nu R U∞`、`T=−8pi rho nu R³omega`，见 [Virginia Stokes 教学推导](https://galileo.phys.virginia.edu/classes/152.mf1i.spring02/Stokes_Law.htm) 和 [Cambridge 旋转球习题](https://www.damtp.cam.ac.uk/user/tong/books/examples/f2.pdf)。候选保留瞬态/对流，低 Re、有限时间、压力边界及约束厚度误差仍须解释。
+
+| 检查 | 首次运行前门槛 |
+|---|---:|
+| 全窗几何体积相对误差 / RMS滑移与特征速度之比 | ≤5% / ≤5% |
+| 体积通量散度最大值 | ≤1e−6 s−1 |
+| 独立线动量残差每窗 / DEM角向冲量残差每窗 | ≤1e−10 kg·m/s / ≤1e−12 kg·m²/s |
+| 力 / 力矩分解误差 | ≤1e−12 N / ≤1e−14 N·m |
+| 时钟/窗口时间 | ≤1e−12 s，40窗且稳定ID/有限值 |
+| 最后10窗平均Stokes阻力/转矩误差 | ≤35%，粗细分别检查 |
+| 细网格参考误差相对粗网格增量 | ≤0.02；两点不证明渐近收敛 |
+| 串行/MPI/重启位置、速度、角速度差 | ≤1e−8 m / m·s−1 / s−1 |
+| 串行/MPI/重启力、力矩、流体动量差 | ≤1e−8 N / 1e−10 N·m / 1e−10 kg·m/s |
+
+自由球还须实际减速；规定平动球穿过目标平面；双进程每窗覆盖两 CFD rank；重启须两段完成且检查点非空。35% 只是粗分辨率首候选的拒绝门槛，**不是发表或材料预测精度**。各组元数据保存具体门槛，不能看结果后仅为通过而放宽。
+
+先收齐整个矩阵并解释失败，停止追加同类通信微测试。首包通过后，把窗口敏感性、运动几何/GCL、完整角动量、MPI共同重启及多球接触组织成下一有限包，再推进热模块；完整 LPBF 联合验证仍需 M1 连续相收束。

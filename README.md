@@ -7,8 +7,11 @@ gas flow, melt-pool dynamics and moving powder particles in LPBF.
 and a standalone OpenFOAM/LIGGGHTS communication demo are implemented. Full
 resolved particle coupling and optional acceleration remain unimplemented;
 the minimal demo has passed build, serial and two-rank communication checks.
+An experimental single-sphere mechanical solver and eight-case integrated
+package are now implemented; native build and CFD/DEM verification are pending.
 This is not validation of resolved CFD forces or heat. See the
-[demo audit and instructions](docs/dem-communication-demo.zh-CN.md).
+[demo audit](docs/dem-communication-demo.zh-CN.md) and
+[M2A scope, fixed gates and user-side instructions](docs/m2a-resolved-coupling.zh-CN.md).
 
 Based on [LaserbeamFoam](https://github.com/laserbeamfoam/LaserbeamFoam),
 tag **V3.0**, commit `f42e08a0bfc1749675beadcf7c6a90334d7aa9f8`.

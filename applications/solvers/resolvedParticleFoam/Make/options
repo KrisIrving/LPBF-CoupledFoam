@@ -1,0 +1,10 @@
+EXE_INC = \
+    $(LPBF_MPI_INC) -DOMPI_SKIP_MPICXX=1 \
+    -I$(LIGGGHTS_SRC) \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude
+
+EXE_LIBS = \
+    -lfiniteVolume -lmeshTools \
+    -L$(LIGGGHTS_LIBDIR) -Wl,-rpath,$(LIGGGHTS_LIBDIR) \
+    -lliggghts $(LPBF_MPI_LIBS)

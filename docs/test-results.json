@@ -5586,5 +5586,20 @@
     "setup_build": "not_run",
     "communication_runtime": "not_run",
     "superseded_by": "Third feedback confirms library integration and minimum communication package passed at 026247c9."
+  },
+  "m2a_01_development_checks": {
+    "date": "2026-10-09",
+    "package": "M2A-01",
+    "kind": "developer_offline_checks_only",
+    "user_report": null,
+    "archive_sha256": null,
+    "native_build": "not_run",
+    "cfd_dem_runtime": "not_run",
+    "offline_contract_tests_passed": 7,
+    "bash_syntax": "passed_windows_git_bash",
+    "entry": "scripts/m2a-mechanical-test.sh",
+    "case_count": 8,
+    "scope": "Experimental isothermal noncontact single sphere, uniform Cartesian cubic mesh, frozen geometry per window. No complete fluid angular ledger, GCL/contact/heat/LPBF validation.",
+    "next_action": "User runs integrated package and returns archive; evaluate all cases before choosing follow-up."
   }
 }
