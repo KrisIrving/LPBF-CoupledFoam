@@ -1,5 +1,9 @@
 # Development and verification record
 
+## 2026-10-09: first M2A report fails name lookup during build
+
+User-tested 38c28c8b; archive SHA 7aeca6017922b8be121e2fbeaf66b47317045da7e1fbb0849f5b32dcfc6903df. Dependency preflight reaches C++17 compilation with MPI flags; build exits 2. No cases, trajectories or physical summary exist. All reported errors are the local fv helper conflicting with Foam::fv and unqualified cbrt overload ambiguity. Renamed all 22 definition/call occurrences to asFoamVector, qualified std::cbrt and reviewed related scalar math calls. No model, matrix or threshold changes. Native rebuild/runtime remain untested; user reruns original integrated entry without DEM reinstall or communication rerun. Raw report remains outside Git, failure preserved.
+
 ## 2026-10-09: M2A-01 experimental resolved mechanical package implemented
 
 User requested the next stage. Added standalone v2512 resolvedParticleFoam and eight-case integrated user-side runner, generator and independent CSV-ledger analysis. Audited pinned DEM coupling/external-force contracts; implemented noncontact spherical external half-kicks around native NVE/sphere steps, stable sparse IDs and local-owner state collection without rebuilding DEM. Actual Cartesian CFD uses subcell coverage, implicit volume constraint and a shared pressure correction; force/torque candidates include virtual-fluid momentum and moving-centre angular corrections. Exported fluid/particle/boundary quantities permit independent balance recomputation.

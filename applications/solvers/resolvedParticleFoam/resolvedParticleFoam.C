@@ -9,7 +9,7 @@
 #include <iomanip>
 
 using namespace Foam;
-static vector fv(const double* p) {return vector(p[0],p[1],p[2]);}
+static vector asFoamVector(const double* p) {return vector(p[0],p[1],p[2]);}
 static vector analytical(const vector& x,const vector& centre,scalar radius,
                          const vector& speed,const vector& omega,bool translation)
 {
@@ -63,8 +63,8 @@ int main(int argc,char* argv[])
         const label np=particles.size();
         List<vector> previousP(np,vector::zero),previousL(np,vector::zero),previousCentre(np,vector::zero);
         labelList ids(np);
-        for(label a=0;a<np;++a) {ids[a]=particles[a].id;previousCentre[a]=fv(particles[a].x);}
-        const scalar h=cbrt(gMin(mesh.V().field()));
+        for(label a=0;a<np;++a) {ids[a]=particles[a].id;previousCentre[a]=asFoamVector(particles[a].x);}
+        const scalar h=std::cbrt(gMin(mesh.V().field()));
         if(gMax(mesh.V().field())>pow3(h)*(1+1e-10)) throw std::runtime_error("Uniform cubic mesh required");
         forAll(mesh.cells(),cell)
         {
@@ -78,14 +78,14 @@ int main(int argc,char* argv[])
             rigid=dimensionedVector("zero",dimVelocity,vector::zero);
             forAll(mesh.C(),cell)
             {
-                const vector centre=mesh.C()[cell], rp=fv(particles[0].x);
+                const vector centre=mesh.C()[cell], rp=asFoamVector(particles[0].x);
                 if(mag(centre-rp)>particles[0].radius+0.866026*h) continue;
                 label hits=0;vector average=vector::zero;
                 for(label i=0;i<q;++i) for(label j=0;j<q;++j) for(label k=0;k<q;++k)
                 {
                     const vector x=centre+h*vector((i+0.5)/q-0.5,(j+0.5)/q-0.5,(k+0.5)/q-0.5);
                     if(mag(x-rp)<=particles[0].radius)
-                    {++hits;average+=fv(particles[0].v)+(fv(particles[0].omega)^(x-rp));}
+                    {++hits;average+=asFoamVector(particles[0].v)+(asFoamVector(particles[0].omega)^(x-rp));}
                 }
                 solid[cell]=scalar(hits)/(q*q*q);
                 if(hits) rigid[cell]=average/hits;
@@ -99,7 +99,7 @@ int main(int argc,char* argv[])
             forAll(mesh.C(),cell)
             {
                 const vector m=rho*solid[cell]*mesh.V()[cell]*U[cell];
-                momentum+=m;angular+=(mesh.C()[cell]-fv(particles[0].x))^m;
+                momentum+=m;angular+=(mesh.C()[cell]-asFoamVector(particles[0].x))^m;
             }
             reduce(momentum,sumOp<vector>());reduce(angular,sumOp<vector>());
         };
@@ -107,17 +107,17 @@ int main(int argc,char* argv[])
         {
             forAll(mesh.C(),cell)
             {
-                const vector r=mesh.C()[cell]-fv(particles[0].x);
+                const vector r=mesh.C()[cell]-asFoamVector(particles[0].x);
                 const scalar distance=mag(r), radius=particles[0].radius;
                 if(mode=="fixed")
                 {
-                    U[cell]=analytical(mesh.C()[cell],fv(particles[0].x),radius,vector(0.01,0,0),vector::zero,true);
+                    U[cell]=analytical(mesh.C()[cell],asFoamVector(particles[0].x),radius,vector(0.01,0,0),vector::zero,true);
                     p[cell]=distance>radius ? -1.5*viscosity*radius*(vector(0.01,0,0)&r)/pow3(distance) : 0;
                 }
-                else if(mode=="rotate") U[cell]=analytical(mesh.C()[cell],fv(particles[0].x),radius,vector::zero,fv(particles[0].omega),false);
+                else if(mode=="rotate") U[cell]=analytical(mesh.C()[cell],asFoamVector(particles[0].x),radius,vector::zero,asFoamVector(particles[0].omega),false);
                 else
                 {
-                    U[cell]=fv(particles[0].v)-analytical(mesh.C()[cell],fv(particles[0].x),radius,fv(particles[0].v),vector::zero,true);
+                    U[cell]=asFoamVector(particles[0].v)-analytical(mesh.C()[cell],asFoamVector(particles[0].x),radius,asFoamVector(particles[0].v),vector::zero,true);
                 }
             }
         }
@@ -127,8 +127,8 @@ int main(int argc,char* argv[])
             if(!mesh.boundary()[patch].coupled())
                 forAll(U.boundaryField()[patch],face)
                     U.boundaryFieldRef()[patch][face]=(mode=="fixed"||mode=="rotate")
-                        ? analytical(mesh.Cf().boundaryField()[patch][face],fv(particles[0].x),particles[0].radius,
-                                     vector(0.01,0,0),fv(particles[0].omega),mode=="fixed") : vector::zero;
+                        ? analytical(mesh.Cf().boundaryField()[patch][face],asFoamVector(particles[0].x),particles[0].radius,
+                                     vector(0.01,0,0),asFoamVector(particles[0].omega),mode=="fixed") : vector::zero;
         U.correctBoundaryConditions();
         if(runTime.value()==0) phi=fvc::flux(U);
         mapGeometry();
@@ -183,7 +183,7 @@ int main(int argc,char* argv[])
             forAll(mesh.C(),cell)
             {
                 const vector f=rho*lambda[cell]*(rigid[cell]-U[cell])*mesh.V()[cell];
-                constraint+=f;constraintTorque+=(mesh.C()[cell]-fv(before[0].x))^f;
+                constraint+=f;constraintTorque+=(mesh.C()[cell]-asFoamVector(before[0].x))^f;
                 volume+=solid[cell]*mesh.V()[cell];slip+=solid[cell]*mesh.V()[cell]*magSqr(U[cell]-rigid[cell]);
             }
             covered=volume>0 ? 1:0;reduce(covered,sumOp<label>());
@@ -192,7 +192,7 @@ int main(int argc,char* argv[])
             if(volume<=0) throw std::runtime_error("Sphere outside resolved mesh");
             vector newP,newL;interior(newP,newL);
             const vector inertia=(newP-previousP[0])/dt;
-            const vector rotationalInertia=(newL-previousL[0]+((fv(before[0].x)-previousCentre[0])^previousP[0]))/dt;
+            const vector rotationalInertia=(newL-previousL[0]+((asFoamVector(before[0].x)-previousCentre[0])^previousP[0]))/dt;
             const vector force=-constraint+inertia, torque=-constraintTorque+rotationalInertia;
             const vector newPhysical=gSum(U.primitiveField()*mesh.V().field())*rho-newP;
             // Boundary momentum ledger uses exactly the selected Gauss-linear
@@ -213,11 +213,11 @@ int main(int argc,char* argv[])
             backend.advance(before,loads,substeps,demDt);
             particles=backend.state();
             if(particles.size()!=before.size()||particles[0].id!=before[0].id) throw std::runtime_error("Particle identity changed");
-            const vector particleImpulse=before[0].mass*(fv(particles[0].v)-fv(before[0].v));
+            const vector particleImpulse=before[0].mass*(asFoamVector(particles[0].v)-asFoamVector(before[0].v));
             // Fixed/prescribed particle fixtures have an external support force.
             const vector support=mode=="free" ? vector::zero : -force;
             const scalar momentumResidual=mag(newPhysical-oldPhysical+particleImpulse-(boundary+support)*dt);
-            const scalar angularResidual=mode=="free" ? mag(inertiaSphere*(fv(particles[0].omega)-fv(before[0].omega))-torque*dt) : 0;
+            const scalar angularResidual=mode=="free" ? mag(inertiaSphere*(asFoamVector(particles[0].omega)-asFoamVector(before[0].omega))-torque*dt) : 0;
             const scalar clock=std::abs(backend.time()-runTime.value());
             const scalar divMax=gMax(mag(fvc::div(phi))().primitiveField());
             const scalar forceRef=6*constant::mathematical::pi*rho*viscosity*radius*0.01;
@@ -238,7 +238,7 @@ int main(int argc,char* argv[])
                 history<<'\n';
                 history.flush();
             }
-            previousP[0]=newP;previousL[0]=newL;previousCentre[0]=fv(before[0].x);
+            previousP[0]=newP;previousL[0]=newL;previousCentre[0]=asFoamVector(before[0].x);
             runTime.write();
             if(runTime.writeTime())
             {

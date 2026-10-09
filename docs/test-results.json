@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "026247c9a232da011132792b25429261f75ad19c",
+  "latest_user_tested_commit": "38c28c8b215670b1c17b6d94a2a2601b51fe06e7",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -545,6 +545,26 @@
           "phase_inventory_mass_change_kg": -1.2571541030403921e-14
         }
       ]
+    },
+    {
+      "report": "m2a-mechanical-20261009-213305-449607.tar.gz",
+      "archive_sha256": "7aeca6017922b8be121e2fbeaf66b47317045da7e1fbb0849f5b32dcfc6903df",
+      "tested_commit": "38c28c8b215670b1c17b6d94a2a2601b51fe06e7",
+      "package": "M2A-01",
+      "last_stage": "build",
+      "exit_status": 2,
+      "dependency_preflight": "completed",
+      "native_build": "failed",
+      "planned_case_count": 8,
+      "executed_case_count": 0,
+      "failure_causes": [
+        "fv helper conflicts with Foam::fv namespace",
+        "unqualified cbrt overload ambiguity"
+      ],
+      "revision": "Rename helper asFoamVector and qualify std::cbrt; physics and thresholds unchanged",
+      "physical_validation": "not_evaluated",
+      "revision_native_build": "not_run",
+      "revision_runtime": "not_run"
     }
   ],
   "development_packages": [
