@@ -1,5 +1,9 @@
 # LaserbeamFoam—LIGGGHTS 通信与耦合讨论
 
+## 当前运行证据：最小嵌入通信已通过
+
+用户在 026247c9 下完成 v2512 + 固定版 LIGGGHTS 的库调用、状态读取、反馈力、时钟、DEM 所有者迁移及串行/MPI 轨迹一致性检查。工程可行性已有本包运行证据，范围见 [通信 demo](dem-communication-demo.zh-CN.md)。实际 CFD/DEM 分布式覆盖映射、解析流体受力、热交换及共同重启仍未实现或验证；不能把两个粒子的全局 gather 当作最终生产交换层。下一审查包见 [M2A](m2a-resolved-coupling.zh-CN.md)。
+
 ## 最新执行状态：v2512 通信 demo 已交付，运行待验证
 
 用户已确认 v2512 定向移植路线。当前独立 demo 采用 LIGGGHTS 公开 C API，完成状态读取、feedback addforce、同步子步及 DEM 所有者迁移的最小结构，尚未运行验证。首次接口限定两个连续 ID 和全局 gather；不会将此实现直接当作生产分布式交换。真实 CFD 反作用、力矩回传、热传导、共同重启及解析边界仍待开发。详见 [审查与 demo 操作](dem-communication-demo.zh-CN.md)。以下“暂停/平台候选”的历史段落受本节覆盖。

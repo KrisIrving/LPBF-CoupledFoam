@@ -6,7 +6,8 @@ gas flow, melt-pool dynamics and moving powder particles in LPBF.
 **Status: research framework under development.** Continuous-phase audit candidates
 and a standalone OpenFOAM/LIGGGHTS communication demo are implemented. Full
 resolved particle coupling and optional acceleration remain unimplemented;
-communication runtime validation is pending. See the
+the minimal demo has passed build, serial and two-rank communication checks.
+This is not validation of resolved CFD forces or heat. See the
 [demo audit and instructions](docs/dem-communication-demo.zh-CN.md).
 
 Based on [LaserbeamFoam](https://github.com/laserbeamfoam/LaserbeamFoam),

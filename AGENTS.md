@@ -41,3 +41,9 @@ communication-only evidence separate from resolved-force, fluid reaction,
 thermal, restart and production distributed-mapping validation. PUBLIC
 officially supports OF6; equivalent IB force volume integration still needs
 LPBF equation and unit audits. Preserve unresolved M1C failures.
+
+Communication package passed at user-tested 026247c9 on 2026-10-09.
+Do not ask to repeat it without backend changes. Next bounded scope is
+docs/m2a-resolved-coupling.zh-CN.md: actual CFD geometry/constraints/forces
+and representative MPI/common restart, not more communication micro-tests.
+Communication pass does not close M1C failures or validate resolved physics.

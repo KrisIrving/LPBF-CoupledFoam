@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "5ff9d52bb934d90d6011acfd3c75f6ba8d1c63e5",
-  "scope": "Curated evidence including first M1C interface archive. Historical failures preserved; separate offline step-aligned interpretation does not replace original summary. Raw files stay outside Git.",
+  "latest_user_tested_commit": "026247c9a232da011132792b25429261f75ad19c",
+  "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
       "report": "m1-compressible-20261008-193210-28596.tar.gz",
@@ -5521,6 +5521,57 @@
       "communication_validation": "not_evaluated",
       "fix_candidate": "Use mpicc --showme:compile/link flags explicitly in wmake; runtime unverified",
       "next_action": "Rebuild/rerun only demo with installed dependency environment."
+    },
+    {
+      "report": "dem-communication-20261009-205042-439489.tar.gz",
+      "archive_sha256": "e713559bbbfb90884508050045c4703abbcedb7b00a3d08fb3239c02a0b2edbe",
+      "tested_commit": "026247c9a232da011132792b25429261f75ad19c",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "build": "passed",
+      "serial_execution": "passed",
+      "mpi_execution": "passed",
+      "summary": {
+        "scope": "OpenFOAM host and embedded LIGGGHTS communication only; no fluid solve, resolved particle forces, heat, restart or scalable distributed CFD mapping.",
+        "serial": {
+          "passed": true,
+          "windows": 20,
+          "migrations_observed": 0,
+          "max_position_error_m": 1.0253503233102756e-16,
+          "max_velocity_error_m_s": 5.507747036226363e-16,
+          "max_impulse_residual_kg_m_s": 7.216720710606639e-19,
+          "max_clock_error_s": 2.7755575615628914e-17
+        },
+        "mpi": {
+          "passed": true,
+          "windows": 20,
+          "migrations_observed": 2,
+          "max_position_error_m": 1.0253503233102756e-16,
+          "max_velocity_error_m_s": 5.507747036226363e-16,
+          "max_impulse_residual_kg_m_s": 7.216720710606639e-19,
+          "max_clock_error_s": 2.7755575615628914e-17
+        },
+        "comparison": {
+          "passed": true,
+          "max_state_absolute_difference": 0.0,
+          "position_tolerance_m": 1e-10,
+          "velocity_tolerance_m_s": 1e-10
+        },
+        "passed": true
+      },
+      "independent_archive_csv_reanalysis": "matches_original_summary",
+      "dem_steps_per_trajectory": 200,
+      "mpi_owner_change_window": 13,
+      "validated_scope": "Minimum embedded communication with two persistent consecutive IDs and manufactured force feedback",
+      "not_validated": [
+        "resolved CFD forces",
+        "real fluid reaction",
+        "thermal coupling",
+        "common restart",
+        "sparse IDs",
+        "scalable distributed CFD mapping"
+      ],
+      "next_action": "M2A resolved mechanical coupling integrated package; no rerun of current demo required."
     }
   ],
   "communication_environment_clarification": {
@@ -5534,6 +5585,6 @@
     "dependency_pin": "3d5c00f20519e6bb6eb6756f51f1ad36564e649d",
     "setup_build": "not_run",
     "communication_runtime": "not_run",
-    "superseded_by": "Second feedback verifies pinned shared library present and preflight passed; demo build not yet successful."
+    "superseded_by": "Third feedback confirms library integration and minimum communication package passed at 026247c9."
   }
 }

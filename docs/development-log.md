@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-09: communication package accepted within scope; M2A specification prepared
+
+User tested 026247c9; archive SHA e713559bbbfb90884508050045c4703abbcedb7b00a3d08fb3239c02a0b2edbe. Build, serial and two-rank runs complete with exit 0; both trajectories pass independent gates and compare identically at CSV precision. Twenty coupling windows/two hundred DEM steps each; two ownership changes at window 13. Position error 1.02535e-16 m, velocity 5.50775e-16 m/s, impulse ledger residual 7.21672e-19 kg m/s, clock 2.77556e-17 s. Recomputed archived histories locally without simulation; original summary matches exactly.
+
+Closed minimal communication feasibility only, preserving prior failures. No claim of resolved forces, fluid reaction, heat, sparse-ID production mapping or common restart. Prepared bounded M2A resolved-mechanics audit/acceptance specification rather than another communication micro-test. Source/backend unchanged this turn; no new runnable physical solver or test request. Updated status, plan, README, communication notes and machine-readable evidence. M1C failures remain open; no developer-side WSL.
+
 ## 2026-10-09: DEM library present; fix missing OpenCFD MPI compiler flags
 
 User archive at 5ff9d52b (SHA 98321e7bacffe310e1d3634ca97b7af98ed6faf2cab98c8f8a3b017544f82537) exits 2 at build. Pinned LIGGGHTS header/library exist and required symbol/ldd preflight passed. The actual g++ invocation omits MPI include paths, causing mpi.h not found; Foundation-style PINC/PLIBS placeholders did not supply the necessary OpenCFD v2512 flags. This is our build adaptation defect, not a DEM runtime failure or proven platform incompatibility.
