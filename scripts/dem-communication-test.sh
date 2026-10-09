@@ -36,7 +36,7 @@ if [ -z "${LIGGGHTS_SRC:-}" ]; then
     done
 fi
 if [ ! -f "${LIGGGHTS_SRC:-}/library.h" ]; then
-    echo 'Set LIGGGHTS_SRC to the source directory containing library.h.' | tee "$report/dependency-error.txt"
+    echo 'Set LIGGGHTS_SRC to the source directory containing library.h. For a read-only inventory run: python3 scripts/audit-dem-dependencies.py' | tee "$report/dependency-error.txt"
     exit 1
 fi
 LIGGGHTS_SRC="$(realpath "$LIGGGHTS_SRC")"

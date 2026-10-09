@@ -1,5 +1,11 @@
 # 项目状态与接续入口
 
+## 当前阻点：通信包依赖路径未定位（2026-10-09）
+
+最新用户测试提交 `dff530e71c384a45c7d5ceb6346b26b3e343d88b`。首次通信反馈在 dependency-audit 退出：没有找到 library.h；没有执行构建、串行或 MPI。v2512 与 SYSTEMOPENMPI/Open MPI 4.1.6 环境已加载，实际 LIGGGHTS 头文件和共享库尚未确认，不能判定通信可行性。
+
+已补充只读依赖定位与归档入口 `python3 scripts/audit-dem-dependencies.py`，下一用户动作先运行该命令获取候选路径，不重复猜安装位置，也不盲目重编 LIGGGHTS。定位后继续原通信 demo，仍不进入解析颗粒耦合验收。详见 [demo 文档](dem-communication-demo.zh-CN.md) 与最新台账；原首次失败及 M1C 未通过项保留。
+
 ## 最新决定：固定 v2512，通信 demo 已准备（2026-10-09）
 
 用户已同意 v2512 定向移植必要算法，解除上一轮计划讨论对本通信包的实现暂停；不再评估 OF10，也不要求移植整套 CFDEM。已审查 LIGGGHTS 公开库接口、数组字段和 CFDEM twoWayMPI 的调用结构；独立 OpenFOAM 应用、串行/双进程反馈入口及独立摘要已完成，真实编译/运行仍待用户执行。见 [通信 demo](dem-communication-demo.zh-CN.md)。

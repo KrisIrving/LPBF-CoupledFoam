@@ -1,5 +1,9 @@
 # Development and verification record
 
+## 2026-10-09: communication report stopped at missing source header
+
+Reviewed archive at dff530e7 (SHA bad860df126c08a2e1ab054ad523a9103b438e2897ece873651c82977ab96c2c). dependency-audit exits 1 because library.h was not found; no build or solver execution. Environment confirms v2512 DPInt32/SystemOpenMPI with Open MPI 4.1.6, not a demonstrated LIGGGHTS library installation. Added bounded read-only user-side dependency inventory with report archive, optional extra roots and interface-header filtering; no automatic rebuilding, candidate binding or binary execution. Communication thresholds/source unchanged. Updated status, plan and curated evidence; native build/runtime remain pending. No developer-side WSL.
+
 ## 2026-10-09: v2512 route approved; embedded LIGGGHTS communication demo prepared
 
 User approved the v2512 selective-port route and requested audit then communication demo. Audited official library.h/library.cpp/atom.cpp, shared-library Makefiles and CFDEM twoWayMPI; recorded source HEAD 3d5c00f20519e6bb6eb6756f51f1ad36564e649d. No whole-CFDEM dependency or platform migration. Added standalone wmake OpenFOAM Time host with particleBackend and MPI communicator duplication; two persistent sphere IDs, measured-velocity feedback via addforce, ten DEM substeps per twenty host windows. Histories check piecewise constant-acceleration motion, impulse ledger and clock, plus DEM ownership migration and serial/MPI comparison. Reaction is only a ledger, not a fluid solve. No force torque feedback, thermal coupling, sparse-ID mapping or restart claim.

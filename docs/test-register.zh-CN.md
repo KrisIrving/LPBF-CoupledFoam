@@ -1,5 +1,13 @@
 # 测试台账与阶段结论
 
+## 通信 demo 首次反馈：依赖定位失败，构建/运行未开始
+
+报告 `dem-communication-20261009-201123-407139.tar.gz`，测试提交 `dff530e71c384a45c7d5ceb6346b26b3e343d88b`，SHA-256 `bad860df126c08a2e1ab054ad523a9103b438e2897ece873651c82977ab96c2c`。原始 result 为 last_stage=dependency-audit、exit_status=1。错误为指定/默认 LIGGGHTS_SRC 下缺少 library.h；没有 log.build、轨迹或 summary，构建、串行及 MPI 运行均未执行，不是求解器编译失败或耦合运行失败。
+
+环境确认 OpenCFD v2512 / linux64GccDPInt32Opt / SYSTEMOPENMPI，Open MPI 4.1.6；wmake、mpirun、mpicc、python3、nm、ldd 路径可用。包内没有实际 LIGGGHTS 源/共享库路径，因此不能确认当前 WSL 已安装完整库，也不能把另一 Ubuntu 机器的安装位置套用到这里。原失败保留，通信可行性仍待验证，M1 结论不变。
+
+补充只读用户侧定位工具 `python3 scripts/audit-dem-dependencies.py`：在 HOME、/opt 的有限深度列出候选库接口头文件、共享库与可执行文件，保存当前显式环境及归档；可通过 --root 补充安装根目录。不开启 DEM，不编译，不自动安装/重编或绑定候选库。未找到只代表本次搜索范围未发现，不代表机器上绝对没有。下一步先取实际路径/安装信息，再完成原通信包的构建与两轨迹。
+
 ## 待用户验证：v2512–LIGGGHTS 通信 demo
 
 用户已确认路线，本包完成官方源码/API 审查、实现及七项离线摘要测试；未调用 WSL、编译 OpenFOAM 或运行 DEM。用户侧环境/库审查、构建、串行与双进程运行均为待验证，不能计为通过。入口 `bash scripts/dem-communication-test.sh`，反馈范围/固定门槛见 [通信 demo](dem-communication-demo.zh-CN.md)。本包不覆盖 M1C 原验收失败，不把冲量记账称为真实流体双向守恒。

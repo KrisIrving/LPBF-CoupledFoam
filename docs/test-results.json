@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "98befc42ae4187d9217fd4793ef427d3fcee58b6",
+  "latest_user_tested_commit": "dff530e71c384a45c7d5ceb6346b26b3e343d88b",
   "scope": "Curated evidence including first M1C interface archive. Historical failures preserved; separate offline step-aligned interpretation does not replace original summary. Raw files stay outside Git.",
   "records": [
     {
@@ -5481,6 +5481,28 @@
       "reaction": "ledger_only_no_fluid_solve",
       "scope": "Two persistent consecutive IDs; library state/feedback/time; DEM ownership migration; no resolved CFD/heat/torque feedback/restart/scalable mapping",
       "entrypoint": "scripts/dem-communication-test.sh"
+    }
+  ],
+  "communication_records": [
+    {
+      "report": "dem-communication-20261009-201123-407139.tar.gz",
+      "archive_sha256": "bad860df126c08a2e1ab054ad523a9103b438e2897ece873651c82977ab96c2c",
+      "tested_commit": "dff530e71c384a45c7d5ceb6346b26b3e343d88b",
+      "last_stage": "dependency-audit",
+      "exit_status": 1,
+      "environment": {
+        "openfoam": "v2512",
+        "options": "linux64GccDPInt32Opt",
+        "mpi_mode": "SYSTEMOPENMPI",
+        "openmpi": "4.1.6"
+      },
+      "dependency_error": "LIGGGHTS_SRC does not contain library.h",
+      "build": "not_run",
+      "serial_execution": "not_run",
+      "mpi_execution": "not_run",
+      "communication_validation": "not_evaluated",
+      "limitation": "Actual source and shared library are not identified by this report; no evidence of a compile/runtime coupling failure.",
+      "next_action": "Read-only bounded dependency inventory before configuring or building the library."
     }
   ]
 }
