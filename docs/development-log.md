@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-09: v2512 route approved; embedded LIGGGHTS communication demo prepared
+
+User approved the v2512 selective-port route and requested audit then communication demo. Audited official library.h/library.cpp/atom.cpp, shared-library Makefiles and CFDEM twoWayMPI; recorded source HEAD 3d5c00f20519e6bb6eb6756f51f1ad36564e649d. No whole-CFDEM dependency or platform migration. Added standalone wmake OpenFOAM Time host with particleBackend and MPI communicator duplication; two persistent sphere IDs, measured-velocity feedback via addforce, ten DEM substeps per twenty host windows. Histories check piecewise constant-acceleration motion, impulse ledger and clock, plus DEM ownership migration and serial/MPI comparison. Reaction is only a ledger, not a fluid solve. No force torque feedback, thermal coupling, sparse-ID mapping or restart claim.
+
+User-side wrapper audits shared library/symbols/MPI dependencies, builds only the demo and packages failures. Independent Python analysis recomputes trajectory and feedback; seven offline contract tests pass. Runtime build and library ABI remain unverified, all CFD/DEM runs remain user-side. Existing M1C failures are untouched; canonical plan/status updated to supersede prior implementation pause for this authorised package.
+
 ## 2026-10-09: M1C feedback reviewed; implementation paused for platform discussion
 
 Reviewed user archive at tested commit 98befc42; build and all seven solver runs complete. Original summary fails all cases because diagnostic timestamp strings use different precision. Separate offline step-aligned review preserves thresholds: off, half-dt, kinetic and condensation pass their limited gates; prescribed coarse/fine and open fail inventory checks, with open also failing the initial-area threshold. Original failure retained. Detailed evidence and archive SHA are in the register and machine-readable record; no universal mass/energy or plume validation claimed.

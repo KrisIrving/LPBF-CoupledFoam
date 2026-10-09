@@ -32,10 +32,12 @@ conservation and internal conduction; the previous empirical-force first
 candidate is superseded. See docs/resolved-gas-formulation.zh-CN.md. M1B-02
 passes its limited fixture; proceed to M1C-01, not more uniform micro-tests.
 
-Latest user instruction (2026-10-09): discuss and agree the platform/CFDEM
-plan before implementation. This overrides automatic next-step development.
-Review feedback and maintain curated documents, but do not modify solver or
-test scripts, migrate platforms or run tests until the plan is agreed. Read
-docs/platform-and-cfdem-plan.zh-CN.md and the latest status first. OF10 is
-a conditional candidate, not a selected platform; PUBLIC officially supports
-OF6. Resolved traction may use validated equivalent IB volume integration.
+Latest user instruction (2026-10-09): v2512 selective CFDEM algorithm port
+is approved; no OF10 assessment. Audit then implement an OpenFOAM/LIGGGHTS
+communication demo. This supersedes the earlier implementation pause for
+the approved route. Read docs/dem-communication-demo.zh-CN.md and the latest
+status. The user runs native builds/CFD/DEM; no developer-side WSL. Keep
+communication-only evidence separate from resolved-force, fluid reaction,
+thermal, restart and production distributed-mapping validation. PUBLIC
+officially supports OF6; equivalent IB force volume integration still needs
+LPBF equation and unit audits. Preserve unresolved M1C failures.

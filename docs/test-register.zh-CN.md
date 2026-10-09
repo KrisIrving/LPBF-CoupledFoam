@@ -1,5 +1,9 @@
 # 测试台账与阶段结论
 
+## 待用户验证：v2512–LIGGGHTS 通信 demo
+
+用户已确认路线，本包完成官方源码/API 审查、实现及七项离线摘要测试；未调用 WSL、编译 OpenFOAM 或运行 DEM。用户侧环境/库审查、构建、串行与双进程运行均为待验证，不能计为通过。入口 `bash scripts/dem-communication-test.sh`，反馈范围/固定门槛见 [通信 demo](dem-communication-demo.zh-CN.md)。本包不覆盖 M1C 原验收失败，不把冲量记账称为真实流体双向守恒。
+
 ## M1C-01 首次反馈：构建/执行通过，验收失败；计划讨论暂停实现
 
 报告 `m1c-interface-20261009-161324-352226.tar.gz`，提交 `98befc42ae4187d9217fd4793ef427d3fcee58b6`，SHA-256 `8635af01b50bb19c110babedf5bda9752c872f361ef76976db562a92be32a56d`。构建成功，七组求解均 exit_status=0、正常结束，半时间步组 200 步，其余各 100 步。整包原摘要 exit_status=1，last_stage=interface-summary，七组均报诊断不完整，原始失败保留。

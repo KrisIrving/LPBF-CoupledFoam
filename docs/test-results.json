@@ -5466,5 +5466,21 @@
       ],
       "next_action": "Discuss and agree platform and coupling plan before implementation; no new run requested."
     }
+  ],
+  "communication_development_packages": [
+    {
+      "package": "v2512-LIGGGHTS-communication-demo-01",
+      "prepared_on": "2026-10-09",
+      "platform": "OpenCFD v2512",
+      "dependency_source_reviewed": "CFDEMproject/LIGGGHTS-PUBLIC",
+      "reviewed_upstream_head": "3d5c00f20519e6bb6eb6756f51f1ad36564e649d",
+      "offline_summary_tests_passed": 7,
+      "native_build": "not_run",
+      "serial_execution": "not_run",
+      "mpi_execution": "not_run",
+      "reaction": "ledger_only_no_fluid_solve",
+      "scope": "Two persistent consecutive IDs; library state/feedback/time; DEM ownership migration; no resolved CFD/heat/torque feedback/restart/scalable mapping",
+      "entrypoint": "scripts/dem-communication-test.sh"
+    }
   ]
 }

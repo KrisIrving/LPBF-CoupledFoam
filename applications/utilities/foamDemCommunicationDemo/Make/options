@@ -1,0 +1,9 @@
+EXE_INC = \
+    $(PFLAGS) $(PINC) \
+    -I$(LIGGGHTS_SRC)
+
+EXE_LIBS = \
+    -L$(LIGGGHTS_LIBDIR) \
+    -Wl,-rpath,$(LIGGGHTS_LIBDIR) \
+    -lliggghts \
+    $(PLIBS)
