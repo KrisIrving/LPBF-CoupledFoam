@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-09: M2A builds; early CFD divergence drives all runtime failures
+
+User-tested 1bcf1413; archive SHA 581d92eeb1c2560fca1f913308ddabaf7c099ed2fd566b265ff195c054505186. Build/link complete; eight cases start, none complete, one to three recorded windows. Five prescribed/fixed cases end in momentum-smoother FPE; three free variants lose DEM atoms following runaway CFD feedback. Independently recalculated first free-window momentum residual 0.9939401260 kg m/s; applied/measured DEM impulses agree to roundoff. This is not successful force validation, nor evidence that DEM/MPI linking is the cause.
+
+Read installed v2512 fvMatrix and pimpleFoam pressure sources without invoking WSL. Equality constructs a matrix copy; no evidence of cumulative pressure-source mutation. Identified structural differences: repeated full momentum predictor within inner corrections, missing transient collocated-flux correction. Candidate follows one predictor per window, then PISO H/pressure corrections with rAU-weighted ddtCorr/adjustPhi. Added correction-level maxU/maxP and nonfinite-state checks. Does not yet prove these changes eliminate the instability or establish a unique cause. Preserved force formulas, DEM integration, matrix inputs and thresholds. Analyzer retains partial failure diagnostics and marks unavailable comparisons not_evaluated; eight offline analyzer tests pass. No developer native CFD/DEM or WSL execution; native revision remains pending.
+
 ## 2026-10-09: first M2A report fails name lookup during build
 
 User-tested 38c28c8b; archive SHA 7aeca6017922b8be121e2fbeaf66b47317045da7e1fbb0849f5b32dcfc6903df. Dependency preflight reaches C++17 compilation with MPI flags; build exits 2. No cases, trajectories or physical summary exist. All reported errors are the local fv helper conflicting with Foam::fv and unqualified cbrt overload ambiguity. Renamed all 22 definition/call occurrences to asFoamVector, qualified std::cbrt and reviewed related scalar math calls. No model, matrix or threshold changes. Native rebuild/runtime remain untested; user reruns original integrated entry without DEM reinstall or communication rerun. Raw report remains outside Git, failure preserved.

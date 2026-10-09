@@ -54,3 +54,9 @@ before changing it. Keep this experimental isothermal noncontact single-sphere
 solver separate from production LPBF. No full angular-fluid ledger, moving-mask
 GCL, contact validation or coupled thermal model is claimed. Evaluate the full
 returned package before requesting additional runs; preserve failed gates.
+
+M2A build passed at user-tested 1bcf1413, but all eight cases became unstable
+in one to three windows. Pressure/PISO structure revision is pending native
+feedback, not an established physical fix. Preserve failed partial trajectories
+and mark absent restart/comparison evidence not_evaluated. No thermal/GCL
+expansion before assessing this revised concentrated package.

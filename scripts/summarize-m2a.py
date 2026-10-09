@@ -21,6 +21,21 @@ def columns(prefix):
     return [prefix+c for c in 'xyz']
 
 
+def failure_diagnostics(case):
+    """Retain incomplete trajectory evidence without evaluating it as a pass."""
+    try:
+        with (case/'mechanical-history.csv').open(newline='') as stream:
+            rows = list(csv.DictReader(stream))
+        result = {'recorded_windows': len(rows), 'completion': False}
+        if rows:
+            for key in ('time', 'vx', 'fx', 'tz', 'slip_rms', 'momentum_residual'):
+                value = float(rows[-1][key])
+                result['last_'+key] = value if math.isfinite(value) else None
+        return result
+    except (OSError, ValueError, KeyError, TypeError):
+        return {'completion': False, 'trajectory_diagnostics': 'unavailable'}
+
+
 def evaluate(case):
     meta = json.loads((case/'M2A_META.json').read_text())
     limits = meta['thresholds']
@@ -142,12 +157,14 @@ def summarize(root):
             entry, histories[name], metadata[name] = evaluate(root/name)
             result['cases'][name] = entry
         except (OSError, ValueError, KeyError, TypeError, ZeroDivisionError) as error:
-            result['cases'][name] = {'passed': False, 'error': str(error)}
+            result['cases'][name] = {'passed': False, 'error': str(error),
+                                     'diagnostics': failure_diagnostics(root/name)}
     for name in ('free-restart', 'free-mpi2'):
         if 'free' in histories and name in histories:
             result['comparisons'][name] = compare(histories['free'], histories[name], metadata['free']['thresholds'])
         else:
-            result['comparisons'][name] = {'passed': False, 'error': 'Missing valid histories'}
+            result['comparisons'][name] = {'passed': False, 'status': 'not_evaluated',
+                                           'error': 'Missing completed valid histories'}
     for family in ('fixed', 'rotate'):
         coarse, fine = result['cases'][family+'-coarse'], result['cases'][family+'-fine']
         if 'stokes_relative_error' in coarse.get('metrics', {}) and 'stokes_relative_error' in fine.get('metrics', {}):
@@ -156,7 +173,8 @@ def summarize(root):
                 'passed': delta <= metadata[family+'-fine']['thresholds']['refinement_error_increase'],
                 'error_increase': delta, 'interpretation': 'Two resolutions; no asymptotic convergence claim'}
         else:
-            result['comparisons'][family+'-refinement'] = {'passed': False, 'error': 'Missing reference metrics'}
+            result['comparisons'][family+'-refinement'] = {'passed': False, 'status': 'not_evaluated',
+                                                         'error': 'Missing reference metrics'}
     result['passed'] = all(v['passed'] for section in ('cases', 'comparisons') for v in result[section].values())
     return result
 

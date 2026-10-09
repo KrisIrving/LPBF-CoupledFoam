@@ -165,18 +165,30 @@ int main(int argc,char* argv[])
             mapGeometry();
             surfaceScalarField advecting(IOobject("advecting",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE),phi);
             fvVectorMatrix equation(fvm::ddt(U)+fvm::div(advecting,U)-fvm::laplacian(nu,U)+fvm::Sp(lambda,U)==lambda*rigid);
+            // One momentum predictor per window; inner PISO corrections update
+            // H from corrected U without repeatedly solving the predictor.
+            solve(equation==-fvc::grad(p));
             volScalarField rAU("rAU",1.0/equation.A());
             for(label c=0;c<correctors;++c)
             {
-                solve(equation==-fvc::grad(p));
                 volVectorField HbyA(constrainHbyA(rAU*equation.H(),U,p));
                 surfaceScalarField predicted("predicted",fvc::flux(HbyA));
+                // Standard transient collocated flux consistency, using the
+                // same inverse diagonal that includes the solid constraint.
+                predicted+=fvc::interpolate(rAU)*fvc::ddtCorr(U,phi);
+                if(p.needReference()) adjustPhi(predicted,U,p);
                 constrainPressure(p,U,predicted,rAU);
                 fvScalarMatrix pressure(fvm::laplacian(rAU,p)==fvc::div(predicted));
                 if(p.needReference()) pressure.setReference(rank==0 ? 0:-1,refPressure);
                 pressure.solve();
                 phi=predicted-pressure.flux();
                 U=HbyA-rAU*fvc::grad(p);U.correctBoundaryConditions();
+                const scalar maxU=gMax(mag(U)().primitiveField());
+                const scalar maxP=gMax(mag(p)().primitiveField());
+                if(rank==0) Info<<"M2A_CORRECTION time="<<runTime.value()
+                    <<" iteration="<<c+1<<" maxU="<<maxU<<" maxP="<<maxP<<endl;
+                if(!std::isfinite(maxU)||!std::isfinite(maxP))
+                    throw std::runtime_error("Nonfinite CFD state before DEM feedback");
             }
             vector constraint=vector::zero, constraintTorque=vector::zero;
             scalar volume=0,slip=0;label covered=0;

@@ -132,6 +132,17 @@ class ContractTests(unittest.TestCase):
         self.assertFalse(result['passed'])
         self.assertEqual(len(result['cases']), 8)
 
+    def test_failed_run_keeps_partial_evidence_without_passing(self):
+        case, rows = self.fixture()
+        self.save(case, rows[:1])
+        (case/'result.txt').write_text('exit_status=1\n')
+        summary = audit.summarize(self.root)
+        entry = summary['cases']['free']
+        self.assertFalse(entry['passed'])
+        self.assertEqual(entry['diagnostics']['recorded_windows'], 1)
+        self.assertEqual(entry['diagnostics']['last_time'], 0.0001)
+        self.assertEqual(summary['comparisons']['free-restart']['status'], 'not_evaluated')
+
 
 if __name__ == '__main__':
     unittest.main()

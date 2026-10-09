@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "38c28c8b215670b1c17b6d94a2a2601b51fe06e7",
+  "latest_user_tested_commit": "1bcf1413b2706acd3429f9e4381d3586c64ca635",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -565,6 +565,44 @@
       "physical_validation": "not_evaluated",
       "revision_native_build": "not_run",
       "revision_runtime": "not_run"
+    },
+    {
+      "report": "m2a-mechanical-20261009-213944-451955.tar.gz",
+      "archive_sha256": "581d92eeb1c2560fca1f913308ddabaf7c099ed2fd566b265ff195c054505186",
+      "tested_commit": "1bcf1413b2706acd3429f9e4381d3586c64ca635",
+      "package": "M2A-01",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "native_build": "passed",
+      "started_case_count": 8,
+      "completed_case_count": 0,
+      "recorded_windows": {
+        "fixed-coarse": 2,
+        "fixed-fine": 2,
+        "rotate-coarse": 3,
+        "rotate-fine": 2,
+        "translate": 1,
+        "free": 1,
+        "free-restart": 1,
+        "free-mpi2": 1
+      },
+      "outcome": "Early CFD divergence; prescribed cases FPE, free cases downstream lost DEM atoms",
+      "first_free_window": {
+        "time_s": 0.0001,
+        "velocity_x_m_s": 0.8219005419453413,
+        "force_x_N": 34.0088103736141,
+        "slip_rms_m_s": 0.9859447179092514,
+        "independent_momentum_residual_kg_m_s": 0.9939401260004195,
+        "applied_impulse_kg_m_s": 0.0034008810373614097,
+        "measured_dem_impulse_kg_m_s": 0.0034008810373614084
+      },
+      "restart_second_segment": "not_run",
+      "full_comparisons": "not_evaluated",
+      "physical_validation": "failed_incomplete",
+      "revision": "One momentum predictor per window, rAU-weighted transient flux correction and adjustPhi, correction diagnostics",
+      "revision_effectiveness": "not_run",
+      "threshold_changes": false,
+      "offline_analysis_tests_passed": 8
     }
   ],
   "development_packages": [
