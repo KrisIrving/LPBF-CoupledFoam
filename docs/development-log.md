@@ -1,5 +1,13 @@
 # Development and verification record
 
+## M1C-01 first interface-source package prepared: 2026-10-09
+
+Added default-legacy interfacePhaseChangeModel with opt-in prescribed or pure-vapour kinetic flux. Evaluate geometry and flux once before all phase updates, map paired liquid/vapour volume sources and shared reference-energy source, bypass the legacy volume-distributed pair closure. Joint occupancy limiter logs requested/actual flux; existing pressure vDot uses the sum of paired volume sources. Restricted to equal constant Cv, reference source and one alpha subcycle, with explicit errors for active extra phases. No new Knudsen exit momentum, shielding-gas partial-pressure transport or low-Mach solver.
+
+One user-side build and seven cases: off, prescribed mesh/time sensitivity, kinetic evaporation/condensation, open outlet. Flat smooth synthetic interface, no laser/gravity/surface tension. Diagnostics include area, pair mass/energy source, limiter, phase boundary flux and pressure response. Summary integrates last outer trial once and independently checks total/liquid/vapour inventory balances; thresholds fixed before runtime. Missing diagnostics are failures. Neither source cancellation nor power identity is claimed as universal physical conservation.
+
+Ten offline tests pass, covering wrong inventory despite paired source, missing flux, outer-iteration counting, source off, condensation and open-field generation, plus existing portability tests. All seven cases generated and Python AST/metadata, shell syntax, JSON, document links and diff checks pass; no WSL, build or CFD executed. User-side compile/runtime remains pending. Plan/status/entrypoints updated; M1C-01 remains incomplete until runtime and remaining momentum/gas scope is resolved.
+
 ## M1B-02 accepted; resolved particles and gas formulation clarified: 2026-10-09
 
 User tested a7395edddbe02701a968679e6b5744b8079c7ade. Build and all three forty-step trajectories complete; independent integration gates, restart and two-rank history comparisons pass unchanged thresholds. Restart maximum temperature difference is 9.999894e-9 K and reference-energy-change difference 5.273559e-15 J; MPI energy difference 3.209238e-16 J. The prior spurious fusion regression is absent. Q08 is closed for this fixed-mesh fully-liquid synthetic fixture only; combined checkpoint changes do not isolate each cause of the original mismatch. Earlier failures preserved, no strong-evaporation or material validation claim.

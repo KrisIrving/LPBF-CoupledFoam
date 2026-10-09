@@ -65,6 +65,7 @@ workspace. Do not infer performance from its elapsed wall-clock values.
 - [论文/书稿依据与未定模型决策](docs/model-decisions.zh-CN.md)
 - [LaserbeamFoam–LIGGGHTS 通信与耦合讨论](docs/cfdem-communication.zh-CN.md)
 - [解析颗粒、蒸汽注入与气体方程权衡](docs/resolved-gas-formulation.zh-CN.md)
+- [M1C-01 界面源与气体响应：七组集中测试](docs/m1c-interface.zh-CN.md)
 - [中文研究路线、文献基准与可选加速](docs/research-plan.zh-CN.md)
 - [Development and verification record](docs/development-log.md)
 - [V3.0 源码入口与守恒审计清单](docs/source-map.zh-CN.md)

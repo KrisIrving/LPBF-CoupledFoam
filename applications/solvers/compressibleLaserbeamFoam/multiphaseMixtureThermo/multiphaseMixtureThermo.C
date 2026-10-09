@@ -38,6 +38,7 @@ License
 #include "fvcMeshPhi.H"
 #include "surfaceInterpolate.H"
 #include "unitConversion.H"
+#include <cmath>
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -1339,6 +1340,8 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::solveAlphas
 
 
 
+    #include "interfacePhaseChange.H"
+
     PtrList<surfaceScalarField> alphaPhiCorrs(phases_.size());
 
     int phasei = 0;
@@ -1534,7 +1537,7 @@ Foam::tmp<Foam::volScalarField> Foam::multiphaseMixtureThermo::solveAlphas
                 boils_.find(interfacePair(alpha, alpha2))
             );
 
-            if(boilT != boils_.end()){// return boiling temperature for pair
+            if(boilT != boils_.end() && !interfacePhaseChange){// legacy pair closure
 
             dimensionedScalar pair_boil_T("pair_boil_T",dimBoil_,boilT());
 
@@ -1703,6 +1706,11 @@ Info<<"Liquid-Vapour State Transition: (Liquid,Vapour): ("<<alpha.name()<<","<<a
 
 // Info<<"HERE5"<<endl;
 
+    if (interfacePhaseChange)
+    {
+        alphagen = interfaceAlphaSources[phasei];
+    }
+
     PCR+=alphagen;//alphagen;//divU;//
 
     // PCR-=(1.0-(alphasum))*(10e-2/mesh_.time().deltaT());
@@ -1837,6 +1845,32 @@ Info<<"Liquid-Vapour State Transition: (Liquid,Vapour): ("<<alpha.name()<<","<<a
         );
 
         rhoPhi_ += fvc::interpolate(alpha.thermo().rho())*alphaPhi;
+        if (interfacePhaseChange)
+        {
+            scalar outwardPhaseMassFlux = 0;
+            const surfaceScalarField phaseMassFlux
+            (
+                fvc::interpolate(alpha.thermo().rho())*alphaPhi
+            );
+            forAll(phaseMassFlux.boundaryField(), patchi)
+            {
+                if (!phaseMassFlux.boundaryField()[patchi].coupled())
+                {
+                    outwardPhaseMassFlux += sum(phaseMassFlux.boundaryField()[patchi]);
+                }
+            }
+            reduce(outwardPhaseMassFlux, sumOp<scalar>());
+            if (Pstream::master())
+            {
+                const int savedPrecision = Info().precision();
+                Info().precision(15);
+                Info<< "M1C_PHASE_FLUX time=" << mesh_.time().value()
+                    << " phase=" << alpha.name()
+                    << " outwardKgPerS=" << outwardPhaseMassFlux << nl;
+                Info().precision(savedPrecision);
+            }
+        }
+
 
         Info<< alpha.name() << " volume fraction, min, max = "
             << alpha.weightedAverage(mesh_.V()).value()

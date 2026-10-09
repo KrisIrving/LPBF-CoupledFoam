@@ -33,3 +33,4 @@ if (runTime.controlDict().lookupOrDefault<Switch>("continuumDiagnostics", false)
 }
 
 #include "spatialDiagnostics.H"
+#include "interfaceDiagnostics.H"

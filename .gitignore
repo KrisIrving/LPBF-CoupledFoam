@@ -85,3 +85,7 @@ SunOS*Gcc*/
 !docs/*.md
 !scripts/*.sh
 !scripts/*.py
+
+# Python checks generate caches, never source artifacts.
+__pycache__/
+*.pyc

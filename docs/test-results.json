@@ -571,9 +571,14 @@
     },
     {
       "package_id": "M1C-01",
-      "status": "planned_not_implemented",
-      "scope": "Interface geometry and conservative evaporation source contract, controlled flux then closure/gas response",
-      "physical_validation": "not_evaluated"
+      "status": "revision_1_mass_energy_interface_prepared_runtime_pending",
+      "scope": "Opt-in prescribed/kinetic paired interface mass and restricted equal-Cv reference energy; area/inventory/boundary/pressure gates. Pure vapour, no explicit exit momentum or shielding gas.",
+      "physical_validation": "not_evaluated",
+      "revision": 1,
+      "case_count": 7,
+      "entrypoint": "scripts/m1c-interface-test.sh",
+      "documentation": "docs/m1c-interface.zh-CN.md",
+      "offline_validation": "Ten feedback-contract tests and fixture generation passed; no developer-side build or CFD."
     },
     {
       "package_id": "M1C-02",
