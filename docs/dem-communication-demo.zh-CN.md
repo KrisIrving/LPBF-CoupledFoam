@@ -1,5 +1,27 @@
 # v2512–LIGGGHTS 最小通信 demo 与审查结论
 
+## 用户已澄清未安装依赖：当前直接安装最小 LIGGGHTS 库
+
+用户确认这台 WSL 只有 OF2512，没有 LIGGGHTS/CFDEM。前一包缺 library.h 的依赖缺口已明确，无需继续找目录；另一 Ubuntu 机器的安装不能套用。当前 demo 只需要 LIGGGHTS MPI 共享库，不需要安装 CFDEM、其他 OpenFOAM 或系统范围 DEM。
+
+准备了用户侧 `scripts/setup-demo-liggghts.sh`：在 `~/LPBF-dependencies/LIGGGHTS-PUBLIC-3d5c00f20519` 独立克隆并固定官方提交 `3d5c00f20519e6bb6eb6756f51f1ad36564e649d`，使用官方 makeshlib/auto-postfix 构建，启用 MPI/PIC，关闭 VTK/Catalyst/超二次曲面等可选功能。当前目标是球形通信 fixture，不将精简构建当作所有未来 DEM 功能已安装。构建及演示均由用户执行，开发端未运行 WSL。
+
+```bash
+cd ~/LPBF-CoupledFoam
+git pull --ff-only
+export OPENFOAM_BASHRC=/home/kris/OpenFOAM/OpenFOAM-v2512/etc/bashrc
+source "$OPENFOAM_BASHRC"
+DEPS_JOBS=8 bash scripts/setup-demo-liggghts.sh
+```
+
+脚本不使用 sudo、不覆盖其他安装、不自动安装系统包；前提是 git/make/g++/OpenMPI 开发头文件和 Python 可用。上一反馈已确认 mpicc 等工具；若提示缺少编译工具，可由用户执行 `sudo apt update` 与 `sudo apt install build-essential git openmpi-bin libopenmpi-dev python3` 后重试。不要卸载/切换现有 OpenFOAM。
+
+成功构建后自动导出正确 LIGGGHTS_SRC/LIGGGHTS_LIB 并执行原串行/MPI 通信包；保存 `.build/demo-liggghts.env`，后续单独重跑时先 `source .build/demo-liggghts.env`，再 `bash scripts/dem-communication-test.sh`。安装位置可由 LPBF_DEPS_ROOT 指定，线程数可由 DEPS_JOBS 调整；编译器/MPI 改变时使用新根目录，不混合旧对象。不重置、清理或覆盖已有源码修改。
+
+最后回传 `.runs/dem-setup-*.tar.gz`：含固定版本、配置、环境和构建日志；进入通信阶段时将子反馈包一并收集。下载、构建或通信失败均留档。脚本已静态检查，Ubuntu 24.04 的实际编译兼容性及 demo 运行仍待用户反馈，不能提前声称安装成功。
+
+构建选项依据已读取的固定版本官方 [Makefile.auto](https://github.com/CFDEMproject/LIGGGHTS-PUBLIC/blob/3d5c00f20519e6bb6eb6756f51f1ad36564e649d/src/MAKE/Makefile.auto)、[默认选项](https://github.com/CFDEMproject/LIGGGHTS-PUBLIC/blob/3d5c00f20519e6bb6eb6756f51f1ad36564e649d/src/MAKE/Makefile.user_default) 及共享库规则。下文定位工具保留用于未来诊断，当前用户无需执行。
+
 ## 最新反馈及当前操作：先定位依赖
 
 首次用户包（测试提交 dff530e7）在 dependency-audit 报 library.h 未找到，未执行编译或 DEM。v2512/Open MPI 4.1.6 已加载，但实际源码/共享库未确认；原 demo 运行仍待验证。此前给出的目录是候选示例，不是当前 WSL 安装已核实的位置。

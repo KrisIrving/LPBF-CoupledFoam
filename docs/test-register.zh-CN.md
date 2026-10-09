@@ -1,5 +1,9 @@
 # 测试台账与阶段结论
 
+## 用户澄清：当前 WSL 未安装 LIGGGHTS/CFDEM
+
+2026-10-09 用户明确本 WSL 只有 OF2512。因此首次反馈的缺头文件确有依赖未安装的背景，原报告状态仍保持 dependency-audit/exit_status=1、构建及执行未开始。新增固定提交的独立 MPI/PIC 库安装与通信入口，真实安装/构建均未执行；无需用户再生成目录定位清单。没有新增运行证据或新的通过结论，下一反馈应为 dem-setup 包。
+
 ## 通信 demo 首次反馈：依赖定位失败，构建/运行未开始
 
 报告 `dem-communication-20261009-201123-407139.tar.gz`，测试提交 `dff530e71c384a45c7d5ceb6346b26b3e343d88b`，SHA-256 `bad860df126c08a2e1ab054ad523a9103b438e2897ece873651c82977ab96c2c`。原始 result 为 last_stage=dependency-audit、exit_status=1。错误为指定/默认 LIGGGHTS_SRC 下缺少 library.h；没有 log.build、轨迹或 summary，构建、串行及 MPI 运行均未执行，不是求解器编译失败或耦合运行失败。

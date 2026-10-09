@@ -1,5 +1,11 @@
 # 项目状态与接续入口
 
+## 当前动作：安装最小 MPI LIGGGHTS 共享库并运行通信 demo
+
+2026-10-09 用户明确这台 WSL 只有 OF2512、未安装 LIGGGHTS 或 CFDEM。依赖缺口已确认，不再要求目录清单。已准备用户侧 `DEPS_JOBS=8 bash scripts/setup-demo-liggghts.sh`，独立固定版 MPI/PIC 构建成功后自动接原通信验收；回传 dem-setup 归档即可。无需安装 CFDEM，不更换 v2512。
+
+源码构建选项已审查，脚本已静态检查；实际下载/构建/通信仍待用户执行。现有失败不覆盖，M1C 和完整解析 CFD–DEM 仍未通过。下文“路径尚未确认、先定位”是此前信息不足时状态，由本节覆盖。
+
 ## 当前阻点：通信包依赖路径未定位（2026-10-09）
 
 最新用户测试提交 `dff530e71c384a45c7d5ceb6346b26b3e343d88b`。首次通信反馈在 dependency-audit 退出：没有找到 library.h；没有执行构建、串行或 MPI。v2512 与 SYSTEMOPENMPI/Open MPI 4.1.6 环境已加载，实际 LIGGGHTS 头文件和共享库尚未确认，不能判定通信可行性。

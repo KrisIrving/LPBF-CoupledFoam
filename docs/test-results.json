@@ -5504,5 +5504,17 @@
       "limitation": "Actual source and shared library are not identified by this report; no evidence of a compile/runtime coupling failure.",
       "next_action": "Read-only bounded dependency inventory before configuring or building the library."
     }
-  ]
+  ],
+  "communication_environment_clarification": {
+    "date": "2026-10-09",
+    "source": "explicit_user_statement",
+    "current_wsl_has": "OpenFOAM v2512 only",
+    "liggghts_installed": false,
+    "cfdem_installed": false,
+    "next_action": "scripts/setup-demo-liggghts.sh",
+    "required_dependency": "MPI-enabled LIGGGHTS shared library only; CFDEM not required for this demo",
+    "dependency_pin": "3d5c00f20519e6bb6eb6756f51f1ad36564e649d",
+    "setup_build": "not_run",
+    "communication_runtime": "not_run"
+  }
 }
