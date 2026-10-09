@@ -25,10 +25,18 @@ def merge(first, second):
     if float(br[0]['time']) != midpoint or float(br[1]['time']) <= midpoint:
         raise ValueError('Restart times do not join at the checkpoint')
     metadata = first.parent/'m1b-case.json'
-    if metadata.exists() and json.loads(metadata.read_text()).get('checkpoint_continuum_state'):
+    meta = json.loads(metadata.read_text()) if metadata.exists() else {}
+    if meta.get('checkpoint_continuum_state'):
         marker = integrated.rows(b,'M1_RESTART_STATE')
         if len(marker)!=1 or float(marker[0]['time'])!=midpoint:
             raise ValueError('Missing checkpoint-state restoration diagnostic')
+        expected = meta.get('expected_checkpoint_epsilon_range')
+        if expected is not None:
+            for key,value in zip(('epsilonMin','epsilonMax'),expected):
+                if key not in marker[0]:
+                    raise ValueError('Missing restored liquid-fraction diagnostic')
+                if not math.isclose(float(marker[0][key]),value,rel_tol=0,abs_tol=1e-12):
+                    raise ValueError('Saved liquid fraction was not restored')
     prefixes = ('M1_CONTINUUM','M1_PHASE','M1_SPATIAL','M1_INTERFACE','M1_OPTICS')
     kept = []
     for line in b.splitlines():

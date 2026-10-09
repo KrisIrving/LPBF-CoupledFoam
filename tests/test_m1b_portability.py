@@ -57,6 +57,13 @@ class PortabilityTests(unittest.TestCase):
         with self.assertRaises(ValueError): p.merge(first,second)
         second.write_text('M1_RESTART_STATE time=1 preservedFields=phi,rho,epsilon1\n'+second.read_text())
         self.assertIn('M1_RESTART_STATE',p.merge(first,second))
+        (self.root/'m1b-case.json').write_text(json.dumps(dict(checkpoint_continuum_state=True,
+            expected_checkpoint_epsilon_range=[1,1])))
+        with self.assertRaises(ValueError): p.merge(first,second)
+        second.write_text('M1_RESTART_STATE time=1 epsilonMin=0 epsilonMax=0\nM1_CONTINUUM time=1\nM1_CONTINUUM time=2\nEnd\n')
+        with self.assertRaises(ValueError): p.merge(first,second)
+        second.write_text(second.read_text().replace('epsilonMin=0 epsilonMax=0','epsilonMin=1 epsilonMax=1'))
+        self.assertIn('epsilonMin=1',p.merge(first,second))
         second.write_text('M1_CONTINUUM time=1\nM1_CONTINUUM time=2\n')
         with self.assertRaises(ValueError): p.merge(first,second)
 

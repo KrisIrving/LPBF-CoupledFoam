@@ -62,6 +62,7 @@ workspace. Do not infer performance from its elapsed wall-clock values.
 - [M1-B 空间界面与激光综合测试](docs/m1b-integrated.zh-CN.md)
 - [M1B-02 重启、并行与分项账本](docs/m1b-portability.zh-CN.md)
 - [M1 主要验收收束清单](docs/m1-closeout.zh-CN.md)
+- [论文/书稿依据与未定模型决策](docs/model-decisions.zh-CN.md)
 - [LaserbeamFoam–LIGGGHTS 通信与耦合讨论](docs/cfdem-communication.zh-CN.md)
 - [中文研究路线、文献基准与可选加速](docs/research-plan.zh-CN.md)
 - [Development and verification record](docs/development-log.md)

@@ -42,6 +42,15 @@ if (restoringContinuumState)
         FatalErrorInFunction << "checkpointContinuumState requires the saved phi field"
             << exit(FatalError);
     }
+    for (const word& fieldName : wordList({"rho", "epsilon1"}))
+    {
+        IOobject checkpointField(fieldName, runTime.timeName(), mesh, IOobject::MUST_READ);
+        if (!checkpointField.typeHeaderOk<volScalarField>(true))
+        {
+            FatalErrorInFunction << "checkpointContinuumState requires saved field "
+                << fieldName << exit(FatalError);
+        }
+    }
 }
 #include "createPhi.H"
 
@@ -55,7 +64,9 @@ volScalarField rho
         "rho",
         runTime.timeName(),
         mesh,
-        restoringContinuumState ? IOobject::MUST_READ : IOobject::READ_IF_PRESENT,
+        // This constructor accepts a default field and reads only READ_IF_PRESENT.
+        // Required checkpoint headers were validated above; MUST_READ is ignored here.
+        IOobject::READ_IF_PRESENT,
         checkpointContinuumState ? IOobject::AUTO_WRITE : IOobject::NO_WRITE
     ),
     mixture.rho()
@@ -551,7 +562,7 @@ laserHeatSource laser(mesh);
             "epsilon1",
             runTime.timeName(),
             mesh,
-            restoringContinuumState ? IOobject::MUST_READ : IOobject::READ_IF_PRESENT,
+            IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
         mesh,

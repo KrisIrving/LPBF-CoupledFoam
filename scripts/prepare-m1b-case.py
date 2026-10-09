@@ -168,6 +168,7 @@ relaxationFactors {{ equations {{ "U.*" 1; }} }}
                 phase_change_enabled=active, laser_power_w=power, velocity_x_m_s=velocity,
                 condensed_phase_optics=laser_on,
                 checkpoint_continuum_state=True,
+                expected_checkpoint_epsilon_range=[1.0,1.0],
                 thermo_fixture='consistent', common_constant_cv_J_per_kg_K=800,
                 vapour_reference_energy_offset_J_per_kg=offset,
                 thresholds=dict(alpha_bound_tolerance=1e-6, alpha_sum_tolerance=1e-6,

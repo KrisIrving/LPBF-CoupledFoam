@@ -1,5 +1,13 @@
 # Development and verification record
 
+## Checkpoint read-constructor regression; literature decisions and staged closeout: 2026-10-09
+
+User tested `6a16c10b228043577250b0d3df95cf321245ab3c`: build and three 40-step runs complete, MPI comparison passes, restart comparison fails. New candidate causes 337.5 K cooling and about 0.000675 J false fusion uptake. Archive has saved epsilon1=1; restart warnings identify MUST_READ with default-value constructors. Direct read-only inspection of installed v2512 GeometricField.C confirms readIfPresent warns and does not read required-mode fields in these constructors. This regression was introduced by our prior candidate, not evidence that checkpoint serialization was missing.
+
+Repaired candidate validates required phi/rho/epsilon1 headers separately and uses READ_IF_PRESENT in fallback-value constructors. Saved epsilon min/max are now logged and checked for this fully liquid synthetic fixture. Missing saved files remain fatal; original comparison thresholds unchanged. Build/CFD and the effect on the earlier flux mismatch remain user-side pending.
+
+Reviewed supplied c03/c02 text plus critical formula/figure/material pages visually and the 2025 author paper/supplement. Recorded decisions D01–D08, proof table discrepancies, geometry-aware empirical particle route versus resolved surface stresses, conservative evaporation contract, variable-property energy scope, backend/MPI and full-melt transfer. Planned M1C split into two bounded packages; neither is implemented. No private PDF/page image or raw report added to Git. Offline archive reanalysis reproduces MPI PASS / restart FAIL; five Python log tests (including restored-fraction checks), candidate generation, Python AST, JSON parsing, shell syntax and diff checks pass. No developer-side compilation or simulation.
+
 ## M1B-02 MPI accepted, restart fails; bounded closeout and DEM design: 2026-10-09
 
 User-tested `4a258dc5400a575fcf5cf6a6617b5146a5e87bac`. All three forty-step trajectories complete and independently pass integration gates. MPI history comparison passes. Restart mass relative difference 8.2578e-8, phase-volume/domain difference 4.1295e-8 and reference-energy history difference 6.2807e-10 J fail unchanged gates. Temperature/absorbed histories pass. Original failure retained.

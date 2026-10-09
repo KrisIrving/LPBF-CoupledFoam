@@ -3,6 +3,8 @@ if (restoringContinuumState)
 {
     Info<< "M1_RESTART_STATE time=" << runTime.timeName()
         << " preservedFields=phi,rho,epsilon1 skippedInitialZeroDivergenceProjection=true"
+        << " epsilonMin=" << gMin(epsilon1.primitiveField())
+        << " epsilonMax=" << gMax(epsilon1.primitiveField())
         << endl;
 }
 
