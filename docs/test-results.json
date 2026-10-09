@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "5e1f81da2667bb4a9dc5eb46b04accd4ea73c12f",
-  "scope": "Curated results from 14 M1-A compressible archives and one M1-B integrated archive. Raw reports remain outside Git. Null means absent or not evaluated, never pass. Historical gates differ; startup failures are not physical outcomes.",
+  "latest_user_tested_commit": "685261887b2a199613fae024207eecddda14f9f9",
+  "scope": "Curated results from 14 M1-A compressible archives and two M1-B integrated archives. Raw reports remain outside Git. Null means absent or not evaluated, never pass. Historical gates differ; startup failures are not physical outcomes.",
   "records": [
     {
       "report": "m1-compressible-20261008-193210-28596.tar.gz",
@@ -550,11 +550,12 @@
   "development_packages": [
     {
       "package_id": "M1B-01",
-      "status": "startup_configuration_fix_prepared_runtime_pending",
+      "status": "revision_2_optics_and_transport_refinement_prepared_runtime_pending",
       "case_count": 8,
       "entrypoint": "scripts/m1b-integrated-test.sh",
       "documentation": "docs/m1b-integrated.zh-CN.md",
-      "physical_validation": "not_evaluated"
+      "physical_validation": "not_evaluated",
+      "revision": 2
     }
   ],
   "integrated_records": [
@@ -731,6 +732,564 @@
         }
       },
       "conclusion": "All cases failed during startup before time stepping; no physical integration outcome."
+    },
+    {
+      "report": "m1b-integrated-20261009-090945-245783.tar.gz",
+      "archive_sha256": "afc613830718f07886afe9be0513e0cec1d844bd31f42870c3336db82135a7c6",
+      "tested_commit": "685261887b2a199613fae024207eecddda14f9f9",
+      "last_stage": "integrated-summary",
+      "exit_status": 1,
+      "build_passed": true,
+      "case_count": 8,
+      "requested_gate_passed": false,
+      "physical_validation": "not_evaluated",
+      "cases": {
+        "advection-coarse": {
+          "metadata": {
+            "family": "advection",
+            "level": "coarse",
+            "profile": "short",
+            "cells": 40,
+            "mesh_cells": [
+              10,
+              2,
+              2
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 1e-06,
+            "end_time_s": 2e-05,
+            "phase_change_enabled": false,
+            "laser_power_w": 0,
+            "velocity_x_m_s": 1,
+            "vapour_reference_energy_offset_J_per_kg": 0,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "execution_passed": true,
+          "completed_time_steps": 20,
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "analytic_advection": false,
+            "phase_volume": true,
+            "disabled_phase_source_zero": true
+          },
+          "passed": false,
+          "closed_mass_balance": {
+            "initial_mass_kg": 5e-09,
+            "final_mass_kg": 5e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 1.9287397723290989e-25,
+            "residual_kg": 1.9287397723290989e-25,
+            "relative_residual": 3.8574795446581976e-17,
+            "samples": 21,
+            "max_history_relative_residual": 4.826165595830198e-17,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "observations": {
+            "absorbed_laser_energy_j": 0.0,
+            "configured_incident_energy_j": 0.0,
+            "reference_energy_change_j": 0.0,
+            "energy_change_minus_absorbed_j": 0.0,
+            "vapour_mass_change_kg": 0.0,
+            "max_abs_temperature_source_kg_k_per_s": 0.0,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.0,
+            "final_analytic_mean_abs_error": 0.143000779994598,
+            "phase_volume_relative_change": 0.0
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "advection-fine": {
+          "metadata": {
+            "family": "advection",
+            "level": "fine",
+            "profile": "short",
+            "cells": 80,
+            "mesh_cells": [
+              20,
+              2,
+              2
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 1e-06,
+            "end_time_s": 2e-05,
+            "phase_change_enabled": false,
+            "laser_power_w": 0,
+            "velocity_x_m_s": 1,
+            "vapour_reference_energy_offset_J_per_kg": 0,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "execution_passed": true,
+          "completed_time_steps": 20,
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "analytic_advection": true,
+            "phase_volume": true,
+            "disabled_phase_source_zero": true
+          },
+          "passed": true,
+          "closed_mass_balance": {
+            "initial_mass_kg": 5e-09,
+            "final_mass_kg": 5e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": -3.117461303602201e-25,
+            "residual_kg": -3.117461303602201e-25,
+            "relative_residual": 6.234922607204402e-17,
+            "samples": 21,
+            "max_history_relative_residual": 8.991977015784404e-17,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "observations": {
+            "absorbed_laser_energy_j": 0.0,
+            "configured_incident_energy_j": 0.0,
+            "reference_energy_change_j": 0.0,
+            "energy_change_minus_absorbed_j": 0.0,
+            "vapour_mass_change_kg": 0.0,
+            "max_abs_temperature_source_kg_k_per_s": 0.0,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.0,
+            "final_analytic_mean_abs_error": 0.10183205477657,
+            "phase_volume_relative_change": 0.0
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "spatial-evaporation-coarse": {
+          "metadata": {
+            "family": "spatial-evaporation",
+            "level": "coarse",
+            "profile": "short",
+            "cells": 216,
+            "mesh_cells": [
+              6,
+              6,
+              6
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 80000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 1e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 0,
+            "velocity_x_m_s": 0,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "execution_passed": true,
+          "completed_time_steps": 20,
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "active_phase_source_observed": true
+          },
+          "passed": true,
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50005865508e-09,
+            "final_mass_kg": 2.50005857959e-09,
+            "inventory_change_kg": -7.548999989849803e-17,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": -7.548999989849803e-17,
+            "relative_residual": 3.0195291516503403e-08,
+            "samples": 21,
+            "max_history_relative_residual": 6.917837693392908e-08,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "observations": {
+            "absorbed_laser_energy_j": 0.0,
+            "configured_incident_energy_j": 0.0,
+            "reference_energy_change_j": -2.2965063271179753e-10,
+            "energy_change_minus_absorbed_j": -2.2965063271179753e-10,
+            "vapour_mass_change_kg": 7.193782239962784e-20,
+            "max_abs_temperature_source_kg_k_per_s": 1.92627275147893e-08,
+            "final_Tmin_K": 4100.99999992,
+            "final_Tmax_K": 4101.00160371
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "spatial-evaporation-fine": {
+          "metadata": {
+            "family": "spatial-evaporation",
+            "level": "fine",
+            "profile": "short",
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 80000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 1e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 0,
+            "velocity_x_m_s": 0,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "execution_passed": true,
+          "completed_time_steps": 20,
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "active_phase_source_observed": true
+          },
+          "passed": true,
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50005865508e-09,
+            "final_mass_kg": 2.50005857422e-09,
+            "inventory_change_kg": -8.086000018691063e-17,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": -8.086000018691063e-17,
+            "relative_residual": 3.2343241236603375e-08,
+            "samples": 21,
+            "max_history_relative_residual": 8.571798883435094e-08,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "observations": {
+            "absorbed_laser_energy_j": 0.0,
+            "configured_incident_energy_j": 0.0,
+            "reference_energy_change_j": -2.4599490586890704e-10,
+            "energy_change_minus_absorbed_j": -2.4599490586890704e-10,
+            "vapour_mass_change_kg": 6.327414640087653e-20,
+            "max_abs_temperature_source_kg_k_per_s": 1.93262304178973e-08,
+            "final_Tmin_K": 4100.99999995,
+            "final_Tmax_K": 4101.00225147
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "laser-heat-coarse": {
+          "metadata": {
+            "family": "laser-heat",
+            "level": "coarse",
+            "profile": "short",
+            "cells": 216,
+            "mesh_cells": [
+              6,
+              6,
+              6
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 1e-08,
+            "phase_change_enabled": false,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "execution_passed": true,
+          "completed_time_steps": 20,
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": false,
+            "temperature_response": false,
+            "disabled_phase_source_zero": true
+          },
+          "passed": false,
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 21,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "observations": {
+            "absorbed_laser_energy_j": 0.0,
+            "configured_incident_energy_j": 1e-08,
+            "reference_energy_change_j": 0.0,
+            "energy_change_minus_absorbed_j": 0.0,
+            "vapour_mass_change_kg": 0.0,
+            "max_abs_temperature_source_kg_k_per_s": 0.0,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.0
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "laser-heat-fine": {
+          "metadata": {
+            "family": "laser-heat",
+            "level": "fine",
+            "profile": "short",
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 1e-08,
+            "phase_change_enabled": false,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "execution_passed": true,
+          "completed_time_steps": 20,
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": false,
+            "temperature_response": false,
+            "disabled_phase_source_zero": true
+          },
+          "passed": false,
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 21,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "observations": {
+            "absorbed_laser_energy_j": 0.0,
+            "configured_incident_energy_j": 1e-08,
+            "reference_energy_change_j": 5.0306980803327406e-17,
+            "energy_change_minus_absorbed_j": 5.0306980803327406e-17,
+            "vapour_mass_change_kg": 0.0,
+            "max_abs_temperature_source_kg_k_per_s": 0.0,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.0
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "laser-phase-coarse": {
+          "metadata": {
+            "family": "laser-phase",
+            "level": "coarse",
+            "profile": "short",
+            "cells": 216,
+            "mesh_cells": [
+              6,
+              6,
+              6
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 1e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "execution_passed": true,
+          "completed_time_steps": 20,
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": false,
+            "temperature_response": false,
+            "active_phase_source_observed": false
+          },
+          "passed": false,
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 21,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "observations": {
+            "absorbed_laser_energy_j": 0.0,
+            "configured_incident_energy_j": 1e-08,
+            "reference_energy_change_j": 0.0,
+            "energy_change_minus_absorbed_j": 0.0,
+            "vapour_mass_change_kg": 0.0,
+            "max_abs_temperature_source_kg_k_per_s": 4.2227472513543e-21,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.0
+          },
+          "physical_validation": "not_evaluated"
+        },
+        "laser-phase-fine": {
+          "metadata": {
+            "family": "laser-phase",
+            "level": "fine",
+            "profile": "short",
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 1e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "execution_passed": true,
+          "completed_time_steps": 20,
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": false,
+            "temperature_response": false,
+            "active_phase_source_observed": false
+          },
+          "passed": false,
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 21,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "observations": {
+            "absorbed_laser_energy_j": 0.0,
+            "configured_incident_energy_j": 1e-08,
+            "reference_energy_change_j": 5.0306980803327406e-17,
+            "energy_change_minus_absorbed_j": 5.0306980803327406e-17,
+            "vapour_mass_change_kg": 0.0,
+            "max_abs_temperature_source_kg_k_per_s": 1.0237927687302e-19,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.0
+          },
+          "physical_validation": "not_evaluated"
+        }
+      },
+      "conclusion": "All eight ran twenty steps; three passed all gates. Coarse advection exceeds analytic error limit; all four laser cases have zero absorption and no temperature response."
     }
   ]
 }

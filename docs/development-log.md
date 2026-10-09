@@ -1,5 +1,36 @@
 # Development and verification record
 
+## M1B-01 completed runs expose transport/optics limits: 2026-10-09
+
+User-tested commit `685261887b2a199613fae024207eecddda14f9f9`: all eight
+cases ran twenty steps and ended normally. Temperature, mass and alpha-bound/
+sum gates passed in all cases. Overall integration gate failed: coarse
+advection error was 0.143000779994598 against 0.12 (fine 0.10183205477657);
+four laser cases absorbed zero energy and had no temperature response. Both
+spatial evaporation cases and fine advection passed all requested gates.
+The initial CorrectPhi dictionary failure is resolved by runtime evidence.
+
+Archived fields and source audit show electrical_resistivity was accumulated
+from vapour/air in update.H, leaving pure metal essentially zero. Rays launched
+with 1 W input, so no source-input failure explains the zero absorption.
+Prepared default-off condensedPhaseOptics: sum positive condensed fractions
+divided by conductivity, normalized by condensed fraction. Single-metal limit
+is 1/sigma; only laser fixtures opt in. Added optional spatial M1_OPTICS values
+and summary observations. Multi-metal mixing and actual absorption runtime
+are not yet validated. Default optics behavior and phase/energy equations are
+preserved. Algebra checks show zero resistivity gives zero normal-incidence
+Drude absorption and the candidate's positive resistivity gives positive
+absorption; this is not CFD validation.
+
+Prepared revision 2 of the same eight-family matrix. Advection grids become
+80/160 cells instead of 40/80 to resolve the observed interface diffusion;
+old failures remain recorded. Other grids and every numerical threshold are
+unchanged. Corrected documentation of actual ray sampling: default polar mode
+uses 5 radial by 30 angular rays, not per-face subdivisions. State, plan and
+registers distinguish the completed failed integration run from pending
+candidate runtime. No WSL process or CFD run was invoked on the development
+side; static generation/parser/algebra checks only.
+
 ## M1B-01 startup configuration failure and repair: 2026-10-09
 
 User-tested commit `5e1f81da2667bb4a9dc5eb46b04accd4ea73c12f` built

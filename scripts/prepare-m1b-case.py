@@ -55,7 +55,7 @@ def prepare(case, family, level, profile='short'):
     advection = family == 'advection'
     laser_on = family.startswith('laser-')
     active = family in ('spatial-evaporation', 'laser-phase')
-    nx, ny, nz = ((10 if level == 'coarse' else 20), 2, 2) if advection else ((6,)*3 if level == 'coarse' else (12,)*3)
+    nx, ny, nz = ((20 if level == 'coarse' else 40), 2, 2) if advection else ((6,)*3 if level == 'coarse' else (12,)*3)
     length = 1e-4
     pressure = 80000 if family == 'spatial-evaporation' else 100000
     dt = 1e-6 if advection else 5e-10
@@ -125,6 +125,7 @@ writeFormat ascii; writePrecision 15; writeCompression off;
 timeFormat general; timePrecision 12; runTimeModifiable false;
 continuumDiagnostics true; couplingDiagnostics true;
 temperatureBudgetDiagnostics true; spatialDiagnostics true;
+condensedPhaseOptics {str(laser_on).lower()};
 {reference}
 '''))
     (case/'system/fvSolution').write_text(dictionary('fvSolution', f'''
@@ -160,10 +161,11 @@ relaxationFactors {{ equations {{ "U.*" 1; }} }}
     path.write_text(re.sub(r'laserRadius\s+[^;]+;', 'laserRadius 2.5e-5;', path.read_text()))
     (case/'constant/timeVsLaserPosition').write_text('(\n(0 (5e-5 0 5e-5))\n(1 (5e-5 0 5e-5))\n)\n')
     (case/'constant/timeVsLaserPower').write_text(f'(\n(0 {power})\n(1 {power})\n)\n')
-    meta = dict(family=family, level=level, profile=profile, cells=nx*ny*nz,
+    meta = dict(family=family, level=level, profile=profile, package_revision=2, cells=nx*ny*nz,
                 mesh_cells=[nx,ny,nz], length_m=length, initial_temperature_K=4101,
                 initial_pressure_Pa=pressure, delta_t_s=dt, end_time_s=end,
                 phase_change_enabled=active, laser_power_w=power, velocity_x_m_s=velocity,
+                condensed_phase_optics=laser_on,
                 vapour_reference_energy_offset_J_per_kg=offset,
                 thresholds=dict(alpha_bound_tolerance=1e-6, alpha_sum_tolerance=1e-6,
                     closed_mass_relative_tolerance=1e-5, advection_mean_abs_error=0.12,

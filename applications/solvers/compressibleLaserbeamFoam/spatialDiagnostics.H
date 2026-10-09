@@ -1,6 +1,19 @@
 // Optional spatial observations for a uniform Cartesian synthetic test mesh.
 if (runTime.controlDict().lookupOrDefault<Switch>("spatialDiagnostics", false))
 {
+    const scalar condensedVolume = gSum(condensate.primitiveField()*mesh.V().field());
+    const scalar condensedResistivity = gSum
+    (
+        electrical_resistivity.primitiveField()*condensate.primitiveField()*mesh.V().field()
+    )/max(condensedVolume, VSMALL);
+    if (Pstream::master())
+    {
+        const int oldPrecision = Info().precision();
+        Info().precision(15);
+        Info<< "M1_OPTICS time=" << runTime.value()
+            << " condensedWeightedResistivityOhmM=" << condensedResistivity << nl;
+        Info().precision(oldPrecision);
+    }
     scalarField alphaSum(mesh.nCells(), Zero);
     for (const phaseModel& phase : mixture.phases())
     {

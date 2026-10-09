@@ -1,4 +1,8 @@
 {
+    const Switch condensedPhaseOptics
+    (
+        runTime.controlDict().lookupOrDefault<Switch>("condensedPhaseOptics", false)
+    );
     alphasum *= 0.0;
     condensate = 1.0;
 
@@ -81,13 +85,31 @@
         if (res != string::npos || phase1.name() == "air")
         {
             condensate -= alpha1;
-            electrical_resistivity += alpha1/phaseconductivity;
+            if (!condensedPhaseOptics)
+            {
+                electrical_resistivity += alpha1/phaseconductivity;
+            }
+        }
+        else if (condensedPhaseOptics)
+        {
+            if (phaseconductivity.value() <= 0)
+            {
+                FatalErrorInFunction << "Condensed-phase conductivity must be positive"
+                    << exit(FatalError);
+            }
+            electrical_resistivity += max(alpha1, scalar(0))/phaseconductivity;
         }
 
         alphasum += alpha1;
     }
 
     condensate = max(min(condensate, 1.0), 0.0);
+    if (condensedPhaseOptics)
+    {
+        // Resistivity of the condensed mixture, not diluted by gas fraction.
+        // Single-metal limit: eta=1/sigma. Default preserves upstream behavior.
+        electrical_resistivity /= max(condensate, scalar(1e-12));
+    }
 
 
     electrical_resistivity.correctBoundaryConditions();

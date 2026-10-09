@@ -58,6 +58,16 @@ def assess(case):
     absorbed = math.fsum(float(after['absorbedLaserPowerW'])*(float(after['time'])-float(before['time']))
                          for before,after in zip(continuum,continuum[1:]))
     extra = {}
+    optics=rows(text,'M1_OPTICS')
+    if optics:
+        if [float(r['time']) for r in optics]!=times:
+            raise ValueError('Optical diagnostics and continuum times differ')
+        resistivities=[float(r['condensedWeightedResistivityOhmM']) for r in optics]
+        if any(not math.isfinite(x) for x in resistivities):
+            raise ValueError('Non-finite optical diagnostic')
+        extra['final_condensed_weighted_resistivity_ohm_m']=resistivities[-1]
+    elif meta.get('condensed_phase_optics',False):
+        raise ValueError('Missing optical diagnostics for condensed-phase candidate')
     if meta['family']=='advection':
         series = phase_spatial['metal1']
         error = float(interfaces[-1]['analyticMeanAbsError'])
