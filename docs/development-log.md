@@ -1,5 +1,13 @@
 # Development and verification record
 
+## M1B-01 short integration accepted; M1B-02 prepared: 2026-10-09
+
+User-tested `4438d4aada380e670974584262890309137c8f36`: all eight cases complete twenty steps and pass unchanged gates. Absorption is 2.57714867562 nJ from 10 nJ incident; advection errors are 0.10183205/0.08099039. Q06 is resolved only for the synthetic single-metal optical candidate; no multi-metal or physical validation. Laser phase exchange remains very weak; mesh peak temperatures differ substantially.
+
+Prepared one milestone package: same fine laser-phase fixture over forty steps, continuous serial, checkpoint/restart at twenty steps, and two MPI ranks. Whole global inventory/temperature histories compared against predeclared tolerances. Raw restart segments retained; duplicated checkpoint diagnostics removed only in derived merged log. Explicit common Cv metadata enables signed temperature-equation budget diagnostics, never a new conservation gate. No C++ equation or production-default changes.
+
+Development verification consists of offline feedback reanalysis, synthetic merge/comparison checks, case generation, Python AST and shell syntax checks. No WSL, compilation or CFD execution performed here. M1B-02 runtime results remain pending.
+
 ## M1B-01 completed runs expose transport/optics limits: 2026-10-09
 
 User-tested commit `685261887b2a199613fae024207eecddda14f9f9`: all eight

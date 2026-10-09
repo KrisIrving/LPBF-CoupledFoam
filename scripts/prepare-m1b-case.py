@@ -166,6 +166,7 @@ relaxationFactors {{ equations {{ "U.*" 1; }} }}
                 initial_pressure_Pa=pressure, delta_t_s=dt, end_time_s=end,
                 phase_change_enabled=active, laser_power_w=power, velocity_x_m_s=velocity,
                 condensed_phase_optics=laser_on,
+                thermo_fixture='consistent', common_constant_cv_J_per_kg_K=800,
                 vapour_reference_energy_offset_J_per_kg=offset,
                 thresholds=dict(alpha_bound_tolerance=1e-6, alpha_sum_tolerance=1e-6,
                     closed_mass_relative_tolerance=1e-5, advection_mean_abs_error=0.12,

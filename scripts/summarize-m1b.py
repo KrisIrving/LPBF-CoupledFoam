@@ -11,6 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('temperature', ROOT/'scripts/summarize-m1-temperature.py')
 temperature = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(temperature)
+spec_energy = importlib.util.spec_from_file_location('energy', ROOT/'scripts/summarize-m1-energy.py')
+energy = importlib.util.module_from_spec(spec_energy)
+spec_energy.loader.exec_module(energy)
 FAMILIES = ('advection', 'spatial-evaporation', 'laser-heat', 'laser-phase')
 
 
@@ -99,6 +102,8 @@ def assess(case):
     else:
         gates['active_phase_source_observed']=max(abs(x) for x in phase_change_source)>limits['minimum_active_temperature_source_kg_k_per_s']
     return dict(metadata=meta,gates=gates,passed=all(gates.values()),
+                temperature_equation_budget=energy.temperature_budget(text,continuum,meta,offset,delta_vapour)
+                    if meta.get('common_constant_cv_J_per_kg_K') else dict(available=False,reason='Missing explicit Cv metadata'),
                 closed_mass_balance=mass,alpha_min=minimum,alpha_max=maximum,alpha_sum_max_error=sum_error,
                 observations=dict(absorbed_laser_energy_j=absorbed,
                     configured_incident_energy_j=meta['laser_power_w']*(times[-1]-times[0]),
