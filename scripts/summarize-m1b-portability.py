@@ -24,6 +24,11 @@ def merge(first, second):
     midpoint = float(ar[-1]['time'])
     if float(br[0]['time']) != midpoint or float(br[1]['time']) <= midpoint:
         raise ValueError('Restart times do not join at the checkpoint')
+    metadata = first.parent/'m1b-case.json'
+    if metadata.exists() and json.loads(metadata.read_text()).get('checkpoint_continuum_state'):
+        marker = integrated.rows(b,'M1_RESTART_STATE')
+        if len(marker)!=1 or float(marker[0]['time'])!=midpoint:
+            raise ValueError('Missing checkpoint-state restoration diagnostic')
     prefixes = ('M1_CONTINUUM','M1_PHASE','M1_SPATIAL','M1_INTERFACE','M1_OPTICS')
     kept = []
     for line in b.splitlines():

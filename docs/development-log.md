@@ -1,5 +1,13 @@
 # Development and verification record
 
+## M1B-02 MPI accepted, restart fails; bounded closeout and DEM design: 2026-10-09
+
+User-tested `4a258dc5400a575fcf5cf6a6617b5146a5e87bac`. All three forty-step trajectories complete and independently pass integration gates. MPI history comparison passes. Restart mass relative difference 8.2578e-8, phase-volume/domain difference 4.1295e-8 and reference-energy history difference 6.2807e-10 J fail unchanged gates. Temperature/absorbed histories pass. Original failure retained.
+
+Prepared default-off checkpointContinuumState candidate for compressible solver: saved phi header required at nonzero time, continuity rho written/read strictly, saved epsilon1 preserved, and startup zero-divergence CorrectPhi skipped while rAU creation retained. Existing dgdt fields already use READ_IF_PRESENT/AUTO_WRITE; no claim they were absent. Same three trajectories, thresholds unchanged. Runtime build and repair effect remain user-side pending.
+
+User requested rapid M1 main verification: documented a bounded closeout matrix for meaningful evaporation/gas response, melting/moving laser and resolution sensitivity. Existing audit evidence reused with explicit scope; no new uniform micro-tests. M1 completion is not claimed. Added source-backed CFD–DEM discussion documenting upstream offline bed generation, embedded library/MPI proposal, unresolved-versus-resolved particle representation and conservative/time/checkpoint contracts. No DEM implementation or linked-library compatibility claim. Offline feedback reanalysis reproduces the original failure; five Python log tests, fixture generation, Python AST and shell syntax checks pass. No developer-side WSL, build or simulation.
+
 ## M1B-01 short integration accepted; M1B-02 prepared: 2026-10-09
 
 User-tested `4438d4aada380e670974584262890309137c8f36`: all eight cases complete twenty steps and pass unchanged gates. Absorption is 2.57714867562 nJ from 10 nJ incident; advection errors are 0.10183205/0.08099039. Q06 is resolved only for the synthetic single-metal optical candidate; no multi-metal or physical validation. Laser phase exchange remains very weak; mesh peak temperatures differ substantially.

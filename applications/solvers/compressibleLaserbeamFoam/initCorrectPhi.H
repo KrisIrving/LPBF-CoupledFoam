@@ -1,4 +1,10 @@
 tmp<volScalarField> rAU;
+if (restoringContinuumState)
+{
+    Info<< "M1_RESTART_STATE time=" << runTime.timeName()
+        << " preservedFields=phi,rho,epsilon1 skippedInitialZeroDivergenceProjection=true"
+        << endl;
+}
 
 if (correctPhi)
 {
@@ -16,9 +22,12 @@ if (correctPhi)
         dimensionedScalar("rAU", dimTime/dimDensity, 1)
     );
 
-    #include "correctPhi.esi.H"
+    if (!restoringContinuumState)
+    {
+        #include "correctPhi.esi.H"
+    }
 }
-else
+else if (!restoringContinuumState)
 {
     CorrectPhi
     (

@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "4438d4aada380e670974584262890309137c8f36",
-  "scope": "Curated results from 14 M1-A archives and three M1-B archives. Raw reports stay outside Git. Missing checks are never passes; historical failures retained.",
+  "latest_user_tested_commit": "4a258dc5400a575fcf5cf6a6617b5146a5e87bac",
+  "scope": "Curated results: 14 M1-A, three spatial M1-B, one restart/MPI archive. Raw feedback stays outside Git. Failed histories remain; absent checks never pass.",
   "records": [
     {
       "report": "m1-compressible-20261008-193210-28596.tar.gz",
@@ -559,13 +559,14 @@
       "tested_commit": "4438d4aada380e670974584262890309137c8f36"
     },
     {
-      "status": "prepared_not_user_tested",
+      "status": "revision_2_checkpoint_candidate_prepared_not_user_tested",
       "scope": "Forty-step fine laser-phase continuous serial, split restart, two-rank MPI; full global diagnostic histories and temperature equation budget.",
       "physical_validation": "not_evaluated",
       "package_id": "M1B-02",
       "case_count": 3,
       "entrypoint": "scripts/m1b-portability-test.sh",
-      "documentation": "docs/m1b-portability.zh-CN.md"
+      "documentation": "docs/m1b-portability.zh-CN.md",
+      "revision": 2
     }
   ],
   "integrated_records": [
@@ -1955,6 +1956,350 @@
         "gate_changed": false
       },
       "changed_hypotheses": "Condensed-phase optics candidate now gives positive absorption in this fixture. Refinement resolves the existing advection gate without changing threshold. Laser phase coupling remains too weak for strong-evaporation validation."
+    }
+  ],
+  "portability_records": [
+    {
+      "report": "m1b-portability-20261009-093525-256028.tar.gz",
+      "archive_sha256": "30e578d6c150265e840230d689682c9d52a79167a5cac7ad39cec30f2f4d7034",
+      "tested_commit": "4a258dc5400a575fcf5cf6a6617b5146a5e87bac",
+      "exit_status": 1,
+      "last_stage": "portability-summary",
+      "build_passed": true,
+      "case_count": 3,
+      "package": "M1B-02",
+      "thresholds": {
+        "mass_relative": 1e-08,
+        "phase_volume_domain_relative": 1e-08,
+        "temperature_absolute_K": 0.0001,
+        "absorbed_absolute_J": 1e-14,
+        "energy_change_absolute_J": 1e-13,
+        "energy_signal_relative": 1e-05
+      },
+      "cases": {
+        "continuous": {
+          "metadata": {
+            "family": "laser-phase",
+            "level": "fine",
+            "profile": "verification",
+            "package_revision": 2,
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 2e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "condensed_phase_optics": true,
+            "thermo_fixture": "consistent",
+            "common_constant_cv_J_per_kg_K": 800,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": true,
+            "temperature_response": true,
+            "active_phase_source_observed": true
+          },
+          "passed": true,
+          "temperature_equation_budget": {
+            "available": true,
+            "constant_cv_J_per_kg_K": 800,
+            "integrated_signed_equation_terms_j": {
+              "storage": 5.154297001626052e-09,
+              "transport": 3.4587816043211405e-30,
+              "diffusion": 4.11784169025195e-29,
+              "mechanical": 5.976663229981308e-20,
+              "laser": -5.154297351235778e-09,
+              "fusion": -1.397802028673804e-18,
+              "phaseChange": 1.6635344123160016e-18,
+              "residual": -3.4928422530183485e-16
+            },
+            "reference_offset_inventory_change_j": -1.077467455511083e-15,
+            "phase_source_inventory_mismatch_j": -1.0791309899233991e-15,
+            "scope": "Unrelaxed rho*T equation terms evaluated before mixture.correct and pressure correction. Last thermal solve per time is integrated once. Constant Cv conversion is restricted to this fixture; EOS native energy after pressure is a separate ledger. Reconstructed explicit transport can differ from implicit matrix transport in nonuniform cases; this is a diagnostic, not a new conservation gate.",
+            "history_sample_count": 40
+          },
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 41,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "alpha_min": -3.28329176838189e-39,
+          "alpha_max": 1.0,
+          "alpha_sum_max_error": 1.9984014443252818e-15,
+          "observations": {
+            "absorbed_laser_energy_j": 5.154297351240001e-09,
+            "configured_incident_energy_j": 2e-08,
+            "reference_energy_change_j": 5.154293514567088e-09,
+            "energy_change_minus_absorbed_j": -3.836672913048165e-15,
+            "vapour_mass_change_kg": -8.1746020537002195e-22,
+            "max_abs_temperature_source_kg_k_per_s": 2.03267241474662e-13,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.11544962,
+            "final_condensed_weighted_resistivity_ohm_m": 9.99999999999999e-07
+          },
+          "physical_validation": "not_evaluated",
+          "execution_passed": true,
+          "completed_time_steps": 40
+        },
+        "restart": {
+          "metadata": {
+            "family": "laser-phase",
+            "level": "fine",
+            "profile": "verification",
+            "package_revision": 2,
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 2e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "condensed_phase_optics": true,
+            "thermo_fixture": "consistent",
+            "common_constant_cv_J_per_kg_K": 800,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": true,
+            "temperature_response": true,
+            "active_phase_source_observed": true
+          },
+          "passed": true,
+          "temperature_equation_budget": {
+            "available": true,
+            "constant_cv_J_per_kg_K": 800,
+            "integrated_signed_equation_terms_j": {
+              "storage": 5.1542686269424056e-09,
+              "transport": -1.2208592917228662e-26,
+              "diffusion": 1.950753636113593e-28,
+              "mechanical": 5.608260987606358e-15,
+              "laser": -5.154297351235778e-09,
+              "fusion": -1.031725273887531e-18,
+              "phaseChange": 2.2997877433727057e-14,
+              "residual": -1.1918667446104261e-16
+            },
+            "reference_offset_inventory_change_j": 4.801970577880886e-14,
+            "phase_source_inventory_mismatch_j": 2.50218283450818e-14,
+            "scope": "Unrelaxed rho*T equation terms evaluated before mixture.correct and pressure correction. Last thermal solve per time is integrated once. Constant Cv conversion is restricted to this fixture; EOS native energy after pressure is a separate ledger. Reconstructed explicit transport can differ from implicit matrix transport in nonuniform cases; this is a diagnostic, not a new conservation gate.",
+            "history_sample_count": 40
+          },
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007316943e-09,
+            "inventory_change_kg": -1.494200000274476e-16,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": -1.494200000274476e-16,
+            "relative_residual": 5.976624721397322e-08,
+            "samples": 41,
+            "max_history_relative_residual": 8.257757821619188e-08,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "alpha_min": -8.67361737988404e-28,
+          "alpha_max": 1.0,
+          "alpha_sum_max_error": 1.9984014443252818e-15,
+          "observations": {
+            "absorbed_laser_energy_j": 5.154297351240001e-09,
+            "configured_incident_energy_j": 2e-08,
+            "reference_energy_change_j": 4.6997465979678466e-09,
+            "energy_change_minus_absorbed_j": -4.545507532721541e-10,
+            "vapour_mass_change_kg": 3.6431911095758695e-20,
+            "max_abs_temperature_source_kg_k_per_s": 2.02409104521794e-08,
+            "final_Tmin_K": 4100.99999926,
+            "final_Tmax_K": 4101.11544931,
+            "final_condensed_weighted_resistivity_ohm_m": 9.99999999999999e-07
+          },
+          "physical_validation": "not_evaluated",
+          "execution_passed": true,
+          "completed_time_steps": 40
+        },
+        "mpi2": {
+          "metadata": {
+            "family": "laser-phase",
+            "level": "fine",
+            "profile": "verification",
+            "package_revision": 2,
+            "cells": 1728,
+            "mesh_cells": [
+              12,
+              12,
+              12
+            ],
+            "length_m": 0.0001,
+            "initial_temperature_K": 4101,
+            "initial_pressure_Pa": 100000,
+            "delta_t_s": 5e-10,
+            "end_time_s": 2e-08,
+            "phase_change_enabled": true,
+            "laser_power_w": 1,
+            "velocity_x_m_s": 0,
+            "condensed_phase_optics": true,
+            "thermo_fixture": "consistent",
+            "common_constant_cv_J_per_kg_K": 800,
+            "vapour_reference_energy_offset_J_per_kg": 1318067.1651452065,
+            "thresholds": {
+              "alpha_bound_tolerance": 1e-06,
+              "alpha_sum_tolerance": 1e-06,
+              "closed_mass_relative_tolerance": 1e-05,
+              "advection_mean_abs_error": 0.12,
+              "advection_phase_volume_relative_tolerance": 1e-05,
+              "minimum_active_temperature_source_kg_k_per_s": 1e-16
+            },
+            "scope": "Spatial synthetic integration tests only. Equal Cv; matched density for advection, rhoConst/perfectGas otherwise. No real material, melting or literature validation. Native-energy change and absorbed laser energy are observations, not a universal energy conservation gate."
+          },
+          "gates": {
+            "normal_end": true,
+            "end_time_reached": true,
+            "temperature_linear": true,
+            "closed_mass": true,
+            "alpha_bounds": true,
+            "alpha_sum": true,
+            "positive_absorbed_energy": true,
+            "temperature_response": true,
+            "active_phase_source_observed": true
+          },
+          "passed": true,
+          "temperature_equation_budget": {
+            "available": true,
+            "constant_cv_J_per_kg_K": 800,
+            "integrated_signed_equation_terms_j": {
+              "storage": 5.154297343499482e-09,
+              "transport": -3.461178609083159e-26,
+              "diffusion": -1.3662402675662514e-28,
+              "mechanical": 5.976661633429576e-20,
+              "laser": -5.154297351235778e-09,
+              "fusion": -1.3061468762347857e-18,
+              "phaseChange": 1.6635647780076386e-18,
+              "residual": -7.319106228131419e-18
+            },
+            "reference_offset_inventory_change_j": -1.077467971237825e-15,
+            "phase_source_inventory_mismatch_j": -1.0791315360158327e-15,
+            "scope": "Unrelaxed rho*T equation terms evaluated before mixture.correct and pressure correction. Last thermal solve per time is integrated once. Constant Cv conversion is restricted to this fixture; EOS native energy after pressure is a separate ledger. Reconstructed explicit transport can differ from implicit matrix transport in nonuniform cases; this is a diagnostic, not a new conservation gate.",
+            "history_sample_count": 40
+          },
+          "closed_mass_balance": {
+            "initial_mass_kg": 2.50007331885e-09,
+            "final_mass_kg": 2.50007331885e-09,
+            "inventory_change_kg": 0.0,
+            "right_endpoint_boundary_integral_kg": 0.0,
+            "residual_kg": 0.0,
+            "relative_residual": 0.0,
+            "samples": 41,
+            "max_history_relative_residual": 0.0,
+            "relative_tolerance": 1e-05,
+            "closed_mass_check_passed": true
+          },
+          "alpha_min": -1.22115761828469e-39,
+          "alpha_max": 1.0,
+          "alpha_sum_max_error": 2.9976021664879227e-15,
+          "observations": {
+            "absorbed_laser_energy_j": 5.154297351240001e-09,
+            "configured_incident_energy_j": 2e-08,
+            "reference_energy_change_j": 5.154293826817313e-09,
+            "energy_change_minus_absorbed_j": -3.52442268737234e-15,
+            "vapour_mass_change_kg": -8.174605966450309e-22,
+            "max_abs_temperature_source_kg_k_per_s": 2.03267973499673e-13,
+            "final_Tmin_K": 4101.0,
+            "final_Tmax_K": 4101.11544962,
+            "final_condensed_weighted_resistivity_ohm_m": 9.99999999999999e-07
+          },
+          "physical_validation": "not_evaluated",
+          "execution_passed": true,
+          "completed_time_steps": 40
+        }
+      },
+      "comparisons": {
+        "restart": {
+          "max_history_differences": {
+            "mass_relative": 8.257757821619188e-08,
+            "phase_volume_domain_relative": 4.1294671997611435e-08,
+            "temperature_absolute_K": 1.5300001905416138e-06,
+            "absorbed_absolute_J": 0.0,
+            "energy_change_absolute_J": 6.280650938564336e-10
+          },
+          "gates": {
+            "mass_relative": false,
+            "phase_volume_domain_relative": false,
+            "temperature_absolute_K": true,
+            "absorbed_absolute_J": true,
+            "energy_change_absolute_J": false
+          },
+          "passed": false
+        },
+        "mpi2": {
+          "max_history_differences": {
+            "mass_relative": 0.0,
+            "phase_volume_domain_relative": 3.029225876048685e-15,
+            "temperature_absolute_K": 9.999894245993346e-09,
+            "absorbed_absolute_J": 0.0,
+            "energy_change_absolute_J": 3.209238430557093e-16
+          },
+          "gates": {
+            "mass_relative": true,
+            "phase_volume_domain_relative": true,
+            "temperature_absolute_K": true,
+            "absorbed_absolute_J": true,
+            "energy_change_absolute_J": true
+          },
+          "passed": true
+        }
+      },
+      "requested_gate_passed": false,
+      "physical_validation": "not_evaluated",
+      "scope": "Synthetic weak-phase laser fixture only; global inventories and temperature extrema. No fieldwise equivalence, strong evaporation, full energy closure or material validation.",
+      "changed_hypotheses": "MPI agrees within original gates. Restart does not. Saved phi is projected to zero divergence at startup; continuity rho is not written. A checkpoint-state candidate is prepared, not runtime confirmed."
     }
   ]
 }

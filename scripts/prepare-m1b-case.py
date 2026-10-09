@@ -124,6 +124,7 @@ writeControl timeStep; writeInterval {round(end/dt)}; purgeWrite 0;
 writeFormat ascii; writePrecision 15; writeCompression off;
 timeFormat general; timePrecision 12; runTimeModifiable false;
 continuumDiagnostics true; couplingDiagnostics true;
+checkpointContinuumState true;
 temperatureBudgetDiagnostics true; spatialDiagnostics true;
 condensedPhaseOptics {str(laser_on).lower()};
 {reference}
@@ -166,6 +167,7 @@ relaxationFactors {{ equations {{ "U.*" 1; }} }}
                 initial_pressure_Pa=pressure, delta_t_s=dt, end_time_s=end,
                 phase_change_enabled=active, laser_power_w=power, velocity_x_m_s=velocity,
                 condensed_phase_optics=laser_on,
+                checkpoint_continuum_state=True,
                 thermo_fixture='consistent', common_constant_cv_J_per_kg_K=800,
                 vapour_reference_energy_offset_J_per_kg=offset,
                 thresholds=dict(alpha_bound_tolerance=1e-6, alpha_sum_tolerance=1e-6,

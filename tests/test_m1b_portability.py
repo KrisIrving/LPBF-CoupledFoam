@@ -48,6 +48,15 @@ class PortabilityTests(unittest.TestCase):
         self.assertEqual(merged.splitlines().count('End'),1)
         second.write_text('M1_CONTINUUM time=0\nM1_CONTINUUM time=2\nEnd\n')
         with self.assertRaises(ValueError): p.merge(first,second)
+
+    def test_checkpoint_candidate_requires_restoration_marker(self):
+        first=self.root/'first'; second=self.root/'second'
+        (self.root/'m1b-case.json').write_text(json.dumps(dict(checkpoint_continuum_state=True)))
+        first.write_text('M1_CONTINUUM time=0\nM1_CONTINUUM time=1\nEnd\n')
+        second.write_text('M1_CONTINUUM time=1\nM1_CONTINUUM time=2\nEnd\n')
+        with self.assertRaises(ValueError): p.merge(first,second)
+        second.write_text('M1_RESTART_STATE time=1 preservedFields=phi,rho,epsilon1\n'+second.read_text())
+        self.assertIn('M1_RESTART_STATE',p.merge(first,second))
         second.write_text('M1_CONTINUUM time=1\nM1_CONTINUUM time=2\n')
         with self.assertRaises(ValueError): p.merge(first,second)
 

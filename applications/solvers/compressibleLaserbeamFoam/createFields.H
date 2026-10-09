@@ -29,6 +29,20 @@ volVectorField U
     mesh
 );
 
+const bool checkpointContinuumState = runTime.controlDict().lookupOrDefault<bool>
+(
+    "checkpointContinuumState", false
+);
+const bool restoringContinuumState = checkpointContinuumState && runTime.value() > SMALL;
+if (restoringContinuumState)
+{
+    IOobject checkpointPhi("phi", runTime.timeName(), mesh, IOobject::MUST_READ);
+    if (!checkpointPhi.typeHeaderOk<surfaceScalarField>(true))
+    {
+        FatalErrorInFunction << "checkpointContinuumState requires the saved phi field"
+            << exit(FatalError);
+    }
+}
 #include "createPhi.H"
 
 Info<< "Constructing multiphaseMixtureThermo\n" << endl;
@@ -41,7 +55,8 @@ volScalarField rho
         "rho",
         runTime.timeName(),
         mesh,
-        IOobject::READ_IF_PRESENT
+        restoringContinuumState ? IOobject::MUST_READ : IOobject::READ_IF_PRESENT,
+        checkpointContinuumState ? IOobject::AUTO_WRITE : IOobject::NO_WRITE
     ),
     mixture.rho()
 );
@@ -536,14 +551,17 @@ laserHeatSource laser(mesh);
             "epsilon1",
             runTime.timeName(),
             mesh,
-            IOobject::READ_IF_PRESENT,
+            restoringContinuumState ? IOobject::MUST_READ : IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
         mesh,
        dimensionedScalar("epsilon1",dimensionSet(0,0,0,0,0),0.0)
     );
     
-    epsilon1=max(min((mixture.T()-TSolidus)/(TLiquidus-TSolidus),scalar(1)),scalar(0));
+    if (!restoringContinuumState)
+    {
+        epsilon1=max(min((mixture.T()-TSolidus)/(TLiquidus-TSolidus),scalar(1)),scalar(0));
+    }
     epsilon1.correctBoundaryConditions();
 
 
