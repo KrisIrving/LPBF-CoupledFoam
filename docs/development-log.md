@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-09: DEM library present; fix missing OpenCFD MPI compiler flags
+
+User archive at 5ff9d52b (SHA 98321e7bacffe310e1d3634ca97b7af98ed6faf2cab98c8f8a3b017544f82537) exits 2 at build. Pinned LIGGGHTS header/library exist and required symbol/ldd preflight passed. The actual g++ invocation omits MPI include paths, causing mpi.h not found; Foundation-style PINC/PLIBS placeholders did not supply the necessary OpenCFD v2512 flags. This is our build adaptation defect, not a DEM runtime failure or proven platform incompatibility.
+
+Use selected mpicc --showme:compile/link output in explicit wmake variables; log flags, disable unnecessary application-side OpenMPI C++ binding declarations and add MPI flags to object signature. No DEM rebuild, source physics or acceptance-threshold changes. Native build and serial/MPI execution remain pending; archive failures preserved, developer performs static checks only.
+
 ## 2026-10-09: user confirms no DEM installation; pinned shared-library bootstrap prepared
 
 User explicitly confirms this WSL has only v2512, no LIGGGHTS/CFDEM. Superseded inventory-first action. Inspected official pinned Makefile.auto/user_default/shared-library rules. Added user-side isolated LIGGGHTS-PUBLIC MPI/PIC bootstrap at 3d5c00f20519e6bb6eb6756f51f1ad36564e649d; disables optional visualization/superquadrics, uses auto postfix, guards source/toolchain changes and saves export paths. Runs existing communication package after build and includes its child archive in setup feedback. No sudo, whole-CFDEM install, platform migration or developer-side WSL/native build. Actual Ubuntu compatibility and communication still unverified; original failed report preserved.

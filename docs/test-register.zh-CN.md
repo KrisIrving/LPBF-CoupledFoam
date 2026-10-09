@@ -1,5 +1,15 @@
 # 测试台账与阶段结论
 
+## 通信 demo 第二次反馈：库已可用，OpenFOAM 应用遗漏 MPI 编译参数
+
+报告 `dem-communication-20261009-203111-434315.tar.gz`，提交 `5ff9d52bb934d90d6011acfd3c75f6ba8d1c63e5`，SHA-256 `98321e7bacffe310e1d3634ca97b7af98ed6faf2cab98c8f8a3b017544f82537`。result 为 last_stage=build、exit_status=2；无串行/MPI 运行记录，通信仍未验证。
+
+LIGGGHTS 头文件/共享库已存在，实际源提交 `3d5c00f20519e6bb6eb6756f51f1ad36564e649d`。头文件 SHA `f7c1facc0a83197f13bd8e59570f08774f4f383045c4598849f1e0ef553804d4`，库 SHA `8b7e8d4b8f6cb72968d8d29723f9eb97f53f7dab83327528be8acb61bac5fb38`。原符号检查及依赖预检通过，ldd 显示 libmpi.so.40/libmpi_cxx.so.40 等均已解析。归档不包含 LIGGGHTS 完整构建日志，证据是库已生成并通过当前预检；不是完整库或通信物理验证。
+
+编译器错误为 library.h 中 `mpi.h: No such file or directory`。实际 g++ 命令缺少 MPI -I 参数：原 Make/options 的 $(PFLAGS)/$(PINC) 在此 v2512 工具链未提供所需参数。这是本项目构建适配遗漏，不是 OpenMPI 尚未安装、LIGGGHTS 编译失败或 v2512 不可行。
+
+修订由当前 mpicc --showme:compile/link 导出 LPBF_MPI_INC/LPBF_MPI_LIBS，供 wmake 显式使用，并记录环境；禁用应用侧不需要的 OpenMPI 旧 C++ bindings，API 仍使用 C MPI；对象环境签名加入 MPI 参数，变更时只清理本 demo 对象。未改通信算法或验收门槛，未重编 LIGGGHTS。静态检查后待用户重跑原 demo，不重跑依赖安装。原始两轮失败均保留。
+
 ## 用户澄清：当前 WSL 未安装 LIGGGHTS/CFDEM
 
 2026-10-09 用户明确本 WSL 只有 OF2512。因此首次反馈的缺头文件确有依赖未安装的背景，原报告状态仍保持 dependency-audit/exit_status=1、构建及执行未开始。新增固定提交的独立 MPI/PIC 库安装与通信入口，真实安装/构建均未执行；无需用户再生成目录定位清单。没有新增运行证据或新的通过结论，下一反馈应为 dem-setup 包。

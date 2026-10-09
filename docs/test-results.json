@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "dff530e71c384a45c7d5ceb6346b26b3e343d88b",
+  "latest_user_tested_commit": "5ff9d52bb934d90d6011acfd3c75f6ba8d1c63e5",
   "scope": "Curated evidence including first M1C interface archive. Historical failures preserved; separate offline step-aligned interpretation does not replace original summary. Raw files stay outside Git.",
   "records": [
     {
@@ -5503,6 +5503,24 @@
       "communication_validation": "not_evaluated",
       "limitation": "Actual source and shared library are not identified by this report; no evidence of a compile/runtime coupling failure.",
       "next_action": "Read-only bounded dependency inventory before configuring or building the library."
+    },
+    {
+      "report": "dem-communication-20261009-203111-434315.tar.gz",
+      "archive_sha256": "98321e7bacffe310e1d3634ca97b7af98ed6faf2cab98c8f8a3b017544f82537",
+      "tested_commit": "5ff9d52bb934d90d6011acfd3c75f6ba8d1c63e5",
+      "last_stage": "build",
+      "exit_status": 2,
+      "dependency_preflight_passed": true,
+      "dependency_source_commit": "3d5c00f20519e6bb6eb6756f51f1ad36564e649d",
+      "header_sha256": "f7c1facc0a83197f13bd8e59570f08774f4f383045c4598849f1e0ef553804d4",
+      "library_sha256": "8b7e8d4b8f6cb72968d8d29723f9eb97f53f7dab83327528be8acb61bac5fb38",
+      "build": "failed",
+      "build_error": "mpi.h missing because actual application g++ command omits MPI include flags",
+      "serial_execution": "not_run",
+      "mpi_execution": "not_run",
+      "communication_validation": "not_evaluated",
+      "fix_candidate": "Use mpicc --showme:compile/link flags explicitly in wmake; runtime unverified",
+      "next_action": "Rebuild/rerun only demo with installed dependency environment."
     }
   ],
   "communication_environment_clarification": {
@@ -5515,6 +5533,7 @@
     "required_dependency": "MPI-enabled LIGGGHTS shared library only; CFDEM not required for this demo",
     "dependency_pin": "3d5c00f20519e6bb6eb6756f51f1ad36564e649d",
     "setup_build": "not_run",
-    "communication_runtime": "not_run"
+    "communication_runtime": "not_run",
+    "superseded_by": "Second feedback verifies pinned shared library present and preflight passed; demo build not yet successful."
   }
 }

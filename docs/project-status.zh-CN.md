@@ -1,5 +1,11 @@
 # 项目状态与接续入口
 
+## 当前状态：LIGGGHTS 库就绪，demo 的 MPI 构建参数修订待验证
+
+最新用户测试提交 `5ff9d52bb934d90d6011acfd3c75f6ba8d1c63e5`。LIGGGHTS 固定版本的头文件、共享库及符号/依赖预检已通过当前检查；OpenFOAM demo 编译因遗漏 MPI include 参数报 mpi.h 不存在，运行尚未开始。已改用当前 mpicc 的显式编译/链接参数，并加入构建签名，静态检查通过，真实编译待反馈。
+
+下一用户动作：加载 v2512 与 `.build/demo-liggghts.env` 后，仅运行 `bash scripts/dem-communication-test.sh`。不需要再安装/重编 LIGGGHTS，也不安装 CFDEM；本错误不能当作平台不可行结论。M1C 及解析耦合限制不变；下文安装待执行的旧状态由本节覆盖。
+
 ## 当前动作：安装最小 MPI LIGGGHTS 共享库并运行通信 demo
 
 2026-10-09 用户明确这台 WSL 只有 OF2512、未安装 LIGGGHTS 或 CFDEM。依赖缺口已确认，不再要求目录清单。已准备用户侧 `DEPS_JOBS=8 bash scripts/setup-demo-liggghts.sh`，独立固定版 MPI/PIC 构建成功后自动接原通信验收；回传 dem-setup 归档即可。无需安装 CFDEM，不更换 v2512。

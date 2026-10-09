@@ -1,5 +1,19 @@
 # v2512–LIGGGHTS 最小通信 demo 与审查结论
 
+## 最新反馈：库已生成，仅重编通信应用
+
+第二用户反馈（5ff9d52b）确认 LIGGGHTS 库及必要符号/依赖可用；demo 的 wmake 配置未传入 MPI 头文件参数，报 mpi.h 未找到。已改从当前 mpicc 获取编译和链接参数，修订静态检查完成；实际构建仍待用户执行。无需重装/重编 LIGGGHTS，不要因此切换 OpenFOAM。
+
+```bash
+cd ~/LPBF-CoupledFoam
+git pull --ff-only
+export OPENFOAM_BASHRC=/home/kris/OpenFOAM/OpenFOAM-v2512/etc/bashrc
+source .build/demo-liggghts.env
+bash scripts/dem-communication-test.sh
+```
+
+`.build/demo-liggghts.env` 由 setup 脚本成功构建后保存；wrapper 会加载 OPENFOAM_BASHRC。回传新的 dem-communication 归档。若保存的环境文件不存在，可按已确认安装设置 LIGGGHTS_SRC=`$HOME/LPBF-dependencies/LIGGGHTS-PUBLIC-3d5c00f20519/src`、LIGGGHTS_LIB=`$LIGGGHTS_SRC/liblmp_auto_lpbf.so`。下文首次安装操作是保留说明，当前不要求重复。
+
 ## 用户已澄清未安装依赖：当前直接安装最小 LIGGGHTS 库
 
 用户确认这台 WSL 只有 OF2512，没有 LIGGGHTS/CFDEM。前一包缺 library.h 的依赖缺口已明确，无需继续找目录；另一 Ubuntu 机器的安装不能套用。当前 demo 只需要 LIGGGHTS MPI 共享库，不需要安装 CFDEM、其他 OpenFOAM 或系统范围 DEM。

@@ -30,6 +30,15 @@ stage=dependency-audit
     mpirun --version | head -n 3
     mpicc --showme
 } > "$report/environment.txt" 2>&1
+# OpenCFD v2512 does not populate the Foundation-style PINC/PLIBS
+# placeholders for this utility. Obtain flags from the selected OpenMPI wrapper.
+export LPBF_MPI_INC="$(mpicc --showme:compile)"
+export LPBF_MPI_LIBS="$(mpicc --showme:link)"
+printf 'LPBF_MPI_INC=%s\nLPBF_MPI_LIBS=%s\n' "$LPBF_MPI_INC" "$LPBF_MPI_LIBS" >> "$report/environment.txt"
+if [ -z "$LPBF_MPI_INC" ] || [ -z "$LPBF_MPI_LIBS" ]; then
+    echo 'OpenMPI compiler wrapper did not provide compile/link flags.' | tee "$report/dependency-error.txt"
+    exit 1
+fi
 if [ -z "${LIGGGHTS_SRC:-}" ]; then
     for candidate in "$HOME/CFDEM/LIGGGHTS/src" "$HOME/LIGGGHTS-PUBLIC/src"; do
         if [ -f "$candidate/library.h" ]; then LIGGGHTS_SRC="$candidate"; break; fi
@@ -88,7 +97,7 @@ ln -sfn "$LIGGGHTS_LIB" "$linkdir/libliggghts.so"
 export LIGGGHTS_SRC LIGGGHTS_LIBDIR="$linkdir"
 export LD_LIBRARY_PATH="$linkdir:$(dirname "$LIGGGHTS_LIB"):$LD_LIBRARY_PATH"
 stage=build
-signature="$WM_PROJECT_DIR|$WM_OPTIONS|$LIGGGHTS_SRC|$LIGGGHTS_LIB|$(sha256sum "$LIGGGHTS_SRC/library.h" | awk '{print $1}')"
+signature="$WM_PROJECT_DIR|$WM_OPTIONS|$LPBF_MPI_INC|$LPBF_MPI_LIBS|$LIGGGHTS_SRC|$LIGGGHTS_LIB|$(sha256sum "$LIGGGHTS_SRC/library.h" | awk '{print $1}')"
 if [ -f "$linkdir/environment.signature" ] && [ "$(cat "$linkdir/environment.signature")" != "$signature" ]; then
     (cd applications/utilities/foamDemCommunicationDemo && wclean) > "$report/log.clean-demo" 2>&1
 fi
