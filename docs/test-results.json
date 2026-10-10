@@ -10596,6 +10596,36 @@
       "decision": "Audit actual native operator before next concentrated14-case delivery; c56435ec remains pending, no immediate repeat request",
       "physical_gate_relaxation": false,
       "budget_increase": false
+    },
+    {
+      "date": "2026-10-11",
+      "scope": "revision4 actual FV joint operator diagnostic package",
+      "document": "docs/m2a-native-operator-audit.zh-CN.md",
+      "native_build_runtime": "not_evaluated",
+      "native_shared_audit_kernel": "not_evaluated",
+      "offline_m2a_tests": 45,
+      "historical_joint_summaries_exact": [
+        "0e4cc6cc",
+        "4aa89072"
+      ],
+      "new_checks": [
+        "uncached zero repeat superposition scaling across wall velocity pressure face flux",
+        "face divergence pressure reference diagonal consistency",
+        "manufactured wall solve with original64 budget",
+        "first actual commit velocity pressure internal flux acceleration source consistency"
+      ],
+      "diagnostic_only": [
+        "full matrix impulse defect of diagonal response",
+        "radial scaled response not full-rank or uniqueness proof"
+      ],
+      "physical_gate_relaxation": false,
+      "budget_increase": false,
+      "early_failure": "reject repeated full predictor and maxU/referenceSpeed>1e6; retains FAIL",
+      "limitations": [
+        "no native execution",
+        "no general projected-Schur rank proof",
+        "no GCL free-body heat or LPBF validation"
+      ]
     }
   ]
 }

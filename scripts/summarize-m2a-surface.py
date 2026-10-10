@@ -42,6 +42,37 @@ def evaluate(case):
                     or truth(marker.group(3))!=algorithm['response_reuse']
                     or algorithm['pressure_solver']+':  Solving for p,' not in text):
                     raise ValueError('Missing accelerated joint algorithm/GAMG native evidence')
+            if 'operator_audit' in meta:
+                lines=re.findall(r'M2A_OPERATOR_AUDIT ([^\n]+)',text)
+                if not lines:raise ValueError('Missing actual joint operator audit')
+                limits=meta['operator_audit']
+                for line in lines:
+                    values=dict(re.findall(r'(\w+)=(\S+)',line))
+                    required=('time','zero','repeat','linear','scale','div','gauge','diagonal',
+                              'fullImpulse','normalGain','manufactured','iterations','pressureSolves','seconds')
+                    if any(key not in values for key in required):raise ValueError('Incomplete actual joint operator audit')
+                    values={key:float(values[key]) for key in required}
+                    if any(not math.isfinite(value) or value<0 for value in values.values()):
+                        raise ValueError('Invalid actual joint operator audit')
+                    if (any(values[key]>limits['relative_tolerance'] for key in ('zero','repeat','linear','scale','gauge','diagonal'))
+                        or values['div']>limits['divergence_per_s']
+                        or values['manufactured']>limits['manufactured_residual_m_s']
+                        or values['iterations']!=int(values['iterations']) or values['iterations']>meta['joint_controls']['krylov_budget']
+                        or values['pressureSolves']!=int(values['pressureSolves']) or values['pressureSolves']<8
+                        or values['seconds']<=0):
+                        raise ValueError('Actual joint operator audit threshold exceeded')
+                entry.setdefault('operator_audits',{})[filename]=[
+                    {key:float(value) for key,value in re.findall(r'(\w+)=(\S+)',line)} for line in lines]
+                commits=re.findall(r'M2A_OPERATOR_COMMIT ([^\n]+)',text)
+                if not commits:raise ValueError('Missing actual joint operator audit commit')
+                for line in commits:
+                    values=dict(re.findall(r'(\w+)=(\S+)',line))
+                    keys=('source','velocity','pressure','flux','acceleration')
+                    if any(key not in values for key in keys):raise ValueError('Incomplete joint operator audit commit')
+                    if any(not math.isfinite(float(values[key])) or not 0<=float(values[key])<=limits['relative_tolerance'] for key in keys):
+                        raise ValueError('Actual joint operator audit commit threshold exceeded')
+                entry.setdefault('operator_commits',{})[filename]=[
+                    {key:float(value) for key,value in re.findall(r'(\w+)=(\S+)',line)} for line in commits]
         if meta['surface_controls'].get('reconstruction')=='quadratic' and 'M2A_RECONSTRUCTION order=quadratic' not in text:
             raise ValueError('Missing native quadratic reconstruction marker')
     controls=meta['surface_controls']

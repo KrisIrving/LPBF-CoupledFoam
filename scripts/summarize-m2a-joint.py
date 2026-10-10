@@ -2,6 +2,7 @@
 import argparse
 import importlib.util
 import json
+import re
 from pathlib import Path
 
 spec=importlib.util.spec_from_file_location('joint_common_gates',Path(__file__).with_name('summarize-m2a-surface.py'))
@@ -16,6 +17,21 @@ def summarize(root):
             meta=json.loads((root/name/'M2A_META.json').read_text())
             if meta['package']!='M2A-02C' or meta['surface_controls']['scheme']!='jointSurface' or 'joint_controls' not in meta:
                 raise ValueError('Wrong package/scheme for joint verification')
+            if 'operator_audit' in meta and not entry['passed']:
+                logs={}
+                for filename in ('log.solver','log.first','log.restart'):
+                    path=root/name/filename
+                    if not path.exists():continue
+                    text=path.read_text(errors='replace');diagnostic={}
+                    for key,pattern in [('probe',r'M2A_OPERATOR_PROBE [^\n]+'),
+                                        ('audit',r'M2A_OPERATOR_AUDIT [^\n]+'),
+                                        ('commit',r'M2A_OPERATOR_COMMIT [^\n]+'),
+                                        ('last_correction',r'M2A_CORRECTION [^\n]+')]:
+                        matches=re.findall(pattern,text)
+                        if matches:diagnostic[key]=matches[-1]
+                    diagnostic['failures']=re.findall(r'M2A_FAIL[^\n]+',text)
+                    logs[filename]=diagnostic
+                entry.setdefault('diagnostics',{})['operator_logs']=logs
         except (OSError,ValueError,KeyError) as error:
             entry['passed']=False;entry['error']=str(error)
     result['passed']=all(x['passed'] for section in ('cases','comparisons') for x in result[section].values())

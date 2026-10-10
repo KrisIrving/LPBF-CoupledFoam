@@ -1,5 +1,9 @@
 # Development and verification record
 
+## 2026-10-11: actual FV joint response diagnostic package
+
+Implement revision4 native response zero/repeat/linearity/scaling audits across wall/U/p/all phi, bypass cache, pressure gauge/divergence/diagonal response checks and actual-matrix finite-difference full impulse diagnostic. Radial probe/manufactured wall solve do not prove full rank or uniqueness. Check first actual commit increments for U/p/internal phi/acceleration/source. Shared C++ audit regression added to user kernel entry;45 offline M2A tests pass, two archived summaries exact. Reject repeated full predictor; fail at gross velocity divergence, keep original gates/budgets. Failed summary retains probe/audit/commit/last correction. Same14-case concurrent entry, native compiler/kernel/CFD pending, no WSL/native run. See docs/m2a-native-operator-audit.zh-CN.md.
+
 ## 2026-10-11: literature and discrete-method review
 
 Re-read supplied chapter3 equations3.61–3.71 and staggered pressure-correction flow, with page-image checks. Current surface IB/fictitious domain is not the book open-volume/area discretisation. Review predictor/diagonal-response mismatch, actual projected Schur vs JJt rank, FV face flux vs cell-centred velocity, force/inertia/stress approximation and fixed vs free-body evidence. Public NUS-related articles support physics scope; Taira–Colonius projection supports joint constraints, not automatic collocated SPD/CG. Native single-cause validation still missing; revision3 remains pending. Next package must include actual-response audit plus original matrix; no immediate unchanged rerun, gate/budget relaxation or WSL. Documentation review only; no new runtime pass. See docs/m2a-literature-method-review.zh-CN.md.

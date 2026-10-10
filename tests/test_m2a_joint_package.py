@@ -31,7 +31,9 @@ class JointPackageTests(unittest.TestCase):
         for log in ('log.first','log.restart') if meta['restart'] else ('log.solver',):
             (case/log).write_text('M2A_CONSTRAINT scheme=jointSurface\nM2A_JOINT markers='+str(meta['joint_controls']['markers'])+' minPivot=.9\n'
                 'M2A_BOUNDARY treatment=compatibleGauss rawFlux=-4e-14 gaussFlux=7e-18 finalFlux=1e-22 normalCorrection=1e-16\n'
-                'M2A_JOINT_ALGORITHM warmStart=1 fullPredictor=0 responseReuse=1\nGAMG:  Solving for p,\nM2A_EXECUTION_COMPLETE\n')
+                'M2A_JOINT_ALGORITHM warmStart=1 fullPredictor=0 responseReuse=1\nGAMG:  Solving for p,\n'
+                'M2A_OPERATOR_AUDIT time=.0001 zero=0 repeat=0 linear=1e-12 scale=1e-12 div=1e-12 gauge=0 diagonal=1e-15 fullImpulse=1e-6 normalGain=.1 manufactured=1e-9 iterations=12 pressureSolves=21 seconds=.1\n'
+                'M2A_OPERATOR_COMMIT time=.0001 source=1e-15 velocity=1e-15 pressure=1e-15 flux=1e-15 acceleration=1e-15\nM2A_EXECUTION_COMPLETE\n')
         for row in rows:
             row.update(surface_correctors=1,pressure_correctors_total=8,joint_iterations=8,
                 joint_pressure_solves=24,joint_wall_residual=1e-8,joint_markers=meta['joint_controls']['markers'],
@@ -46,6 +48,7 @@ class JointPackageTests(unittest.TestCase):
             self.assertIn('boundaryTreatment compatibleGauss;',properties)
             self.assertIn('jointWarmStart true;',properties)
             self.assertIn('jointFullPredictor false;',properties)
+            self.assertIn('jointOperatorAudit true;',properties)
             self.assertIn('solver GAMG;',(case/'system/fvSolution').read_text())
             self.assertIn('tolerance 1e-14;',(case/'system/fvSolution').read_text())
             self.assertNotIn('constraintScheme surfaceExtension;',properties)
@@ -90,12 +93,40 @@ class JointPackageTests(unittest.TestCase):
     def test_historical_revision2_mode_is_checked_against_its_metadata(self):
         case,rows,meta=self.fixture('fixed-restart')
         meta['joint_algorithm'].update(revision=2,full_predictor=True)
+        meta.pop('operator_audit')
         (case/'M2A_META.json').write_text(json.dumps(meta))
         for name in ('log.first','log.restart'):
             p=case/name;p.write_text(p.read_text().replace('fullPredictor=0','fullPredictor=1'))
         p=case/'0.002/couplingState'
         p.write_text(p.read_text().replace('jointFullPredictor false;','jointFullPredictor true;'))
         self.assertTrue(summary.audit.evaluate(case)[0]['passed'])
+
+    def test_operator_audit_evidence_and_failures(self):
+        case,rows,meta=self.fixture('fixed-coarse');p=case/'log.solver';original=p.read_text()
+        for before,after in [('M2A_OPERATOR_AUDIT','M2A_OLD_AUDIT'),('linear=1e-12','linear=1e-5'),
+                             ('normalGain=.1','normalGain=nan'),('manufactured=1e-9','manufactured=1e-5'),
+                             ('pressureSolves=21','pressureSolves=0'),('source=1e-15','source=1e-3'),
+                             ('M2A_OPERATOR_COMMIT','M2A_OLD_COMMIT')]:
+            p.write_text(original.replace(before,after))
+            with self.assertRaisesRegex(ValueError,'joint operator audit'):summary.audit.evaluate(case)
+        p.write_text(original.replace('fullImpulse=1e-6','fullImpulse=1'))
+        self.assertTrue(summary.audit.evaluate(case)[0]['passed'])
+
+    def test_restart_requires_its_own_operator_audit(self):
+        case,rows,meta=self.fixture('fixed-restart');p=case/'log.restart'
+        p.write_text(p.read_text().replace('M2A_OPERATOR_AUDIT','M2A_OLD_AUDIT'))
+        with self.assertRaisesRegex(ValueError,'Missing actual joint operator audit'):summary.audit.evaluate(case)
+
+    def test_failed_operator_evidence_is_retained_without_a_pass(self):
+        case,rows,meta=self.fixture('fixed-coarse')
+        (case/'result.txt').write_text('exit_status=1\n')
+        with (case/'log.solver').open('a') as log:
+            log.write('M2A_OPERATOR_PROBE time=.0001 linear=1e-3\n'
+                      'M2A_FAIL rank=0: Actual joint operator probe failed before manufactured solve\n')
+        entry=summary.summarize(self.root)['cases']['fixed-coarse']
+        self.assertFalse(entry['passed'])
+        self.assertIn('linear=1e-3',entry['diagnostics']['operator_logs']['log.solver']['probe'])
+        self.assertTrue(entry['diagnostics']['operator_logs']['log.solver']['failures'])
 
     def test_warm_restart_seed_checked_independently(self):
         case,rows,meta=self.fixture('fixed-restart')

@@ -51,6 +51,16 @@ public:
         }
     }
     int count() const {return points_.size();}
+    std::vector<double> normalProbe(const Foam::vector& centre,double amplitude) const
+    {
+        std::vector<double> result(3*count());
+        for(int i=0;i<count();++i)
+        {
+            const Foam::vector n=(points_[i]-centre)/Foam::mag(points_[i]-centre);
+            for(int a=0;a<3;++a) result[3*i+a]=amplitude*n[a];
+        }
+        return result;
+    }
     double minPivot() const {return minPivot_;}
     void loads(const std::vector<double>& forces,const Foam::vector& centre,
                Foam::vector& total,Foam::vector& torque) const

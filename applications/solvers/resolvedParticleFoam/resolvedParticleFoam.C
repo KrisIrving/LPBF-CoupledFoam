@@ -6,6 +6,7 @@
 #include "MechanicalBackend.H"
 #include "SphereSurface.H"
 #include "JointSphere.H"
+#include "JointResponseAudit.H"
 #include <fstream>
 #include <filesystem>
 #include <iomanip>
@@ -64,6 +65,9 @@ int main(int argc,char* argv[])
         const label jointBudget=config.getOrDefault<label>("jointKrylovBudget",64);
         const bool jointWarmStart=config.getOrDefault<bool>("jointWarmStart",false);
         const bool jointFullPredictor=config.getOrDefault<bool>("jointFullPredictor",false);
+        const bool jointOperatorAudit=config.getOrDefault<bool>("jointOperatorAudit",false);
+        if(jointConstraint&&jointFullPredictor)
+            throw std::runtime_error("Repeated full predictor is incompatible with the current diagonal joint response");
         if(jointConstraint&&(jointBudget<1||jointBudget>256||!compatibleBoundary||targetTolerance<=0||continuityTolerance<=0))
             throw std::runtime_error("Joint surface requires bounded controls and compatible boundary");
         if(boundaryTreatment!="faceCentre"&&!compatibleBoundary)
@@ -120,6 +124,22 @@ int main(int argc,char* argv[])
                 <<" fullPredictor="<<jointFullPredictor<<" responseReuse=1"<<endl;
         }
         std::vector<double> jointPreviousLoads(joint ? 3*joint->count():0,0);
+        bool operatorAudited=false;
+        bool commitAudited=false;
+        // Same coupled-interface residual convention for the response audit and
+        // final equation gate. No change to the solved momentum matrix.
+        auto matrixResidual=[&](const fvVectorMatrix& equation)
+        {
+            vectorField defect(equation.residual());
+            forAll(U.boundaryField(),patch) if(U.boundaryField()[patch].coupled())
+            {
+                const vectorField neighbour(U.boundaryField()[patch].patchNeighbourField());
+                const labelUList& cells=mesh.boundary()[patch].faceCells();
+                forAll(cells,face)
+                    defect[cells[face]]-=cmptMultiply(equation.boundaryCoeffs()[patch][face],neighbour[face]);
+            }
+            return defect;
+        };
         auto mapGeometry=[&]()
         {
             if(surface) surface->gather(U,p);
@@ -392,6 +412,15 @@ int main(int argc,char* argv[])
                                 }
                                 if(commit)
                                 {
+                                    const bool checkCommit=jointOperatorAudit&&!commitAudited;
+                                    vectorField oldU,oldSource,oldAcceleration;
+                                    scalarField oldPressure,oldFlux;
+                                    if(checkCommit)
+                                    {
+                                        oldU=U.primitiveField();oldSource=equation.source();
+                                        oldAcceleration=wallAcceleration.primitiveField();
+                                        oldPressure=p.primitiveField();oldFlux=phi.primitiveField();
+                                    }
                                     U.primitiveFieldRef()+=deltaU.primitiveField();
                                     p.primitiveFieldRef()+=deltaP.primitiveField();phi+=deltaPhi;
                                     U.correctBoundaryConditions();p.correctBoundaryConditions();
@@ -400,9 +429,111 @@ int main(int argc,char* argv[])
                                     // Exactly the same source is used by equation.H,
                                     // equation residual and the final force ledger.
                                     equation.source()+=mesh.V().field()*lastAcceleration;
+                                    if(checkCommit)
+                                    {
+                                        auto relative=[](const auto& error,const auto& expected,const auto& baseline)
+                                        {return gMax(mag(error))/Foam::max(Foam::max(gMax(mag(expected)),gMax(mag(baseline))),scalar(1e-30));};
+                                        const vectorField expectedSource(mesh.V().field()*lastAcceleration);
+                                        const vectorField sourceError(equation.source()-oldSource-expectedSource);
+                                        const vectorField velocityError(U.primitiveField()-oldU-deltaU.primitiveField());
+                                        const vectorField accelerationError(wallAcceleration.primitiveField()-oldAcceleration-lastAcceleration);
+                                        const scalarField pressureError(p.primitiveField()-oldPressure-deltaP.primitiveField());
+                                        const scalarField fluxError(phi.primitiveField()-oldFlux-deltaPhi.primitiveField());
+                                        scalar source=relative(sourceError,expectedSource,oldSource);
+                                        scalar velocity=relative(velocityError,deltaU.primitiveField(),oldU);
+                                        scalar acceleration=relative(accelerationError,lastAcceleration,oldAcceleration);
+                                        scalar pressure=relative(pressureError,deltaP.primitiveField(),oldPressure);
+                                        scalar flux=relative(fluxError,deltaPhi.primitiveField(),oldFlux);
+                                        if(rank==0) Info<<"M2A_OPERATOR_COMMIT time="<<runTime.value()
+                                            <<" source="<<source<<" velocity="<<velocity<<" pressure="<<pressure
+                                            <<" flux="<<flux<<" acceleration="<<acceleration<<endl;
+                                        for(scalar error:{source,velocity,pressure,flux,acceleration})
+                                            if(!std::isfinite(error)||error>1e-8)
+                                                throw std::runtime_error("Joint operator commit differs from checked response");
+                                        commitAudited=true;
+                                    }
                                 }
                                 return lastResult;
                             };
+                            if(jointOperatorAudit&&!operatorAudited)
+                            {
+                                const auto auditStart=std::chrono::steady_clock::now();
+                                const label pressureStart=jointPressureSolves;
+                                scalar auditDiv=0,auditGauge=0,auditDiagonal=0,auditFull=0;
+                                auto sample=[&](const std::vector<double>& input)
+                                {
+                                    lastInput.clear(); // bypass cache: exercise actual pressure solve
+                                    lpbfM2::JointResponseSample result;
+                                    result.wall=response(input,false);
+                                    for(const vector& u:deltaU.primitiveField()) for(int a=0;a<3;++a) result.velocity.push_back(u[a]);
+                                    for(scalar v:deltaP.primitiveField()) result.pressure.push_back(v);
+                                    for(scalar v:deltaPhi.primitiveField()) result.flux.push_back(v);
+                                    forAll(deltaPhi.boundaryField(),patch)
+                                        for(scalar v:deltaPhi.boundaryField()[patch]) result.flux.push_back(v);
+                                    auditDiv=Foam::max(auditDiv,gMax(mag(fvc::div(deltaPhi))().primitiveField()));
+                                    scalar gauge=rank==0 ? mag(deltaP[0]):0;
+                                    reduce(gauge,maxOp<scalar>());
+                                    auditGauge=Foam::max(auditGauge,gauge/Foam::max(gMax(mag(deltaP)().primitiveField()),scalar(1)));
+                                    const vectorField gradient(fvc::grad(deltaP)().primitiveField());
+                                    const vectorField expected(rAU.primitiveField()*lastAcceleration);
+                                    const vectorField diagonal(deltaU.primitiveField()+rAU.primitiveField()*gradient-expected);
+                                    auditDiagonal=Foam::max(auditDiagonal,gMax(mag(diagonal))/Foam::max(gMax(mag(expected)),scalar(1e-30)));
+                                    // A finite-difference matrix action on the actual U:
+                                    // source and old time are unchanged, then restore U.
+                                    const vectorField saved(U.primitiveField()),beforeResidual(matrixResidual(equation));
+                                    U.primitiveFieldRef()+=deltaU.primitiveField();U.correctBoundaryConditions();
+                                    const vectorField afterResidual(matrixResidual(equation));
+                                    U.primitiveFieldRef()=saved;U.correctBoundaryConditions();
+                                    const vectorField full(beforeResidual-afterResidual+mesh.V().field()*gradient-mesh.V().field()*lastAcceleration);
+                                    auditFull=Foam::max(auditFull,rho*dt*gSum(mag(full)));
+                                    return result;
+                                };
+                                const auto audit=lpbfM2::auditJointResponse(sample,3*joint->count());
+                                scalar zero=audit.zero,repeat=audit.repeat,linear=audit.linear,scale=audit.scale;
+                                reduce(zero,maxOp<scalar>());reduce(repeat,maxOp<scalar>());
+                                reduce(linear,maxOp<scalar>());reduce(scale,maxOp<scalar>());
+                                const auto normal=joint->normalProbe(asFoamVector(before[0].x),1e-3);
+                                const auto projected=sample(normal).wall;
+                                scalar normalGain=0;
+                                for(double value:projected) normalGain+=value*value;
+                                normalGain=std::sqrt(normalGain)/(1e-3*std::sqrt(scalar(joint->count())));
+                                if(rank==0) Info<<"M2A_OPERATOR_PROBE time="<<runTime.value()
+                                    <<" zero="<<zero<<" repeat="<<repeat<<" linear="<<linear<<" scale="<<scale
+                                    <<" div="<<auditDiv<<" gauge="<<auditGauge<<" diagonal="<<auditDiagonal
+                                    <<" fullImpulse="<<auditFull<<" normalGain="<<normalGain<<endl;
+                                for(scalar metric:{zero,repeat,linear,scale,auditDiv,auditGauge,auditDiagonal,auditFull,normalGain})
+                                    if(!std::isfinite(metric)) throw std::runtime_error("Nonfinite actual joint operator probe");
+                                if(zero>1e-8||repeat>1e-8||linear>1e-8||scale>1e-8||auditDiv>continuityTolerance||auditGauge>1e-8||auditDiagonal>1e-8)
+                                    throw std::runtime_error("Actual joint operator probe failed before manufactured solve");
+                                std::vector<double> manufacturedInput(3*joint->count());
+                                for(std::size_t i=0;i<manufacturedInput.size();++i) manufacturedInput[i]=1e-3*std::sin(.73*(i+1));
+                                lastInput.clear();
+                                const auto manufacturedRhs=response(manufacturedInput,false);
+                                int manufacturedIterations=0;
+                                const auto manufacturedAnswer=lpbfM2::wallGMRES(
+                                    [&](const std::vector<double>& input){return response(input,false);},
+                                    manufacturedRhs,targetTolerance*.1,jointBudget,manufacturedIterations);
+                                const auto manufacturedCheck=response(manufacturedAnswer,false);
+                                scalar manufacturedResidual=0;
+                                for(std::size_t i=0;i<manufacturedRhs.size();++i)
+                                    manufacturedResidual+=sqr(manufacturedCheck[i]-manufacturedRhs[i]);
+                                manufacturedResidual=std::sqrt(manufacturedResidual);
+                                const label auditPressureSolves=jointPressureSolves-pressureStart;
+                                jointPressureSolves=pressureStart; // CSV retains physical correction counts
+                                const double auditSeconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-auditStart).count();
+                                if(rank==0) Info<<"M2A_OPERATOR_AUDIT time="<<runTime.value()
+                                    <<" zero="<<zero<<" repeat="<<repeat<<" linear="<<linear<<" scale="<<scale
+                                    <<" div="<<auditDiv<<" gauge="<<auditGauge<<" diagonal="<<auditDiagonal
+                                    <<" fullImpulse="<<auditFull<<" normalGain="<<normalGain
+                                    <<" manufactured="<<manufacturedResidual<<" iterations="<<manufacturedIterations
+                                    <<" pressureSolves="<<auditPressureSolves<<" seconds="<<auditSeconds<<endl;
+                                for(scalar metric:{zero,repeat,linear,scale,auditDiv,auditGauge,auditDiagonal,auditFull,normalGain,manufacturedResidual})
+                                    if(!std::isfinite(metric)) throw std::runtime_error("Nonfinite actual joint operator audit");
+                                if(zero>1e-8||repeat>1e-8||linear>1e-8||scale>1e-8||auditDiv>continuityTolerance||auditGauge>1e-8||auditDiagonal>1e-8||manufacturedResidual>2*targetTolerance*.1)
+                                    throw std::runtime_error("Actual joint operator audit failed before DEM feedback");
+                                operatorAudited=true;
+                                lastInput.clear();
+                            }
                             int iterations=0;
                             const auto correction=lpbfM2::wallGMRES(
                                 [&](const std::vector<double>& input){return response(input,false);},
@@ -424,19 +555,11 @@ int main(int argc,char* argv[])
                     // residual() is source - A*U, integrated over each cell.
                     // Include the pressure source and sum magnitudes, so opposite
                     // local defects cannot cancel in a global momentum ledger.
-                    vectorField defect(equation.residual());
+                    vectorField defect(matrixResidual(equation));
                     // In this v2512 residual() path, addBoundarySource includes
                     // coupled neighbours and lduMatrix::residual includes their
                     // interface contribution again. Remove one explicit copy;
                     // the momentum matrix and pressure solve remain unchanged.
-                    forAll(U.boundaryField(),patch)
-                        if(U.boundaryField()[patch].coupled())
-                        {
-                            const vectorField neighbour(U.boundaryField()[patch].patchNeighbourField());
-                            const labelUList& cells=mesh.boundary()[patch].faceCells();
-                            forAll(cells,face)
-                                defect[cells[face]]-=cmptMultiply(equation.boundaryCoeffs()[patch][face],neighbour[face]);
-                        }
                     defect-=mesh.V().field()*fvc::grad(p)().primitiveField();
                     equationImpulse=rho*dt*gSum(mag(defect));
                     usedCorrectors=c+1;
@@ -449,6 +572,9 @@ int main(int argc,char* argv[])
                         <<" responsePressureTotal="<<jointPressureSolves<<endl;
                     if(!std::isfinite(maxU)||!std::isfinite(maxP)||!std::isfinite(equationImpulse)||!std::isfinite(continuityDefect))
                         throw std::runtime_error("Nonfinite CFD state before DEM feedback");
+                    const scalar referenceSpeed=mode=="fixed" ? .01 : Foam::max(mag(asFoamVector(before[0].v))+before[0].radius*mag(asFoamVector(before[0].omega)),scalar(1e-12));
+                    if(joint&&maxU>1e6*referenceSpeed)
+                        throw std::runtime_error("Joint velocity divergence guard exceeded before DEM feedback");
                     if(usedCorrectors>=correctors && (momentumTolerance<0||equationImpulse<=momentumTolerance)
                         && (continuityTolerance<0||continuityDefect<=continuityTolerance)
                         && (!joint||targetDefect<=targetTolerance)) break;

@@ -5,6 +5,7 @@
 #include <cmath>
 #include <functional>
 #include <stdexcept>
+#include <sstream>
 #include <vector>
 namespace lpbfM2
 {
@@ -50,7 +51,13 @@ inline std::vector<double> wallGMRES(const std::function<std::vector<double>(con
         if(std::abs(g[j+1])<=tolerance) break;
         if(length<=1e-30) throw std::runtime_error("Joint wall Krylov breakdown before convergence");
     }
-    if(std::abs(g[used])>tolerance) throw std::runtime_error("Joint wall iteration budget exhausted");
+    if(std::abs(g[used])>tolerance)
+    {
+        std::ostringstream message;message.precision(17);
+        message<<"Joint wall iteration budget exhausted: residual="<<std::abs(g[used])
+               <<" tolerance="<<tolerance<<" iterations="<<used;
+        throw std::runtime_error(message.str());
+    }
     std::vector<double> y(used),answer(n,0);
     for(int i=used-1;i>=0;--i)
     {
@@ -59,9 +66,15 @@ inline std::vector<double> wallGMRES(const std::function<std::vector<double>(con
         for(int k=0;k<n;++k) answer[k]+=y[i]*basis[i][k];
     }
     const auto check=apply(answer);double residual=0;
+    if(check.size()!=rhs.size()) throw std::runtime_error("Invalid explicit wall operator dimensions");
     for(int k=0;k<n;++k) residual+=(check[k]-rhs[k])*(check[k]-rhs[k]);
     if(!std::isfinite(residual)||std::sqrt(residual)>2*tolerance)
-        throw std::runtime_error("Joint wall explicit residual exceeds tolerance");
+    {
+        std::ostringstream message;message.precision(17);
+        message<<"Joint wall explicit residual exceeds tolerance: residual="<<std::sqrt(residual)
+               <<" limit="<<2*tolerance<<" iterations="<<used;
+        throw std::runtime_error(message.str());
+    }
     iterations=used;return answer;
 }
 }
