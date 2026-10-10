@@ -106,3 +106,9 @@ and simulation outputs are excluded from project additions.
 三组偏移固定球的散度平台已由独立边界通量审计重现，另有一个固定球超时。
 暂停原包重复测试；下一步集中审查边界通量与壁面/压力/受力离散相容性。
 数值、失败原因及接续计划见[项目状态](docs/project-status.zh-CN.md)。当前未修改求解器。
+
+### M2A-02C审查交付
+
+已准备可选边界通量修复并完成完整图像点插值/应力与联合约束代数审计。
+原生边界修复未测试，联合壁面求解器仍待实现，暂不重复运行原14组。
+下一原生开发契约见[压力—壁面联合约束](docs/m2a-pressure-wall-contract.zh-CN.md)。

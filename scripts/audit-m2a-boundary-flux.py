@@ -39,17 +39,26 @@ def fixture(n, phase, mode, gauss=False):
                 values.append(side*velocity(point, centre, mode)[axis])
             contributions.append(math.fsum(values)*h*h/len(values))
     flux = math.fsum(contributions)
-    return {'mesh_n': n, 'phase_h': phase, 'mode': mode,
+    result = {'mesh_n': n, 'phase_h': phase, 'mode': mode,
             'quadrature': 'gauss2x2' if gauss else 'faceCentre',
             'net_boundary_flux_m3_s': flux,
             'reference_cell_divergence_estimate_per_s': abs(flux)/h**3,
             'box_mean_divergence_lower_bound_per_s': abs(flux)/.12**3}
+    if gauss:
+        correction=flux/(6*.12**2)
+        projected=[value-correction*h*h for value in contributions]
+        second=math.fsum(projected)/(6*.12**2)
+        final=math.fsum(value-second*h*h for value in projected)
+        result.update(normal_correction_m_s=abs(correction)+abs(second),
+                      projected_net_flux_m3_s=final,
+                      projected_reference_cell_divergence_per_s=abs(final)/h**3)
+    return result
 
 
 def run():
     return {'kind': 'analytic_boundary_quadrature_only',
             'limitations': ['No pressure matrix or CFD execution',
-                            'Gauss integration is a diagnostic, not an applied boundary fix'],
+                            'Python formula oracle is not native validation of compatibleGauss'],
             'cases': [fixture(n, phase, mode, gauss)
                       for mode in ('fixed', 'rotate') for n in (36, 48, 64)
                       for phase in (0., .25) for gauss in (False, True)]}

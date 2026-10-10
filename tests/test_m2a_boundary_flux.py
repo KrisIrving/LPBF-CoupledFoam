@@ -26,6 +26,8 @@ class BoundaryCompatibility(unittest.TestCase):
                 'reference_cell_divergence_estimate_per_s'], 1e-9)
             result = audit.fixture(n, .25, 'fixed', gauss=True)
             self.assertLess(result['reference_cell_divergence_estimate_per_s'], 1e-9)
+            self.assertLess(result['normal_correction_m_s'],1e-10)
+            self.assertLess(abs(result['projected_net_flux_m3_s']),1e-18)
         # Rotational field has a different flux compatibility behaviour.
         self.assertLess(audit.fixture(36, .25, 'rotate')[
             'reference_cell_divergence_estimate_per_s'], 1e-9)

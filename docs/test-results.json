@@ -8426,5 +8426,888 @@
     "target_relaxation": 0.5,
     "pressure_pcg_tolerance": 1e-14,
     "continuity_internal_per_s": 1e-07
-  }
+  },
+  "development_audits": [
+    {
+      "date": "2026-10-10",
+      "stage": "M2A-02C-contract-and-boundary-candidate",
+      "native_build_runtime": "not_evaluated",
+      "native_joint_wall_solver": "not_implemented",
+      "offline_m2a_test_count": 32,
+      "offline_tests_passed": true,
+      "boundary_formula_audit": {
+        "kind": "analytic_boundary_quadrature_only",
+        "limitations": [
+          "No pressure matrix or CFD execution",
+          "Python formula oracle is not native validation of compatibleGauss"
+        ],
+        "cases": [
+          {
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "mode": "fixed",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": 5.178150634581953e-22,
+            "reference_cell_divergence_estimate_per_s": 1.3981006713371277e-14,
+            "box_mean_divergence_lower_bound_per_s": 2.9966149505682606e-19
+          },
+          {
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "mode": "fixed",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 5.388047715017284e-22,
+            "reference_cell_divergence_estimate_per_s": 1.454772883054667e-14,
+            "box_mean_divergence_lower_bound_per_s": 3.1180831684127806e-19,
+            "normal_correction_m_s": 1.1979279415011296e-20,
+            "projected_net_flux_m3_s": 4.5650030055270215e-22,
+            "projected_reference_cell_divergence_per_s": 1.2325508114922961e-14
+          },
+          {
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "mode": "fixed",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": -4.607792303959422e-14,
+            "reference_cell_divergence_estimate_per_s": 1.2441039220690443e-06,
+            "box_mean_divergence_lower_bound_per_s": 2.66654647219874e-11
+          },
+          {
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "mode": "fixed",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 7.601121312331017e-18,
+            "reference_cell_divergence_estimate_per_s": 2.052302754329375e-10,
+            "box_mean_divergence_lower_bound_per_s": 4.398797055747117e-15,
+            "normal_correction_m_s": 8.80322577897846e-17,
+            "projected_net_flux_m3_s": -8.233290528258276e-22,
+            "projected_reference_cell_divergence_per_s": 2.222988442629735e-14
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "mode": "fixed",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": -1.1789908668294873e-21,
+            "reference_cell_divergence_estimate_per_s": 7.545541547708717e-14,
+            "box_mean_divergence_lower_bound_per_s": 6.822863812670645e-19
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "mode": "fixed",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": -1.258400205634578e-21,
+            "reference_cell_divergence_estimate_per_s": 8.053761316061297e-14,
+            "box_mean_divergence_lower_bound_per_s": 7.282408597422327e-19,
+            "normal_correction_m_s": 2.695637051180114e-20,
+            "projected_net_flux_m3_s": -9.15533841731348e-22,
+            "projected_reference_cell_divergence_per_s": 5.859416587080626e-14
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "mode": "fixed",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": -1.0931141776446305e-14,
+            "reference_cell_divergence_estimate_per_s": 6.995930736925634e-07,
+            "box_mean_divergence_lower_bound_per_s": 6.3258922317397605e-12
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "mode": "fixed",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 1.0159017206729846e-18,
+            "reference_cell_divergence_estimate_per_s": 6.5017710123071e-11,
+            "box_mean_divergence_lower_bound_per_s": 5.879060883524217e-16,
+            "normal_correction_m_s": 1.1791348485532252e-17,
+            "projected_net_flux_m3_s": 8.401699331095244e-23,
+            "projected_reference_cell_divergence_per_s": 5.377087571900956e-15
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "mode": "fixed",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": 8.499280793982359e-23,
+            "reference_cell_divergence_estimate_per_s": 1.2893723752648795e-14,
+            "box_mean_divergence_lower_bound_per_s": 4.9185652742953474e-20
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "mode": "fixed",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 1.7887780746459223e-23,
+            "reference_cell_divergence_estimate_per_s": 2.7136425902776664e-15,
+            "box_mean_divergence_lower_bound_per_s": 1.0351724969015756e-20,
+            "normal_correction_m_s": 4.1406899876063017e-22,
+            "projected_net_flux_m3_s": 1.7887780746459223e-23,
+            "projected_reference_cell_divergence_per_s": 2.7136425902776664e-15
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "mode": "fixed",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": -2.5935592149854112e-15,
+            "reference_cell_divergence_estimate_per_s": 3.9345253868815727e-07,
+            "box_mean_divergence_lower_bound_per_s": 1.500902323486928e-12
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "mode": "fixed",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 1.3662582244099279e-19,
+            "reference_cell_divergence_estimate_per_s": 2.0726643285863206e-11,
+            "box_mean_divergence_lower_bound_per_s": 7.906586946816714e-17,
+            "normal_correction_m_s": 1.6858058986242018e-18,
+            "projected_net_flux_m3_s": -2.398694529433069e-21,
+            "projected_reference_cell_divergence_per_s": 3.638908441688093e-13
+          },
+          {
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "mode": "rotate",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0
+          },
+          {
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "mode": "rotate",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0,
+            "normal_correction_m_s": 0.0,
+            "projected_net_flux_m3_s": 0.0,
+            "projected_reference_cell_divergence_per_s": 0.0
+          },
+          {
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "mode": "rotate",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0
+          },
+          {
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "mode": "rotate",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0,
+            "normal_correction_m_s": 0.0,
+            "projected_net_flux_m3_s": 0.0,
+            "projected_reference_cell_divergence_per_s": 0.0
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "mode": "rotate",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "mode": "rotate",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0,
+            "normal_correction_m_s": 0.0,
+            "projected_net_flux_m3_s": 0.0,
+            "projected_reference_cell_divergence_per_s": 0.0
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "mode": "rotate",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "mode": "rotate",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0,
+            "normal_correction_m_s": 0.0,
+            "projected_net_flux_m3_s": 0.0,
+            "projected_reference_cell_divergence_per_s": 0.0
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "mode": "rotate",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "mode": "rotate",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0,
+            "normal_correction_m_s": 0.0,
+            "projected_net_flux_m3_s": 0.0,
+            "projected_reference_cell_divergence_per_s": 0.0
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "mode": "rotate",
+            "quadrature": "faceCentre",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "mode": "rotate",
+            "quadrature": "gauss2x2",
+            "net_boundary_flux_m3_s": 0.0,
+            "reference_cell_divergence_estimate_per_s": 0.0,
+            "box_mean_divergence_lower_bound_per_s": 0.0,
+            "normal_correction_m_s": 0.0,
+            "projected_net_flux_m3_s": 0.0,
+            "projected_reference_cell_divergence_per_s": 0.0
+          }
+        ]
+      },
+      "wall_operator_audit": {
+        "kind": "analytic_cartesian_wall_operator_audit_only",
+        "excluded": [
+          "CFD momentum/pressure solution",
+          "ghost-pressure coupling",
+          "force ledger",
+          "native C++ execution"
+        ],
+        "cases": [
+          {
+            "mode": "fixed",
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.033279121067910915,
+            "pressure_force": [
+              4.557436540349257e-05,
+              2.496017498378761e-21,
+              -3.044024654195142e-22
+            ],
+            "viscous_force": [
+              0.00012254546860695874,
+              -1.5234081943812542e-21,
+              3.861279099397533e-21
+            ],
+            "stress_torque": [
+              5.407723546824179e-24,
+              -6.57608586979657e-23,
+              -1.3811331290221334e-22
+            ],
+            "pressure_drag_ratio": 0.24177951774140344,
+            "viscous_drag_ratio": 0.6501239027436722,
+            "stress_load_ratio": 0.8919034204850755
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.0205469130383734,
+            "pressure_force": [
+              4.557436540349257e-05,
+              2.496017498378761e-21,
+              -3.044024654195142e-22
+            ],
+            "viscous_force": [
+              0.00012254546860695874,
+              -1.5234081943812542e-21,
+              3.861279099397533e-21
+            ],
+            "stress_torque": [
+              5.407723546824179e-24,
+              -6.57608586979657e-23,
+              -1.3811331290221334e-22
+            ],
+            "pressure_drag_ratio": 0.24177951774140344,
+            "viscous_drag_ratio": 0.6501239027436722,
+            "stress_load_ratio": 0.8919034204850755
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.03561344628503087,
+            "pressure_force": [
+              4.456440380419035e-05,
+              1.1471773600461215e-09,
+              2.5781681218622916e-10
+            ],
+            "viscous_force": [
+              0.00012394019156517096,
+              1.4938350303069794e-09,
+              -4.555174600169257e-10
+            ],
+            "stress_torque": [
+              -3.9379168303044805e-13,
+              -2.4675055005796788e-09,
+              1.3398036684424115e-09
+            ],
+            "pressure_drag_ratio": 0.23642150504600531,
+            "viscous_drag_ratio": 0.6575231378451131,
+            "stress_load_ratio": 0.8939446428911184
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.02261854695003955,
+            "pressure_force": [
+              4.456440380419035e-05,
+              1.1471773600461215e-09,
+              2.5781681218622916e-10
+            ],
+            "viscous_force": [
+              0.00012394019156517096,
+              1.4938350303069794e-09,
+              -4.555174600169257e-10
+            ],
+            "stress_torque": [
+              -3.9379168303044805e-13,
+              -2.4675055005796788e-09,
+              1.3398036684424115e-09
+            ],
+            "pressure_drag_ratio": 0.23642150504600531,
+            "viscous_drag_ratio": 0.6575231378451131,
+            "stress_load_ratio": 0.8939446428911184
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.021710953123191174,
+            "pressure_force": [
+              5.004775457437898e-05,
+              9.747599735901447e-21,
+              -2.3425754947501744e-21
+            ],
+            "viscous_force": [
+              0.00012681088157601427,
+              1.0530526185682888e-20,
+              5.406452483646589e-21
+            ],
+            "stress_torque": [
+              -4.213489110515435e-24,
+              -5.362198320875002e-22,
+              2.450005576805499e-22
+            ],
+            "pressure_drag_ratio": 0.265511584372081,
+            "viscous_drag_ratio": 0.6727526213554543,
+            "stress_load_ratio": 0.9382642057275353
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.011126674113229363,
+            "pressure_force": [
+              5.004775457437898e-05,
+              9.747599735901447e-21,
+              -2.3425754947501744e-21
+            ],
+            "viscous_force": [
+              0.00012681088157601427,
+              1.0530526185682888e-20,
+              5.406452483646589e-21
+            ],
+            "stress_torque": [
+              -4.213489110515435e-24,
+              -5.362198320875002e-22,
+              2.450005576805499e-22
+            ],
+            "pressure_drag_ratio": 0.265511584372081,
+            "viscous_drag_ratio": 0.6727526213554543,
+            "stress_load_ratio": 0.9382642057275353
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.02390368159086237,
+            "pressure_force": [
+              5.070719064519726e-05,
+              -8.026531478010634e-10,
+              -1.260227951876633e-09
+            ],
+            "viscous_force": [
+              0.00012566310027537622,
+              -1.6807851636334873e-09,
+              -2.2114414348707955e-09
+            ],
+            "stress_torque": [
+              6.665901598371381e-14,
+              -3.1160632379351736e-09,
+              2.3673370408392743e-09
+            ],
+            "pressure_drag_ratio": 0.26901000138287523,
+            "viscous_drag_ratio": 0.6666634524359547,
+            "stress_load_ratio": 0.9356734538188299
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.0129274642977866,
+            "pressure_force": [
+              5.070719064519726e-05,
+              -8.026531478010634e-10,
+              -1.260227951876633e-09
+            ],
+            "viscous_force": [
+              0.00012566310027537622,
+              -1.6807851636334873e-09,
+              -2.2114414348707955e-09
+            ],
+            "stress_torque": [
+              6.665901598371381e-14,
+              -3.1160632379351736e-09,
+              2.3673370408392743e-09
+            ],
+            "pressure_drag_ratio": 0.26901000138287523,
+            "viscous_drag_ratio": 0.6666634524359547,
+            "stress_load_ratio": 0.9356734538188299
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.016826115301033416,
+            "pressure_force": [
+              5.519774852700679e-05,
+              -3.81898949058076e-21,
+              1.6014216659026616e-21
+            ],
+            "viscous_force": [
+              0.00012662781007505573,
+              -1.5354540120515576e-21,
+              3.222695666506596e-21
+            ],
+            "stress_torque": [
+              -1.0589037702962686e-25,
+              3.226004388956808e-22,
+              -3.928138557346546e-22
+            ],
+            "pressure_drag_ratio": 0.29283315085388384,
+            "viscous_drag_ratio": 0.6717813968782276,
+            "stress_load_ratio": 0.9646145477321113
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.0071389660256632815,
+            "pressure_force": [
+              5.519774852700679e-05,
+              -3.81898949058076e-21,
+              1.6014216659026616e-21
+            ],
+            "viscous_force": [
+              0.00012662781007505573,
+              -1.5354540120515576e-21,
+              3.222695666506596e-21
+            ],
+            "stress_torque": [
+              -1.0589037702962686e-25,
+              3.226004388956808e-22,
+              -3.928138557346546e-22
+            ],
+            "pressure_drag_ratio": 0.29283315085388384,
+            "viscous_drag_ratio": 0.6717813968782276,
+            "stress_load_ratio": 0.9646145477321113
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.015169450368437531,
+            "pressure_force": [
+              5.499694847420272e-05,
+              -1.4521107800459133e-09,
+              -1.2666257495123767e-09
+            ],
+            "viscous_force": [
+              0.0001270744097311204,
+              -3.6786414991631613e-09,
+              -2.342465742401447e-09
+            ],
+            "stress_torque": [
+              -1.2580918431079258e-13,
+              -1.4111379474327876e-09,
+              1.6681125050204725e-09
+            ],
+            "pressure_drag_ratio": 0.2917678734879878,
+            "viscous_drag_ratio": 0.6741506816397552,
+            "stress_load_ratio": 0.965918555127743
+          },
+          {
+            "mode": "fixed",
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.0068984095549205,
+            "pressure_force": [
+              5.499694847420272e-05,
+              -1.4521107800459133e-09,
+              -1.2666257495123767e-09
+            ],
+            "viscous_force": [
+              0.0001270744097311204,
+              -3.6786414991631613e-09,
+              -2.342465742401447e-09
+            ],
+            "stress_torque": [
+              -1.2580918431079258e-13,
+              -1.4111379474327876e-09,
+              1.6681125050204725e-09
+            ],
+            "pressure_drag_ratio": 0.2917678734879878,
+            "viscous_drag_ratio": 0.6741506816397552,
+            "stress_load_ratio": 0.965918555127743
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.060234581743510734,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              1.4454981204364159e-21,
+              3.763671787116276e-22,
+              1.880543423851024e-24
+            ],
+            "stress_torque": [
+              1.2407709188295415e-24,
+              1.857925203976527e-24,
+              -2.1601287596059824e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 7.66860570324998e-18,
+            "stress_load_ratio": 0.8594879245156414
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.04233067875669446,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              1.4454981204364159e-21,
+              3.763671787116276e-22,
+              1.880543423851024e-24
+            ],
+            "stress_torque": [
+              1.2407709188295415e-24,
+              1.857925203976527e-24,
+              -2.1601287596059824e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 7.66860570324998e-18,
+            "stress_load_ratio": 0.8594879245156414
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.06480084222152653,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              4.567103762517179e-08,
+              -4.567103762516908e-08,
+              2.636153526372608e-23
+            ],
+            "stress_torque": [
+              -1.4303213744927225e-13,
+              -1.4303213745263106e-13,
+              -2.1765912393867932e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 0.00024229237980606758,
+            "stress_load_ratio": 0.8660381370973074
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.046762703821522755,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              4.567103762517179e-08,
+              -4.567103762516908e-08,
+              2.636153526372608e-23
+            ],
+            "stress_torque": [
+              -1.4303213744927225e-13,
+              -1.4303213745263106e-13,
+              -2.1765912393867932e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 0.00024229237980606758,
+            "stress_load_ratio": 0.8660381370973074
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.03329773315897732,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              2.0358982826461394e-22,
+              5.67445900211377e-22,
+              5.082879461296305e-23
+            ],
+            "stress_torque": [
+              3.864484424271176e-24,
+              5.240964662347699e-24,
+              -2.3035261872224484e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 1.0800775843847792e-18,
+            "stress_load_ratio": 0.9165439480951983
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.01890770964833959,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              2.0358982826461394e-22,
+              5.67445900211377e-22,
+              5.082879461296305e-23
+            ],
+            "stress_torque": [
+              3.864484424271176e-24,
+              5.240964662347699e-24,
+              -2.3035261872224484e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 1.0800775843847792e-18,
+            "stress_load_ratio": 0.9165439480951983
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.04160913368784586,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              -5.084407199221451e-09,
+              5.084407199223733e-09,
+              2.041213564316646e-23
+            ],
+            "stress_torque": [
+              1.0756682553939703e-12,
+              1.0756682553954921e-12,
+              -2.2845608727691766e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": -2.6973617948270432e-05,
+            "stress_load_ratio": 0.9089978892388725
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.026039400457298675,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              -5.084407199221451e-09,
+              5.084407199223733e-09,
+              2.041213564316646e-23
+            ],
+            "stress_torque": [
+              1.0756682553939703e-12,
+              1.0756682553954921e-12,
+              -2.2845608727691766e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": -2.6973617948270432e-05,
+            "stress_load_ratio": 0.9089978892388725
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.02690767610547364,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              3.9314860538879714e-21,
+              -3.766980509566488e-21,
+              -1.4139275283562365e-22
+            ],
+            "stress_torque": [
+              -3.7481621506309067e-25,
+              -2.0679515313825692e-24,
+              -2.3735150674804677e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 2.0857181305770676e-17,
+            "stress_load_ratio": 0.9443916387315248
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.013057941329004312,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              3.9314860538879714e-21,
+              -3.766980509566488e-21,
+              -1.4139275283562365e-22
+            ],
+            "stress_torque": [
+              -3.7481621506309067e-25,
+              -2.0679515313825692e-24,
+              -2.3735150674804677e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 2.0857181305770676e-17,
+            "stress_load_ratio": 0.9443916387315248
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "order": "linear",
+            "interpolated_image_wall_slip_relative": 0.025298138407115034,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              5.7082877310281396e-08,
+              -5.7082877310284434e-08,
+              4.885858610318098e-23
+            ],
+            "stress_torque": [
+              2.3265489813890936e-12,
+              2.326548981387402e-12,
+              -2.377453800619599e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 0.000302834069661316,
+            "stress_load_ratio": 0.9459588108530562
+          },
+          {
+            "mode": "rotate",
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "order": "quadratic",
+            "interpolated_image_wall_slip_relative": 0.01380296035187949,
+            "pressure_force": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "viscous_force": [
+              5.7082877310281396e-08,
+              -5.7082877310284434e-08,
+              4.885858610318098e-23
+            ],
+            "stress_torque": [
+              2.3265489813890936e-12,
+              2.326548981387402e-12,
+              -2.377453800619599e-07
+            ],
+            "pressure_drag_ratio": 0.0,
+            "viscous_drag_ratio": 0.000302834069661316,
+            "stress_load_ratio": 0.9459588108530562
+          }
+        ]
+      },
+      "scope": "Formula/algebra checks only; no CFD or DEM validation; user-tested744930ac failures remain."
+    }
+  ]
 }

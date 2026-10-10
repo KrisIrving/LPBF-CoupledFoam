@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: M2A-02C boundary candidate and pressure/wall contract
+
+Add opt-in compatibleGauss analytic static outer boundary:2x2 quadrature and two global normal compatibility sweeps, bounded correction/final flux, external faces only, checkpoint mode guard. Legacy default and surface generator retained. Native build/runtime pending; no unchanged14-case rerun requested.
+
+Full24-fixture analytic Cartesian-image interpolation/traction audit separates wall reconstruction from diagnostic stress bias. Fixed36 stress load ratio0.891903, rotation64 ratio0.944392 on exact fields. No empirical force correction or gate relaxation. Select joint pressure/wall constraint direction; dense algebra oracle checks constraints/stationarity, sequential-projection counterexample and weighted-adjoint work/force exchange. Native FV phi/J/S block implementation remains pending; prototype is not CFD validation.32 M2A offline tests pass. Document scope, node rank risk, collocated flux compatibility, force/inventory and concentrated next delivery contract in docs/m2a-pressure-wall-contract.zh-CN.md. No developer-side WSL/native simulations.
+
 ## 2026-10-10: quadratic surface feedback and discrete boundary compatibility audit
 
 User-tested 744930ac. Ten of fourteen cases complete40 windows; four fine rotation cases pass individually. Three offset fixed cases abort first window on continuity plateau; fixed-finer times out (124) after14 windows. MPI and serial common restart comparisons pass. Summary independently reproduced exactly. Fixed-origin drag/slip/stress errors worsen versus linear candidate; no M2A closure and no unchanged14-case rerun requested.

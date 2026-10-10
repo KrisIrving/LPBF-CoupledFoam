@@ -111,3 +111,13 @@ this explains boundary compatibility, not wall accuracy. Freeze both candidates;
 do not request unchanged14-case reruns or blind budget/tolerance tuning. Read latest
 status/plan: M2A-02C must audit boundary flux and pressure/wall/force compatibility
 before selecting/implementing next operator. No solver fix/native pass claimed.
+
+M2A-02C audit/contract delivered: read docs/m2a-pressure-wall-contract.zh-CN.md.
+Opt-in compatibleGauss static analytic outer boundary candidate now exists;
+native compilation/runtime pending. Default and old surface generator retained.
+Full Cartesian image interpolation and stress oracle plus small joint-constraint
+algebra pass offline32 M2A tests, not CFD evidence. Next native wall direction is
+actual FV phi-pressure coupled with paired J/S surface constraints; not implemented.
+Audit node independence, collocated flux compatibility and last-solved source
+before delivering one concentrated native package. No unchanged14-case rerun,
+no empirical force fits, no gate relaxation or thermal/GCL expansion.

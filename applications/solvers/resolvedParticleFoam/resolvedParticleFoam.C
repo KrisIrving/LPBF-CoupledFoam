@@ -57,6 +57,12 @@ int main(int argc,char* argv[])
         const word reconstruction=config.getOrDefault<word>("surfaceReconstruction","linear");
         const scalar surfaceRelaxation=config.getOrDefault<scalar>("surfaceRelaxation",1);
         const scalar continuityTolerance=config.getOrDefault<scalar>("continuityTolerance",-1);
+        const word boundaryTreatment=config.getOrDefault<word>("boundaryTreatment","faceCentre");
+        const bool compatibleBoundary=boundaryTreatment=="compatibleGauss";
+        if(boundaryTreatment!="faceCentre"&&!compatibleBoundary)
+            throw std::runtime_error("Unknown boundary treatment");
+        if(compatibleBoundary&&mode!="fixed"&&mode!="rotate")
+            throw std::runtime_error("Compatible analytic boundary is static-reference only");
         if(reconstruction!="linear"&&reconstruction!="quadratic") throw std::runtime_error("Unknown surface reconstruction");
         if(surfaceRelaxation<=0||surfaceRelaxation>1) throw std::runtime_error("Invalid surface relaxation");
         if(surfaceExtension&&(maxSurfaceCorrectors<1||targetTolerance<=0))
@@ -155,20 +161,79 @@ int main(int argc,char* argv[])
                 }
             }
         }
-        // Exact Dirichlet velocity for stationary Stokes references removes
-        // the usual finite-box velocity-boundary error; closed walls otherwise.
+        // Legacy face-centre values are retained for historical comparisons.
+        // Point samples of a divergence-free analytic field need not have zero
+        // discrete net flux, especially for an off-centre sphere.
         forAll(U.boundaryField(),patch)
             if(!mesh.boundary()[patch].coupled())
                 forAll(U.boundaryField()[patch],face)
                     U.boundaryFieldRef()[patch][face]=(mode=="fixed"||mode=="rotate")
                         ? analytical(mesh.Cf().boundaryField()[patch][face],asFoamVector(particles[0].x),particles[0].radius,
                                      vector(0.01,0,0),asFoamVector(particles[0].omega),mode=="fixed") : vector::zero;
+        if(compatibleBoundary)
+        {
+            scalar rawFlux=0,area=0;
+            forAll(U.boundaryField(),patch) if(!mesh.boundary()[patch].coupled())
+                forAll(U.boundaryField()[patch],face)
+                {
+                    const vector sf=mesh.Sf().boundaryField()[patch][face];
+                    rawFlux+=U.boundaryField()[patch][face]&sf;area+=mag(sf);
+                    label axis=0;
+                    for(label a=1;a<3;++a) if(mag(sf[a])>mag(sf[axis])) axis=a;
+                    vector normal=vector::zero;normal[axis]=sf[axis]>0 ? 1:-1;
+                    if(mag(sf-mag(sf)*normal)>mag(sf)*1e-8)
+                        throw std::runtime_error("Compatible boundary requires Cartesian faces");
+                    const label a=(axis+1)%3,b=(axis+2)%3;
+                    vector average=vector::zero;
+                    for(int s=-1;s<=1;s+=2) for(int t=-1;t<=1;t+=2)
+                    {
+                        vector point=mesh.Cf().boundaryField()[patch][face];
+                        point[a]+=s*h/(2*std::sqrt(3.0));point[b]+=t*h/(2*std::sqrt(3.0));
+                        average+=0.25*analytical(point,asFoamVector(particles[0].x),particles[0].radius,
+                            vector(0.01,0,0),asFoamVector(particles[0].omega),mode=="fixed");
+                    }
+                    U.boundaryFieldRef()[patch][face]=average;
+                }
+            reduce(rawFlux,sumOp<scalar>());reduce(area,sumOp<scalar>());
+            if(area<=0) throw std::runtime_error("Missing analytic outer boundary");
+            scalar gaussFlux=0,finalFlux=0,maxCorrection=0;
+            // Area-weighted normal projection: the smallest area-weighted
+            // velocity correction that removes the discrete compatibility defect.
+            // A second sweep removes accumulation roundoff; no pressure-row source.
+            for(int sweep=0;sweep<2;++sweep)
+            {
+                scalar flux=0;
+                forAll(U.boundaryField(),patch) if(!mesh.boundary()[patch].coupled())
+                    flux+=sum(U.boundaryField()[patch]&mesh.Sf().boundaryField()[patch]);
+                reduce(flux,sumOp<scalar>());
+                if(sweep==0) gaussFlux=flux;
+                const scalar correction=flux/area;maxCorrection+=mag(correction);
+                if(maxCorrection>1e-10)
+                    throw std::runtime_error("Analytic boundary compatibility correction is not negligible");
+                forAll(U.boundaryField(),patch) if(!mesh.boundary()[patch].coupled())
+                    forAll(U.boundaryField()[patch],face)
+                    {
+                        const vector sf=mesh.Sf().boundaryField()[patch][face];
+                        U.boundaryFieldRef()[patch][face]-=correction*sf/mag(sf);
+                    }
+            }
+            forAll(U.boundaryField(),patch) if(!mesh.boundary()[patch].coupled())
+                finalFlux+=sum(U.boundaryField()[patch]&mesh.Sf().boundaryField()[patch]);
+            reduce(finalFlux,sumOp<scalar>());
+            if(mag(finalFlux)>1e-18)
+                throw std::runtime_error("Analytic boundary net flux remains incompatible");
+            if(rank==0) Info<<"M2A_BOUNDARY treatment="<<boundaryTreatment<<" rawFlux="<<rawFlux
+                <<" gaussFlux="<<gaussFlux<<" finalFlux="<<finalFlux
+                <<" normalCorrection="<<maxCorrection<<endl;
+        }
         U.correctBoundaryConditions();
         if(runTime.value()==0) phi=fvc::flux(U);
         mapGeometry();
         IOdictionary restore(IOobject("couplingState",runTime.timeName(),mesh,IOobject::READ_IF_PRESENT,IOobject::NO_WRITE,false));
         if(runTime.value()>0)
         {
+            if(restore.getOrDefault<word>("boundaryTreatment","faceCentre")!=boundaryTreatment)
+                throw std::runtime_error("Restart boundary treatment differs from checkpoint");
             if(restore.getOrDefault<word>("constraintScheme","volumePenalty")!=constraintScheme)
                 throw std::runtime_error("Restart constraint scheme differs from checkpoint");
             if(surfaceExtension&&restore.getOrDefault<word>("surfaceReconstruction","linear")!=reconstruction)
@@ -362,6 +427,7 @@ int main(int argc,char* argv[])
                 checkpoint.add("ids",ids);checkpoint.add("interiorMomentum",previousP);
                 checkpoint.add("constraintScheme",constraintScheme);
                 checkpoint.add("surfaceReconstruction",reconstruction);
+                checkpoint.add("boundaryTreatment",boundaryTreatment);
                 checkpoint.add("interiorAngular",previousL);checkpoint.add("mappedCentres",previousCentre);
                 checkpoint.regIOobject::write();
                 if(rank==0) std::filesystem::create_directories(runTime.timeName().c_str());
