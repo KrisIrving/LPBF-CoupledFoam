@@ -72,3 +72,13 @@ residual double-counts coupled neighbours in the audited v2512 call path.
 Diagnostic correction and budget96 await native validation; target unchanged.
 Keep fixed refinement failure open; read the geometry-force audit before
 new surface/geometry work. New geometry module is not implemented yet.
+
+At user-tested f6f31a4f all eight cases pass individually, as do serial/MPI
+and serial common restart comparisons. Overall fixed refinement still fails.
+Freeze the current engineering baseline; no more pressure iteration micro-runs.
+Read docs/m2a-geometry-reference.zh-CN.md: independent Python geometry oracle
+and six offline fixtures pass, but CFD constraints/forces remain unchanged.
+Accurate intersections may enlarge cell support; replacing chi alone is not
+a surface-constraint fix. Next concentrated task is actual-surface/pressure/
+force compatibility, then extended static-grid/phase and mechanical regression
+package. No rerun of unchanged eight cases, no developer-side WSL/native CFD.

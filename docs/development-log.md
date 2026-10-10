@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: eight individual mechanical gates pass; freeze engineering baseline
+
+User-tested f6f31a4fa46404dbe5e15eee0be52f568ec329d5, archive m2a-mechanical-20261010-111707-634604.tar.gz SHA256 bed97d5e3cadf42f3c33f3fc04098eba3c0d49a5c71bda08dbe01cabed709f9c. All eight complete40 windows and pass individual gates. Independent summary recomputation exactly matches. Translation uses at most67 pressure corrections, maximum true momentum residual7.4341e-14 kg m/s. Free serial/MPI maximum residual1.8708e-13; MPI uses at most49 corrections. Serial/MPI and serial common restart history comparisons pass. Fixed refinement still fails: errors0.0217664466281/0.0861528236719, increase0.0643863770438 over unchanged0.02. Overall package remains failed; no thermal/GCL/full angular or LPBF validation.
+
+Added M2A-02A standard-library Python independent geometry reference: analytic disk/rectangle face intersections, split adaptive sphere/box volume integration, fluid face apertures, integrated curved normal from face-vector closure, stable segment intersections with actual normals. Six fixtures (36/48/64 cubes, phases0/.25h) pass pre-set geometry gates and independently reproduce legacy q4 metrics. Exact classification may enlarge nonzero cell support; improving chi alone does not establish the correct velocity constraint. This is a reference oracle for the next C++ surface/force audit, not a change to fluid matrices or a resolved-force fix. Nineteen relevant offline tests pass (10 existing mechanical contract, 9 new geometry/matrix); diff whitespace check passes. No WSL/native simulation; no request to rerun unchanged eight-case baseline.
+
 ## 2026-10-10: six M2A cases pass; fix duplicated MPI residual contribution
 
 User-tested 7354a5ab; archive SHA e2ad3b5f0a3cac7ef29698f78921957f832ef1443b17228796aa50368f0394e1. Six complete/pass cases including free and serial restart; independent archived-summary match exact. Free maximum true momentum residual 1.8708e-13 kg m/s, startup correction count49. Translation stops at64 with decreasing L1=1.4491e-11. MPI stops at64 with diagnostic plateau9.7234e-8, no complete comparison.
