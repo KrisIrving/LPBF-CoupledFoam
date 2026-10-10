@@ -66,3 +66,9 @@ pass. Startup momentum and fixed-sphere refinement gates fail. Residual-controll
 PISO candidate is pending native feedback. Do not erase startup windows, loosen
 thresholds or call nonmonotone two-grid errors convergence. Keep refinement
 failure open while investigating geometry/support and force discretization.
+
+At user-tested 7354a5ab six cases pass. Translation reaches budget64; MPI
+residual double-counts coupled neighbours in the audited v2512 call path.
+Diagnostic correction and budget96 await native validation; target unchanged.
+Keep fixed refinement failure open; read the geometry-force audit before
+new surface/geometry work. New geometry module is not implemented yet.

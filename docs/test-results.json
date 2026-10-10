@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-10",
-  "latest_user_tested_commit": "f4598d84116b228fec8f04f803d83e756cb2cceb",
+  "latest_user_tested_commit": "7354a5abb6e3210118009b74af7b897bd788271f",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -892,6 +892,271 @@
       "revision_native_build": "not_run",
       "revision_runtime": "not_run",
       "offline_contract_tests_passed": 9
+    },
+    {
+      "report": "m2a-mechanical-20261010-103723-624621.tar.gz",
+      "archive_sha256": "e2ad3b5f0a3cac7ef29698f78921957f832ef1443b17228796aa50368f0394e1",
+      "tested_commit": "7354a5abb6e3210118009b74af7b897bd788271f",
+      "package": "M2A-01",
+      "native_build": "passed",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "completed_case_count": 6,
+      "individual_cases_passed": 6,
+      "independent_summary_exact_match": true,
+      "cases": {
+        "fixed-coarse": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "equation_convergence": true,
+            "correction_count": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "stokes_reference": true
+          },
+          "metrics": {
+            "momentum": 1.0066571933128365e-14,
+            "angular": 0.0,
+            "force_decomposition": 1.3144003331044179e-20,
+            "torque_decomposition": 0.0,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.687516446738047e-12,
+            "pressure_correctors_max": 29.0,
+            "support_volume_ratio_max": 1.4147106052612897,
+            "volume": 0.00417636301529134,
+            "slip": 0.0012190692877613637,
+            "divergence": 7.459514764003195e-14,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.02176644662808358
+          }
+        },
+        "fixed-fine": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "equation_convergence": true,
+            "correction_count": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "stokes_reference": true
+          },
+          "metrics": {
+            "momentum": 1.8864512686331303e-14,
+            "angular": 0.0,
+            "force_decomposition": 1.3539912651727372e-20,
+            "torque_decomposition": 0.0,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.994072844780094e-12,
+            "pressure_correctors_max": 49.0,
+            "support_volume_ratio_max": 1.5219191433162522,
+            "volume": 0.005753551511382016,
+            "slip": 0.003007738491419492,
+            "divergence": 8.02828415319463e-14,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.08615282367189825
+          }
+        },
+        "rotate-coarse": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "equation_convergence": true,
+            "correction_count": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "stokes_reference": true
+          },
+          "metrics": {
+            "momentum": 5.444636205643742e-21,
+            "angular": 0.0,
+            "force_decomposition": 0.0,
+            "torque_decomposition": 1.2976395859425622e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 7.924682973819287e-12,
+            "pressure_correctors_max": 11.0,
+            "support_volume_ratio_max": 1.4147106052612897,
+            "volume": 0.00417636301529134,
+            "slip": 0.0016128623185168956,
+            "divergence": 2.6571031678552174e-13,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.06013370644456795
+          }
+        },
+        "rotate-fine": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "equation_convergence": true,
+            "correction_count": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "stokes_reference": true
+          },
+          "metrics": {
+            "momentum": 8.462240373577491e-22,
+            "angular": 0.0,
+            "force_decomposition": 0.0,
+            "torque_decomposition": 2.409163534060693e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.159549688996582e-12,
+            "pressure_correctors_max": 18.0,
+            "support_volume_ratio_max": 1.5219191433162522,
+            "volume": 0.005753551511382016,
+            "slip": 0.0042454859467276895,
+            "divergence": 1.1496751723302966e-12,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.07117043519194088
+          }
+        },
+        "translate": {
+          "passed": false,
+          "error": "Case execution failed; inspect retained logs",
+          "diagnostics": {
+            "recorded_windows": 0,
+            "completion": false
+          }
+        },
+        "free": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "equation_convergence": true,
+            "correction_count": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "actual_response": true
+          },
+          "metrics": {
+            "momentum": 1.8708225757317024e-13,
+            "angular": 9.019382093933327e-37,
+            "force_decomposition": 2.668153783851046e-20,
+            "torque_decomposition": 2.947461079158021e-35,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.94163244195128e-12,
+            "pressure_correctors_max": 49.0,
+            "support_volume_ratio_max": 1.520813900655886,
+            "volume": 0.0030711203549319555,
+            "slip": 0.003427892510005082,
+            "divergence": 1.121593321112314e-12,
+            "clock": 3.0357660829594124e-18
+          }
+        },
+        "free-restart": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "equation_convergence": true,
+            "correction_count": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "actual_response": true,
+            "common_checkpoint": true
+          },
+          "metrics": {
+            "momentum": 1.8708225757317024e-13,
+            "angular": 1.1132496276291938e-36,
+            "force_decomposition": 2.668153783851046e-20,
+            "torque_decomposition": 3.0733852250403935e-35,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.94163244195128e-12,
+            "pressure_correctors_max": 49.0,
+            "support_volume_ratio_max": 1.520813900655886,
+            "volume": 0.0030711203549319555,
+            "slip": 0.003427892510005082,
+            "divergence": 1.121593321112314e-12,
+            "clock": 3.469446951953614e-18
+          }
+        },
+        "free-mpi2": {
+          "passed": false,
+          "error": "Case execution failed; inspect retained logs",
+          "diagnostics": {
+            "recorded_windows": 0,
+            "completion": false
+          }
+        }
+      },
+      "comparisons": {
+        "free-restart": {
+          "passed": true,
+          "checks": {
+            "position": true,
+            "velocity": true,
+            "rotation": true,
+            "force": true,
+            "torque": true,
+            "fluid_momentum": true
+          },
+          "metrics": {
+            "position": 3.6277918068258024e-24,
+            "velocity": 2.9958077999857225e-21,
+            "rotation": 1.4329359545313684e-17,
+            "force": 1.8431436932253575e-18,
+            "torque": 9.048968162336937e-21,
+            "fluid_momentum": 1.257314531080602e-22
+          }
+        },
+        "free-mpi2": {
+          "passed": false,
+          "status": "not_evaluated",
+          "error": "Missing completed valid histories"
+        },
+        "fixed-refinement": {
+          "passed": false,
+          "error_increase": 0.06438637704381467,
+          "interpretation": "Two resolutions; no asymptotic convergence claim"
+        },
+        "rotate-refinement": {
+          "passed": true,
+          "error_increase": 0.011036728747372937,
+          "interpretation": "Two resolutions; no asymptotic convergence claim"
+        }
+      },
+      "translation_last_equation_impulse_L1_kg_m_s": 1.4491488532414657e-11,
+      "mpi_last_equation_impulse_L1_kg_m_s": 9.723395074059779e-08,
+      "revision": "Remove one duplicated coupled-neighbour contribution from diagnostic; finite cap64 to96, targets unchanged",
+      "revision_native_build": "not_run",
+      "revision_runtime": "not_run",
+      "geometry_revision": "not_implemented",
+      "physical_validation": "partial_gates_passed_overall_failed",
+      "offline_contract_tests_passed": 10
     }
   ],
   "development_packages": [

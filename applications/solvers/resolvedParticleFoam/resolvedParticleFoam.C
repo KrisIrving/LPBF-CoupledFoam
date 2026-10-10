@@ -193,6 +193,18 @@ int main(int argc,char* argv[])
                 // Include the pressure source and sum magnitudes, so opposite
                 // local defects cannot cancel in a global momentum ledger.
                 vectorField defect(equation.residual());
+                // In this v2512 residual() path, addBoundarySource includes
+                // coupled neighbours and lduMatrix::residual includes their
+                // interface contribution again. Remove one explicit copy;
+                // the momentum matrix and pressure solve remain unchanged.
+                forAll(U.boundaryField(),patch)
+                    if(U.boundaryField()[patch].coupled())
+                    {
+                        const vectorField neighbour(U.boundaryField()[patch].patchNeighbourField());
+                        const labelUList& cells=mesh.boundary()[patch].faceCells();
+                        forAll(cells,face)
+                            defect[cells[face]]-=cmptMultiply(equation.boundaryCoeffs()[patch][face],neighbour[face]);
+                    }
                 defect-=mesh.V().field()*fvc::grad(p)().primitiveField();
                 equationImpulse=rho*dt*gSum(mag(defect));
                 usedCorrectors=c+1;

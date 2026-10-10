@@ -8,9 +8,9 @@ and a standalone OpenFOAM/LIGGGHTS communication demo are implemented. Full
 resolved particle coupling and optional acceleration remain unimplemented;
 the minimal demo has passed build, serial and two-rank communication checks.
 An experimental single-sphere mechanical solver and eight-case integrated
-package are now implemented; native build and all eight current
-executions passed. Startup momentum and fixed-sphere refinement gates still
-fail; a bounded residual-controlled correction candidate awaits user execution.
+package are now implemented; native build passed and six current cases
+pass their gates. Translation iteration budget, MPI residual diagnostics and
+fixed-sphere refinement remain open; a diagnostic revision awaits user execution.
 Full CFD/DEM physical verification remains pending.
 This is not validation of resolved CFD forces or heat. See the
 [demo audit](docs/dem-communication-demo.zh-CN.md) and

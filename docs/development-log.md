@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: six M2A cases pass; fix duplicated MPI residual contribution
+
+User-tested 7354a5ab; archive SHA e2ad3b5f0a3cac7ef29698f78921957f832ef1443b17228796aa50368f0394e1. Six complete/pass cases including free and serial restart; independent archived-summary match exact. Free maximum true momentum residual 1.8708e-13 kg m/s, startup correction count49. Translation stops at64 with decreasing L1=1.4491e-11. MPI stops at64 with diagnostic plateau9.7234e-8, no complete comparison.
+
+Audited installed fvMatrixSolve.C residual/addBoundarySource/lduMatrix residual: coupled neighbour contribution is included explicitly then by interface residual. Correct our diagnostic by subtracting one boundary-coefficient/neighbour-field copy, without changing fluid matrix/pressure or DEM. Independent two-cell algebra test preserves serial/partition residual identity. Increase finite budget64 to96 based on measured translation contraction, target1e-11 unchanged. Native revision untested. Fixed refinement still fails at errors0.0217664466/0.0861528237. Saved geometry/force audit: support-volume ratios1.4147/1.5219 differ from accurate chi-weighted volume; strong partially covered-cell constraint may shift effective boundary, not proven sole cause. No geometry/radius/drag/threshold tuning, no thermal/GCL expansion or WSL simulation.
+
 ## 2026-10-10: stable eight-case M2A trajectories; startup balance and refinement gates remain open
 
 User-tested f4598d84; archive SHA 7e9d5b6ab8d33987b0ce8732250190c376b72b79040a52ec2055a8503f593ac9. Build and all eight 40-window executions succeed. Four stationary/rotating cases pass individual gates; prescribed/free/free-restart/free-mpi2 fail startup momentum. Restart and serial/MPI full-history comparisons pass. Independent offline summary exactly matches archived summary. Fixed Stokes errors 0.0217730541/0.0861604279; refinement increase 0.0643873737 fails unchanged 0.02 gate. Rotation errors 0.0601330623/0.0711723402. Prior composite PISO revision restores this matrix's stability; no isolated attribution to individual modifications.

@@ -152,6 +152,17 @@ class ContractTests(unittest.TestCase):
         self.assertTrue(result['checks']['momentum'])
         self.assertFalse(result['checks']['equation_convergence'])
 
+    def test_partition_residual_counts_neighbour_contribution_once(self):
+        # Independent two-cell system A=[[2,-1],[-1,2]], u=[1,2], b=[0,3].
+        # A zero true residual must stay zero if each cell becomes one rank.
+        u, b = [1., 2.], [0., 3.]
+        serial = [b[0]-2*u[0]+u[1], b[1]-2*u[1]+u[0]]
+        duplicated = [b[0]-2*u[0]+2*u[1], b[1]-2*u[1]+2*u[0]]
+        corrected = [duplicated[0]-u[1], duplicated[1]-u[0]]
+        self.assertEqual(serial, [0., 0.])
+        self.assertNotEqual(duplicated, serial)
+        self.assertEqual(corrected, serial)
+
 
 if __name__ == '__main__':
     unittest.main()
