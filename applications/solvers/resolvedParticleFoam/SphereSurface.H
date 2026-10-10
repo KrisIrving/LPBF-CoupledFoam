@@ -48,6 +48,29 @@ class SphereSurface
     {return Foam::vector(v[0],v[1],v[2]);}
 
 public:
+    struct Stencil {std::array<int,8> cells;std::array<double,8> weights;};
+    Stencil stencil(const Foam::vector& point) const
+    {
+        int lower[3];double fraction[3];
+        for(int a=0;a<3;++a)
+        {
+            const double x=(point[a]-origin_[a])/h_;
+            lower[a]=static_cast<int>(std::floor(x));fraction[a]=x-lower[a];
+            if(lower[a]<0||lower[a]+1>=size_[a])
+                throw std::runtime_error("Wall stencil outside Cartesian grid");
+        }
+        Stencil result;int q=0;
+        for(int i=0;i<2;++i) for(int j=0;j<2;++j) for(int k=0;k<2;++k,++q)
+        {
+            result.cells[q]=index(lower[0]+i,lower[1]+j,lower[2]+k);
+            result.weights[q]=(i?fraction[0]:1-fraction[0])*(j?fraction[1]:1-fraction[1])
+                *(k?fraction[2]:1-fraction[2]);
+        }
+        return result;
+    }
+    int globalCells() const {return count_;}
+    int globalIndex(int local) const {return indices_[local];}
+    Foam::vector interpolateVelocity(const Foam::vector& point) const {return velocity(sample(point));}
     struct Diagnostics
     {
         double slip=0;

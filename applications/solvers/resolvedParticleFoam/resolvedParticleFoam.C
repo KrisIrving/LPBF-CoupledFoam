@@ -5,6 +5,7 @@
 #include "constrainPressure.H"
 #include "MechanicalBackend.H"
 #include "SphereSurface.H"
+#include "JointSphere.H"
 #include <fstream>
 #include <filesystem>
 #include <iomanip>
@@ -49,8 +50,9 @@ int main(int argc,char* argv[])
         const scalar momentumTolerance=config.getOrDefault<scalar>("momentumImpulseTolerance",-1);
         const word constraintScheme=config.getOrDefault<word>("constraintScheme","volumePenalty");
         const bool surfaceExtension=constraintScheme=="surfaceExtension";
-        if(!surfaceExtension&&constraintScheme!="volumePenalty") throw std::runtime_error("Unknown constraintScheme");
-        if(surfaceExtension&&mode!="fixed"&&mode!="rotate")
+        const bool jointConstraint=constraintScheme=="jointSurface";
+        if(!surfaceExtension&&!jointConstraint&&constraintScheme!="volumePenalty") throw std::runtime_error("Unknown constraintScheme");
+        if((surfaceExtension||jointConstraint)&&mode!="fixed"&&mode!="rotate")
             throw std::runtime_error("Surface extension candidate is stationary single-sphere only");
         const label maxSurfaceCorrectors=config.getOrDefault<label>("maxSurfaceCorrectors",32);
         const scalar targetTolerance=config.getOrDefault<scalar>("surfaceTargetTolerance",1e-7);
@@ -59,6 +61,9 @@ int main(int argc,char* argv[])
         const scalar continuityTolerance=config.getOrDefault<scalar>("continuityTolerance",-1);
         const word boundaryTreatment=config.getOrDefault<word>("boundaryTreatment","faceCentre");
         const bool compatibleBoundary=boundaryTreatment=="compatibleGauss";
+        const label jointBudget=config.getOrDefault<label>("jointKrylovBudget",64);
+        if(jointConstraint&&(jointBudget<1||jointBudget>256||!compatibleBoundary||targetTolerance<=0||continuityTolerance<=0))
+            throw std::runtime_error("Joint surface requires bounded controls and compatible boundary");
         if(boundaryTreatment!="faceCentre"&&!compatibleBoundary)
             throw std::runtime_error("Unknown boundary treatment");
         if(compatibleBoundary&&mode!="fixed"&&mode!="rotate")
@@ -83,6 +88,8 @@ int main(int argc,char* argv[])
         volScalarField solid(IOobject("solidFraction",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::AUTO_WRITE),mesh,dimensionedScalar("zero",dimless,0));
         volScalarField lambda(IOobject("constraintRate",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE),mesh,dimensionedScalar("zero",dimless/dimTime,0));
         volVectorField rigid(IOobject("rigidVelocity",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE),mesh,dimensionedVector("zero",dimVelocity,vector::zero));
+        volVectorField wallAcceleration(IOobject("wallAcceleration",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE),
+            mesh,dimensionedVector("zero",dimVelocity/dimTime,vector::zero));
         lpbfM2::MechanicalBackend backend("input.dem");
         auto particles=backend.state();
         // First integrated package isolates one sphere; API does not require consecutive IDs.
@@ -100,7 +107,14 @@ int main(int argc,char* argv[])
             if(mag(span-vector(h,h,h))>h*1e-8) throw std::runtime_error("Axis-aligned cubic cells required");
         }
         std::unique_ptr<lpbfM2::SphereSurface> surface;
-        if(surfaceExtension) surface.reset(new lpbfM2::SphereSurface(mesh,h,reconstruction=="quadratic"));
+        if(surfaceExtension||jointConstraint) surface.reset(new lpbfM2::SphereSurface(mesh,h,reconstruction=="quadratic"));
+        std::unique_ptr<lpbfM2::JointSphere> joint;
+        if(jointConstraint)
+        {
+            mesh.setFluxRequired("jointDeltaP");
+            joint.reset(new lpbfM2::JointSphere(mesh,*surface,asFoamVector(particles[0].x),particles[0].radius,h));
+            if(rank==0) Info<<"M2A_JOINT markers="<<joint->count()<<" minPivot="<<joint->minPivot()<<endl;
+        }
         auto mapGeometry=[&]()
         {
             if(surface) surface->gather(U,p);
@@ -122,7 +136,7 @@ int main(int argc,char* argv[])
             }
             solid.correctBoundaryConditions();rigid.correctBoundaryConditions();
             lambda=dimensionedScalar("rate",dimless/dimTime,penalty/dt)*solid;
-            if(surface)
+            if(surfaceExtension)
                 forAll(mesh.C(),cell)
                 {
                     const vector rp=asFoamVector(particles[0].x);
@@ -132,6 +146,7 @@ int main(int argc,char* argv[])
                         asFoamVector(particles[0].v),asFoamVector(particles[0].omega));
                 }
             rigid.correctBoundaryConditions();
+            if(jointConstraint) lambda=dimensionedScalar("zero",dimless/dimTime,0);
         };
         auto interior=[&](vector& momentum,vector& angular)
         {
@@ -238,6 +253,8 @@ int main(int argc,char* argv[])
                 throw std::runtime_error("Restart constraint scheme differs from checkpoint");
             if(surfaceExtension&&restore.getOrDefault<word>("surfaceReconstruction","linear")!=reconstruction)
                 throw std::runtime_error("Restart surface reconstruction differs from checkpoint");
+            if(jointConstraint&&restore.getOrDefault<label>("jointMarkerCount",-1)!=joint->count())
+                throw std::runtime_error("Restart joint marker count differs from checkpoint");
             if(!restore.found("ids")) throw std::runtime_error("Missing common coupling checkpoint");
             labelList saved(restore.lookup("ids"));
             if(saved!=ids) throw std::runtime_error("Restart ID mismatch");
@@ -256,7 +273,7 @@ int main(int argc,char* argv[])
             if(!history) throw std::runtime_error("Cannot write mechanical history");
             history<<std::setprecision(17);
             if(runTime.value()==0)
-                history<<"time,id,owner,x,y,z,vx,vy,vz,wx,wy,wz,fx,fy,fz,tx,ty,tz,volume_error,slip_rms,div_max,momentum_residual,angular_impulse_residual,clock_error,covered_ranks,force_ratio,torque_ratio,fluid_px,fluid_py,fluid_pz,old_fluid_px,old_fluid_py,old_fluid_pz,boundary_fx,boundary_fy,boundary_fz,constraint_fx,constraint_fy,constraint_fz,inertia_fx,inertia_fy,inertia_fz,constraint_tx,constraint_ty,constraint_tz,inertia_tx,inertia_ty,inertia_tz,pressure_correctors,momentum_equation_impulse_L1,support_volume_ratio,surface_correctors,surface_target_defect,pressure_correctors_total,bulk_target_slip_rms,stress_pressure_fx,stress_pressure_fy,stress_pressure_fz,stress_viscous_fx,stress_viscous_fy,stress_viscous_fz,stress_pressure_tx,stress_pressure_ty,stress_pressure_tz,stress_viscous_tx,stress_viscous_ty,stress_viscous_tz,window_wall_seconds\n";
+                history<<"time,id,owner,x,y,z,vx,vy,vz,wx,wy,wz,fx,fy,fz,tx,ty,tz,volume_error,slip_rms,div_max,momentum_residual,angular_impulse_residual,clock_error,covered_ranks,force_ratio,torque_ratio,fluid_px,fluid_py,fluid_pz,old_fluid_px,old_fluid_py,old_fluid_pz,boundary_fx,boundary_fy,boundary_fz,constraint_fx,constraint_fy,constraint_fz,inertia_fx,inertia_fy,inertia_fz,constraint_tx,constraint_ty,constraint_tz,inertia_tx,inertia_ty,inertia_tz,pressure_correctors,momentum_equation_impulse_L1,support_volume_ratio,surface_correctors,surface_target_defect,pressure_correctors_total,bulk_target_slip_rms,stress_pressure_fx,stress_pressure_fy,stress_pressure_fz,stress_viscous_fx,stress_viscous_fy,stress_viscous_fz,stress_pressure_tx,stress_pressure_ty,stress_pressure_tz,stress_viscous_tx,stress_viscous_ty,stress_viscous_tz,window_wall_seconds,joint_iterations,joint_pressure_solves,joint_wall_residual,joint_markers,joint_min_pivot,joint_force_exchange_error,joint_torque_exchange_error,joint_work_exchange_error\n";
         }
         const scalar refPressure=p[0];
         while(runTime.run())
@@ -270,9 +287,12 @@ int main(int argc,char* argv[])
             surfaceScalarField advecting(IOobject("advecting",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE),phi);
             label usedCorrectors=0,surfaceCorrectors=0,totalCorrectors=0;
             scalar equationImpulse=GREAT,targetDefect=0,continuityDefect=GREAT;
-            for(label outer=0;outer<(surface ? maxSurfaceCorrectors:1);++outer)
+            label jointIterations=0,jointPressureSolves=0;
+            std::vector<double> jointLoads(joint ? 3*joint->count():0,0);
+            wallAcceleration=dimensionedVector("zero",dimVelocity/dimTime,vector::zero);
+            for(label outer=0;outer<(surfaceExtension ? maxSurfaceCorrectors:1);++outer)
             {
-                fvVectorMatrix equation(fvm::ddt(U)+fvm::div(advecting,U)-fvm::laplacian(nu,U)+fvm::Sp(lambda,U)==lambda*rigid);
+                fvVectorMatrix equation(fvm::ddt(U)+fvm::div(advecting,U)-fvm::laplacian(nu,U)+fvm::Sp(lambda,U)==lambda*rigid+wallAcceleration);
                 // One momentum predictor per outer target update. Each inner PISO
                 // loop corrects H without re-solving the predictor. All outer solves
                 // retain the SAME old-time field and frozen advecting flux/window.
@@ -292,6 +312,69 @@ int main(int argc,char* argv[])
                     pressure.solve();
                     phi=predicted-pressure.flux();
                     U=HbyA-rAU*fvc::grad(p);U.correctBoundaryConditions();
+                    if(joint)
+                    {
+                        auto values=joint->interpolate(U,p);
+                        const auto desired=joint->desired(asFoamVector(before[0].x),asFoamVector(before[0].v),asFoamVector(before[0].omega));
+                        std::vector<double> rhs(values.size());targetDefect=0;
+                        for(double value:values) if(!std::isfinite(value))
+                            throw std::runtime_error("Nonfinite joint wall velocity");
+                        for(int i=0;i<joint->count();++i)
+                        {
+                            scalar norm=0;
+                            for(int a=0;a<3;++a) {rhs[3*i+a]=desired[3*i+a]-values[3*i+a];norm+=sqr(rhs[3*i+a]);}
+                            targetDefect=Foam::max(targetDefect,std::sqrt(norm));
+                        }
+                        if(targetDefect>targetTolerance)
+                        {
+                            const auto scaling=joint->inverseDiagonal(rAU,rho);
+                            auto response=[&](const std::vector<double>& scaled,bool commit)
+                            {
+                                std::vector<double> forces(scaled.size());
+                                for(std::size_t i=0;i<forces.size();++i) forces[i]=scaled[i]/scaling[i/3];
+                                const vectorField acceleration=joint->acceleration(forces,rho);
+                                volVectorField deltaU(IOobject("jointDeltaU",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false),
+                                    mesh,dimensionedVector("zero",dimVelocity,vector::zero),U.boundaryField().types());
+                                deltaU.primitiveFieldRef()=rAU.primitiveField()*acceleration;
+                                deltaU.correctBoundaryConditions();
+                                surfaceScalarField deltaPhi("jointDeltaPhi",fvc::flux(deltaU));
+                                volScalarField deltaP(IOobject("jointDeltaP",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false),
+                                    mesh,dimensionedScalar("zero",p.dimensions(),0),p.boundaryField().types());
+                                constrainPressure(deltaP,deltaU,deltaPhi,rAU);
+                                fvScalarMatrix responsePressure(fvm::laplacian(rAU,deltaP)==fvc::div(deltaPhi));
+                                if(deltaP.needReference()) responsePressure.setReference(rank==0 ? 0:-1,0);
+                                responsePressure.solve(word("p"));++jointPressureSolves;
+                                deltaPhi-=responsePressure.flux();
+                                deltaU-=rAU*fvc::grad(deltaP);deltaU.correctBoundaryConditions();
+                                auto result=joint->interpolate(deltaU,deltaP);
+                                if(commit)
+                                {
+                                    U.primitiveFieldRef()+=deltaU.primitiveField();
+                                    p.primitiveFieldRef()+=deltaP.primitiveField();phi+=deltaPhi;
+                                    U.correctBoundaryConditions();p.correctBoundaryConditions();
+                                    wallAcceleration.primitiveFieldRef()+=acceleration;
+                                    for(std::size_t i=0;i<forces.size();++i) jointLoads[i]+=forces[i];
+                                    // Exactly the same source is used by equation.H,
+                                    // equation residual and the final force ledger.
+                                    equation.source()+=mesh.V().field()*acceleration;
+                                }
+                                return result;
+                            };
+                            int iterations=0;
+                            const auto correction=lpbfM2::wallGMRES(
+                                [&](const std::vector<double>& input){return response(input,false);},
+                                rhs,targetTolerance*.1,jointBudget,iterations);
+                            response(correction,true);jointIterations+=iterations;
+                            values=joint->interpolate(U,p);targetDefect=0;
+                            for(int i=0;i<joint->count();++i)
+                            {
+                                scalar norm=0;for(int a=0;a<3;++a) norm+=sqr(values[3*i+a]-desired[3*i+a]);
+                                targetDefect=Foam::max(targetDefect,std::sqrt(norm));
+                            }
+                            if(!std::isfinite(targetDefect)||targetDefect>targetTolerance)
+                                throw std::runtime_error("Joint wall explicit residual did not converge");
+                        }
+                    }
                     const scalar maxU=gMax(mag(U)().primitiveField());
                     const scalar maxP=gMax(mag(p)().primitiveField());
                     continuityDefect=gMax(mag(fvc::div(phi))().primitiveField());
@@ -318,17 +401,21 @@ int main(int argc,char* argv[])
                     if(rank==0) Info<<"M2A_CORRECTION time="<<runTime.value()
                         <<" iteration="<<c+1<<" maxU="<<maxU<<" maxP="<<maxP
                         <<" equationImpulseL1="<<equationImpulse<<" continuityMax="<<continuityDefect<<endl;
+                    if(joint&&rank==0) Info<<"M2A_JOINT_STEP time="<<runTime.value()<<" correction="<<c+1
+                        <<" wallResidual="<<targetDefect<<" krylovTotal="<<jointIterations
+                        <<" responsePressureTotal="<<jointPressureSolves<<endl;
                     if(!std::isfinite(maxU)||!std::isfinite(maxP)||!std::isfinite(equationImpulse)||!std::isfinite(continuityDefect))
                         throw std::runtime_error("Nonfinite CFD state before DEM feedback");
                     if(usedCorrectors>=correctors && (momentumTolerance<0||equationImpulse<=momentumTolerance)
-                        && (continuityTolerance<0||continuityDefect<=continuityTolerance)) break;
+                        && (continuityTolerance<0||continuityDefect<=continuityTolerance)
+                        && (!joint||targetDefect<=targetTolerance)) break;
                 }
                 if(momentumTolerance>=0 && equationImpulse>momentumTolerance)
                     throw std::runtime_error("CFD momentum equation did not converge before DEM feedback");
                 if(continuityTolerance>=0&&continuityDefect>continuityTolerance)
                     throw std::runtime_error("CFD continuity did not converge before DEM feedback");
                 surfaceCorrectors=outer+1;
-                if(!surface) break;
+                if(!surfaceExtension) break;
                 surface->gather(U,p);
                 vectorField updated(rigid.primitiveField());targetDefect=0;
                 forAll(mesh.C(),cell) if(lambda[cell]>0)
@@ -351,13 +438,14 @@ int main(int argc,char* argv[])
                 rigid.correctBoundaryConditions();
             }
             lpbfM2::SphereSurface::Diagnostics stress;
+            if(surface) surface->gather(U,p);
             if(surface) stress=surface->diagnose(asFoamVector(before[0].x),before[0].radius,
                 asFoamVector(before[0].v),asFoamVector(before[0].omega),rho,viscosity);
             vector constraint=vector::zero, constraintTorque=vector::zero;
             scalar volume=0,slip=0,supportVolume=0;label covered=0;
             forAll(mesh.C(),cell)
             {
-                const vector f=rho*lambda[cell]*(rigid[cell]-U[cell])*mesh.V()[cell];
+                const vector f=rho*(lambda[cell]*(rigid[cell]-U[cell])+wallAcceleration[cell])*mesh.V()[cell];
                 constraint+=f;constraintTorque+=(mesh.C()[cell]-asFoamVector(before[0].x))^f;
                 volume+=solid[cell]*mesh.V()[cell];slip+=solid[cell]*mesh.V()[cell]*magSqr(U[cell]-rigid[cell]);
                 if(lambda[cell]>0) supportVolume+=mesh.V()[cell];
@@ -366,6 +454,20 @@ int main(int argc,char* argv[])
             reduce(constraint,sumOp<vector>());reduce(constraintTorque,sumOp<vector>());
             reduce(volume,sumOp<scalar>());reduce(slip,sumOp<scalar>());
             reduce(supportVolume,sumOp<scalar>());
+            scalar jointForceError=0,jointTorqueError=0,jointWorkError=0;
+            if(joint)
+            {
+                vector markerForce,markerTorque;
+                joint->loads(jointLoads,asFoamVector(before[0].x),markerForce,markerTorque);
+                jointForceError=mag(markerForce-constraint);jointTorqueError=mag(markerTorque-constraintTorque);
+                const auto markerU=joint->interpolate(U,p);
+                scalar markerWork=0,gridWork=0;
+                for(std::size_t i=0;i<jointLoads.size();++i) markerWork+=jointLoads[i]*markerU[i];
+                forAll(mesh.C(),cell) gridWork+=rho*mesh.V()[cell]*(wallAcceleration[cell]&U[cell]);
+                reduce(gridWork,sumOp<scalar>());jointWorkError=mag(gridWork-markerWork);
+                if(jointForceError>1e-12||jointTorqueError>1e-14||jointWorkError>1e-14)
+                    throw std::runtime_error("Joint spreading force/torque/work exchange failed");
+            }
             if(volume<=0) throw std::runtime_error("Sphere outside resolved mesh");
             vector newP,newL;interior(newP,newL);
             const vector inertia=(newP-previousP[0])/dt;
@@ -416,7 +518,10 @@ int main(int argc,char* argv[])
                     <<','<<surfaceCorrectors<<','<<targetDefect<<','<<totalCorrectors<<','<<std::sqrt(slip/volume);
                 for(const vector& data:{stress.pressureForce,stress.viscousForce,stress.pressureTorque,stress.viscousTorque})
                     for(int k=0;k<3;++k) history<<','<<data[k];
-                history<<','<<std::chrono::duration<double>(std::chrono::steady_clock::now()-wallStart).count()<<'\n';
+                history<<','<<std::chrono::duration<double>(std::chrono::steady_clock::now()-wallStart).count()
+                    <<','<<jointIterations<<','<<jointPressureSolves<<','<<(joint ? targetDefect:0)
+                    <<','<<(joint ? joint->count():0)<<','<<(joint ? joint->minPivot():0)
+                    <<','<<jointForceError<<','<<jointTorqueError<<','<<jointWorkError<<'\n';
                 history.flush();
             }
             previousP[0]=newP;previousL[0]=newL;previousCentre[0]=asFoamVector(before[0].x);
@@ -428,6 +533,7 @@ int main(int argc,char* argv[])
                 checkpoint.add("constraintScheme",constraintScheme);
                 checkpoint.add("surfaceReconstruction",reconstruction);
                 checkpoint.add("boundaryTreatment",boundaryTreatment);
+                if(joint) checkpoint.add("jointMarkerCount",joint->count());
                 checkpoint.add("interiorAngular",previousL);checkpoint.add("mappedCentres",previousCentre);
                 checkpoint.regIOobject::write();
                 if(rank==0) std::filesystem::create_directories(runTime.timeName().c_str());

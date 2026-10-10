@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: native jointSurface candidate and concentrated user package
+
+Implement paired trilinear J/integrated-force transpose spread at true sphere nodes, compatibleGauss outer boundary and matrix-free nonsymmetric GMRES using actual FV face-flux pressure response. No ghost penalty in joint mode. rAU diagonal response is approximate; PISO iterations retain full momentum residual/continuity/wall constraints and bounded fail-before-DEM control. Same solved source in equation.H/residual, force/torque and fictitious-fluid inertia inventory. Native force/torque/work exchange guards, source/cost CSV and marker checkpoint guard. Each window/restart resets source identically; common restart remains pending native validation.
+
+Add independent6-fixture stencil/rank/moment/work audit,14-case joint generator/summary/runner and actual shared C++ GMRES kernel test executed only on user machine.37 M2A offline tests pass, min normalised J Gram pivot0.9064–0.9410; old quadratic archive summary exact. Windows Git Bash syntax check passed; read-only installed v2512 constructor/solve API checks. Native kernel/solver build and runtime not executed. Physical gates and900s per-invocation budget unchanged; pressure-response cost separately recorded. Next action is one complete user joint package, not more review-only turns. See docs/m2a-joint-candidate.zh-CN.md. M2A and dynamic/GCL/contact/heat/angular-fluid limitations remain.
+
 ## 2026-10-10: M2A-02C boundary candidate and pressure/wall contract
 
 Add opt-in compatibleGauss analytic static outer boundary:2x2 quadrature and two global normal compatibility sweeps, bounded correction/final flux, external faces only, checkpoint mode guard. Legacy default and surface generator retained. Native build/runtime pending; no unchanged14-case rerun requested.

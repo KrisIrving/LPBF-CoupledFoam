@@ -9308,6 +9308,91 @@
         ]
       },
       "scope": "Formula/algebra checks only; no CFD or DEM validation; user-tested744930ac failures remain."
+    },
+    {
+      "date": "2026-10-10",
+      "stage": "M2A-02C-native-joint-candidate",
+      "native_joint_wall_solver": "candidate_implemented",
+      "native_build_runtime": "not_evaluated",
+      "native_shared_cpp_kernel": "not_evaluated",
+      "offline_m2a_test_count": 37,
+      "offline_tests_passed": true,
+      "windows_git_bash_syntax": "passed",
+      "historical_quadratic_summary": "exact_match",
+      "stencil_audit": {
+        "kind": "geometric_stencil_oracle_only",
+        "pressure_projected_schur_rank": "not_evaluated",
+        "passed": true,
+        "cases": [
+          {
+            "mesh_n": 36,
+            "phase_h": 0.0,
+            "markers": 51,
+            "min_normalised_cholesky_pivot": 0.9064322712049557,
+            "partition_error": 1.1102230246251565e-16,
+            "coordinate_error_m": 1.3877787807814457e-17,
+            "force_exchange_error_N": 1.3552527156068805e-20,
+            "first_moment_exchange_error_N_m": 1.1580528575742387e-21,
+            "work_exchange_error_W": 0.0
+          },
+          {
+            "mesh_n": 36,
+            "phase_h": 0.25,
+            "markers": 51,
+            "min_normalised_cholesky_pivot": 0.9371535408029432,
+            "partition_error": 1.1102230246251565e-16,
+            "coordinate_error_m": 1.3877787807814457e-17,
+            "force_exchange_error_N": 6.776263578034403e-21,
+            "first_moment_exchange_error_N_m": 2.329340604949326e-21,
+            "work_exchange_error_W": 0.0
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.0,
+            "markers": 90,
+            "min_normalised_cholesky_pivot": 0.9395698026410739,
+            "partition_error": 1.1102230246251565e-16,
+            "coordinate_error_m": 1.0842021724855044e-17,
+            "force_exchange_error_N": 2.710505431213761e-20,
+            "first_moment_exchange_error_N_m": 2.2234614865425384e-21,
+            "work_exchange_error_W": 6.776263578034403e-21
+          },
+          {
+            "mesh_n": 48,
+            "phase_h": 0.25,
+            "markers": 90,
+            "min_normalised_cholesky_pivot": 0.9409979754770144,
+            "partition_error": 1.1102230246251565e-16,
+            "coordinate_error_m": 1.0408340855860843e-17,
+            "force_exchange_error_N": 0.0,
+            "first_moment_exchange_error_N_m": 3.877822711648594e-21,
+            "work_exchange_error_W": 4.743384504624082e-20
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.0,
+            "markers": 159,
+            "min_normalised_cholesky_pivot": 0.9140754677735085,
+            "partition_error": 2.220446049250313e-16,
+            "coordinate_error_m": 1.9081958235744878e-17,
+            "force_exchange_error_N": 1.0842021724855044e-19,
+            "first_moment_exchange_error_N_m": 8.013725774413732e-21,
+            "work_exchange_error_W": 0.0
+          },
+          {
+            "mesh_n": 64,
+            "phase_h": 0.25,
+            "markers": 159,
+            "min_normalised_cholesky_pivot": 0.9233125806235861,
+            "partition_error": 1.1102230246251565e-16,
+            "coordinate_error_m": 1.8214596497756474e-17,
+            "force_exchange_error_N": 1.0842021724855044e-19,
+            "first_moment_exchange_error_N_m": 3.2690177808095654e-21,
+            "work_exchange_error_W": 0.0
+          }
+        ]
+      },
+      "scope": "Geometric/gate regression only; native CFD/DEM, projected Schur convergence, force accuracy and cost pending."
     }
   ]
 }

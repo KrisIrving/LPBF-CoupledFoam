@@ -112,3 +112,10 @@ and simulation outputs are excluded from project additions.
 已准备可选边界通量修复并完成完整图像点插值/应力与联合约束代数审计。
 原生边界修复未测试，联合壁面求解器仍待实现，暂不重复运行原14组。
 下一原生开发契约见[压力—壁面联合约束](docs/m2a-pressure-wall-contract.zh-CN.md)。
+
+### M2A-02C原生联合候选已交付
+
+新增真实球面插值/反力与实际phi压力响应的联合校正；37项离线检查通过。
+原生编译/运行、精度和成本待验证，M2A仍未关闭。集中用户入口：
+`bash scripts/m2a-joint-test.sh`。完整命令与限制见[原生联合候选](docs/m2a-joint-candidate.zh-CN.md)。
+旧surface包保留作历史对照，当前测试使用新joint包。

@@ -121,3 +121,14 @@ actual FV phi-pressure coupled with paired J/S surface constraints; not implemen
 Audit node independence, collocated flux compatibility and last-solved source
 before delivering one concentrated native package. No unchanged14-case rerun,
 no empirical force fits, no gate relaxation or thermal/GCL expansion.
+
+M2A-02C native jointSurface candidate delivered; read docs/m2a-joint-candidate.zh-CN.md.
+True-surface J and integrated-force transpose spread, compatible boundary, actual
+FV phi pressure response and bounded nonsymmetric GMRES; full momentum residual
+via PISO because rAU response is diagonal approximation. No ghost penalty in joint
+mode. Same solved source for force/inertia ledger, native exchange audits/cost and
+marker checkpoint.37 offline tests and6 geometric rank fixtures pass, historical
+quadratic summary exact; native build/kernel/CFD still pending. User entry is
+scripts/m2a-joint-test.sh (14 cases and actual shared kernel), not old surface
+runner. Preserve all physical gates, budgets, failures; no more review-only turns
+before processing this full feedback. No developer-side WSL/native simulations.

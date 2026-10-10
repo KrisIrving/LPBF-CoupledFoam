@@ -3,6 +3,7 @@ import argparse
 import importlib.util
 import json
 import math
+import re
 from pathlib import Path
 
 
@@ -21,8 +22,17 @@ def evaluate(case):
     logs=('log.first','log.restart') if meta['restart'] else ('log.solver',)
     for filename in logs:
         text=(case/filename).read_text(errors='replace')
-        if 'M2A_CONSTRAINT scheme=surfaceExtension' not in text:
-            raise ValueError('Missing native surfaceExtension scheme marker')
+        scheme=meta['surface_controls'].get('scheme','surfaceExtension')
+        if 'M2A_CONSTRAINT scheme='+scheme not in text:
+            raise ValueError('Missing native '+scheme+' scheme marker')
+        if scheme=='jointSurface':
+            if 'M2A_JOINT markers=' not in text or 'M2A_BOUNDARY treatment=compatibleGauss' not in text:
+                raise ValueError('Missing native joint/compatible boundary marker')
+            match=re.search(r'M2A_BOUNDARY treatment=compatibleGauss rawFlux=(\S+) gaussFlux=(\S+) finalFlux=(\S+) normalCorrection=(\S+)',text)
+            if not match or any(not math.isfinite(float(x)) for x in match.groups()):
+                raise ValueError('Invalid native boundary compatibility diagnostics')
+            if abs(float(match.group(3)))>meta['joint_controls']['boundary_net_flux_m3_s'] or abs(float(match.group(4)))>meta['joint_controls']['boundary_correction_m_s']:
+                raise ValueError('Native boundary compatibility threshold exceeded')
         if meta['surface_controls'].get('reconstruction')=='quadratic' and 'M2A_RECONSTRUCTION order=quadratic' not in text:
             raise ValueError('Missing native quadratic reconstruction marker')
     controls=meta['surface_controls']
@@ -41,6 +51,18 @@ def evaluate(case):
     checks['positive_window_cost']=all(r['window_wall_seconds']>0 for r in rows)
     if 'continuity_per_s' in meta['solver_controls']:
         checks['continuity_convergence']=metrics['divergence']<=meta['solver_controls']['continuity_per_s']
+    if 'joint_controls' in meta:
+        joint=meta['joint_controls']
+        metrics['joint_wall_residual']=max(abs(r['joint_wall_residual']) for r in rows)
+        metrics['joint_iterations_total']=sum(r['joint_iterations'] for r in rows)
+        metrics['joint_pressure_solves_total']=sum(r['joint_pressure_solves'] for r in rows)
+        checks['joint_wall_constraint']=metrics['joint_wall_residual']<=controls['target_defect_m_s']
+        checks['joint_marker_rank']=all(r['joint_markers']==joint['markers'] and r['joint_min_pivot']>joint['min_rank_pivot'] for r in rows)
+        checks['joint_iteration_counts']=all(r['joint_iterations']==int(r['joint_iterations']) and 0<=r['joint_iterations']<=r['pressure_correctors']*joint['krylov_budget']
+            and r['joint_pressure_solves']==int(r['joint_pressure_solves']) and 0<=r['joint_pressure_solves']<=r['pressure_correctors']*(joint['krylov_budget']+2) for r in rows)
+        for name,limit in (('force','force_exchange_N'),('torque','torque_exchange_N_m'),('work','work_exchange_W')):
+            metrics['joint_'+name+'_exchange_error']=max(abs(r['joint_'+name+'_exchange_error']) for r in rows)
+            checks['joint_'+name+'_exchange']=metrics['joint_'+name+'_exchange_error']<=joint[limit]
     radius=meta['radius']
     reference=(6*math.pi*meta['rho']*meta['nu']*radius*meta['reference_flow_speed']
         if meta['mode']=='fixed' else 8*math.pi*meta['rho']*meta['nu']*radius**3*meta['reference_rotation_speed'])
@@ -58,8 +80,8 @@ def evaluate(case):
     return entry,rows,meta
 
 
-def summarize(root):
-    result={'package':'M2A-02B','cases':{},'comparisons':{},
+def summarize(root,package='M2A-02B'):
+    result={'package':package,'cases':{},'comparisons':{},
             'scope':'Static noncontact single-sphere surface candidate only. '
                     'No moving GCL, general angular conservation, contact, heat or LPBF validation.'}
     histories,metadata={},{}
