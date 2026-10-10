@@ -10566,6 +10566,36 @@
       ],
       "physical_gate_relaxation": false,
       "budget_increase": false
+    },
+    {
+      "date": "2026-10-11",
+      "scope": "Literature and actual discrete-method review",
+      "review_document": "docs/m2a-literature-method-review.zh-CN.md",
+      "book_pages_reviewed": [
+        22,
+        23,
+        24,
+        25,
+        28,
+        29
+      ],
+      "book_pages_visually_checked": [
+        23,
+        24,
+        29
+      ],
+      "native_build_runtime": "not_evaluated",
+      "new_runtime_tests": 0,
+      "findings": [
+        "surface IB is not book open-area discretisation",
+        "repeated full predictor with diagonal constraint response can diverge",
+        "JJt rank and small GMRES test do not validate pressure-projected wall Schur",
+        "FV phi and cell U need compatible response audit",
+        "virtual inertia and extrapolated stress spatial accuracy remain open"
+      ],
+      "decision": "Audit actual native operator before next concentrated14-case delivery; c56435ec remains pending, no immediate repeat request",
+      "physical_gate_relaxation": false,
+      "budget_increase": false
     }
   ]
 }
