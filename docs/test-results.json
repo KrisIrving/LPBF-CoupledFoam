@@ -6684,5 +6684,47 @@
       "new_geometry_and_matrix": 9,
       "total": 19
     }
+  },
+  "m2a_02b_development_checks": {
+    "date": "2026-10-10",
+    "kind": "developer_offline_only",
+    "native_build": "not_run",
+    "native_cfd_dem": "not_run",
+    "package": "M2A-02B",
+    "case_count": 14,
+    "entry": "scripts/m2a-surface-test.sh",
+    "scheme": "surfaceExtension",
+    "stationary_only": true,
+    "offline_formula_and_gate_tests": 10,
+    "previous_archive_reanalysis": "exact_match",
+    "bash_syntax": "passed_windows_git_bash",
+    "predeclared_gates": {
+      "max_target_iterations": 32,
+      "target_defect_m_s": 1e-07,
+      "original_refinement_increase": 0.02,
+      "fine64_reference_relative": 0.1,
+      "fine64_stress_ledger_relative": 0.1,
+      "phase_load_difference_relative": 0.02
+    },
+    "analytic_continuous_field_radial_reconstruction_relative_error": {
+      "fixed": [
+        0.11382183349530528,
+        0.06918349350322295,
+        0.03939845526172636
+      ],
+      "rotate": [
+        0.13442176870748235,
+        0.08900226757369878,
+        0.05524412211165508
+      ],
+      "mesh_n": [
+        36,
+        48,
+        64
+      ],
+      "not_cfd_or_cartesian_interpolation": true
+    },
+    "next_action": "User runs the new fourteen-case static surface package; assess all evidence before moving/contact/heat extensions.",
+    "total_relevant_offline_tests_passed": 29
   }
 }

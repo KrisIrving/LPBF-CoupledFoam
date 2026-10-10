@@ -44,3 +44,5 @@ python3 scripts/m2a-geometry-audit.py --output .runs/m2a-geometry-reference.json
 ```
 
 这条命令只做几何数值积分，不加载 OpenFOAM，不运行 CFD/DEM。运动扫掠体积/GCL、全流体角动量、多球接触及热/熔化仍在后续独立阶段。
+
+更新2026-10-10：[M2A-02B静态表面延拓候选](m2a-surface-candidate.zh-CN.md)现已实现并交付14组原生测试入口；原生效果待验证。此阶段先做12组静态矩阵和固定球MPI/共同重启，运动/自由回归在静态前置条件通过后再接入，不能把旧运动证据转移给新方案。

@@ -82,3 +82,14 @@ Accurate intersections may enlarge cell support; replacing chi alone is not
 a surface-constraint fix. Next concentrated task is actual-surface/pressure/
 force compatibility, then extended static-grid/phase and mechanical regression
 package. No rerun of unchanged eight cases, no developer-side WSL/native CFD.
+
+M2A-02B static surfaceExtension candidate and fourteen-case package delivered.
+Read docs/m2a-surface-candidate.zh-CN.md before edits. Native build/runtime
+pending. True-radius fluid-side ghost target, bounded outer updates, q4
+fictitious inventory and last-solved-source force ledger; stress is diagnostic,
+never a duplicate applied force. Keep default volumePenalty and old failures.
+No moving/free-sphere mode in this candidate until static evidence passes.
+Predeclared fine64/stress10% and phase2% gates must not be relaxed after feedback.
+User runs scripts/m2a-surface-test.sh; no WSL/developer-side CFD/DEM. All case
+failures retained. Full global Cartesian field replication is validation-only,
+not production distributed mapping or acceleration.

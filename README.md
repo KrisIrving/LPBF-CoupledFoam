@@ -14,6 +14,9 @@ still fails fixed-sphere refinement. The mechanical engineering baseline is
 frozen while actual-surface geometry and force discretization are audited.
 An independent six-fixture [geometry reference](docs/m2a-geometry-reference.zh-CN.md)
 passes offline checks; it has not changed the CFD constraint or force scheme.
+An optional stationary true-surface extension candidate and a fourteen-case
+[verification package](docs/m2a-surface-candidate.zh-CN.md) are now delivered.
+Its native compilation and physical gates remain untested.
 Full CFD/DEM physical verification remains pending.
 This is not validation of resolved CFD forces or heat. See the
 [demo audit](docs/dem-communication-demo.zh-CN.md) and

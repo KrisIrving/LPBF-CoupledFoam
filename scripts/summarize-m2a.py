@@ -41,7 +41,8 @@ def evaluate(case):
     limits = meta['thresholds']
     if (case/'result.txt').read_text().strip() != 'exit_status=0':
         raise ValueError('Case execution failed; inspect retained logs')
-    logs = ('log.first', 'log.restart') if meta['selection'] == 'free-restart' else ('log.solver',)
+    restarting = meta.get('restart',meta['selection'] == 'free-restart')
+    logs = ('log.first', 'log.restart') if restarting else ('log.solver',)
     for log in logs:
         if 'M2A_EXECUTION_COMPLETE' not in (case/log).read_text(errors='replace'):
             raise ValueError(f'Missing completion marker: {log}')
@@ -62,7 +63,7 @@ def evaluate(case):
                              'torque_decomposition', 'fluid_continuity')}
     previous_v, previous_w = meta['initial_velocity'], meta['initial_omega']
     previous_fluid = None
-    ranks = 2 if meta['selection'] == 'free-mpi2' else 1
+    ranks = meta.get('nprocs',2 if meta['selection'] == 'free-mpi2' else 1)
     for index, row in enumerate(rows, 1):
         if abs(row['time']-index*dt) > limits['clock_s']:
             raise ValueError('Missing, duplicate or out-of-order coupling window')
@@ -131,9 +132,9 @@ def evaluate(case):
         checks['actual_response'] = 0 < rows[-1]['vx'] < meta['initial_velocity'][0]-1e-8
     if meta['mode'] == 'translate':
         checks['motion_across_plane'] = meta['initial_centre'][0] < 0 < rows[-1]['x']
-    if meta['selection'] == 'free-mpi2':
-        checks['multi_rank_coverage'] = all(r['covered_ranks'] == 2 for r in rows)
-    if meta['selection'] == 'free-restart':
+    if ranks > 1:
+        checks['multi_rank_coverage'] = all(r['covered_ranks'] == ranks for r in rows)
+    if restarting:
         checks['common_checkpoint'] = all((case/'0.002'/name).is_file()
                                           and (case/'0.002'/name).stat().st_size > 0
                                           for name in ('couplingState', 'dem.restart'))

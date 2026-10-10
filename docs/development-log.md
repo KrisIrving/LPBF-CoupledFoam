@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: M2A-02B static true-surface extension candidate delivered
+
+Added optional surfaceExtension to resolvedParticleFoam; default volumePenalty equations remain. Constrain cell centres inside the actual sphere. Near-wall targets use fluid-only image interpolation at R+2h and linear extension through the true rigid wall; deep interior remains rigid. Frozen geometry/advection/old-time data shared by bounded outer target updates; each inner momentum/PISO solve retains current residual gate. Preserve the last solved source for force accounting and reject unconverged outer updates before DEM. Common checkpoints record/reject mismatched constraint schemes.
+
+Added replicated Cartesian MPI interpolation (validation only, cap500000 cells), independent wall interpolation RMS, Gauss12x24 one-sided pressure/viscous stress diagnostics and window/iteration costs. Force remains source plus fictitious-fluid inertia; q4 inventory retained, stress is not a second applied load. Static fixed/rotate only; no transfer of old moving-sphere evidence or GCL claim. Fourteen-case integrated user-side package and predeclared fine64/reference/stress/phase gates; timeout900s per solver invocation, every failed case retained. 29 relevant offline tests (10 mechanical, 9 geometry, 10 new surface) and Windows Git Bash syntax pass; previous feedback reanalysis exactly unchanged. Native compile/runtime pending; no developer-side WSL. See m2a-surface-candidate.zh-CN.md for derivation and limitations.
+
 ## 2026-10-10: eight individual mechanical gates pass; freeze engineering baseline
 
 User-tested f6f31a4fa46404dbe5e15eee0be52f568ec329d5, archive m2a-mechanical-20261010-111707-634604.tar.gz SHA256 bed97d5e3cadf42f3c33f3fc04098eba3c0d49a5c71bda08dbe01cabed709f9c. All eight complete40 windows and pass individual gates. Independent summary recomputation exactly matches. Translation uses at most67 pressure corrections, maximum true momentum residual7.4341e-14 kg m/s. Free serial/MPI maximum residual1.8708e-13; MPI uses at most49 corrections. Serial/MPI and serial common restart history comparisons pass. Fixed refinement still fails: errors0.0217664466281/0.0861528236719, increase0.0643863770438 over unchanged0.02. Overall package remains failed; no thermal/GCL/full angular or LPBF validation.
