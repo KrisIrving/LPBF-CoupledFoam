@@ -54,9 +54,15 @@ int main(int argc,char* argv[])
             throw std::runtime_error("Surface extension candidate is stationary single-sphere only");
         const label maxSurfaceCorrectors=config.getOrDefault<label>("maxSurfaceCorrectors",32);
         const scalar targetTolerance=config.getOrDefault<scalar>("surfaceTargetTolerance",1e-7);
+        const word reconstruction=config.getOrDefault<word>("surfaceReconstruction","linear");
+        const scalar surfaceRelaxation=config.getOrDefault<scalar>("surfaceRelaxation",1);
+        const scalar continuityTolerance=config.getOrDefault<scalar>("continuityTolerance",-1);
+        if(reconstruction!="linear"&&reconstruction!="quadratic") throw std::runtime_error("Unknown surface reconstruction");
+        if(surfaceRelaxation<=0||surfaceRelaxation>1) throw std::runtime_error("Invalid surface relaxation");
         if(surfaceExtension&&(maxSurfaceCorrectors<1||targetTolerance<=0))
             throw std::runtime_error("Invalid surface target controls");
         if(rank==0) Info<<"M2A_CONSTRAINT scheme="<<constraintScheme<<endl;
+        if(surfaceExtension&&rank==0) Info<<"M2A_RECONSTRUCTION order="<<reconstruction<<endl;
         const int substeps=static_cast<int>(std::llround(dt/demDt));
         if(rho<=0||viscosity<=0||penalty<=0||q<2||q>8||correctors<1||maxCorrectors<correctors
             || substeps<1||std::abs(substeps*demDt-dt)>dt*1e-10)
@@ -88,7 +94,7 @@ int main(int argc,char* argv[])
             if(mag(span-vector(h,h,h))>h*1e-8) throw std::runtime_error("Axis-aligned cubic cells required");
         }
         std::unique_ptr<lpbfM2::SphereSurface> surface;
-        if(surfaceExtension) surface.reset(new lpbfM2::SphereSurface(mesh,h));
+        if(surfaceExtension) surface.reset(new lpbfM2::SphereSurface(mesh,h,reconstruction=="quadratic"));
         auto mapGeometry=[&]()
         {
             if(surface) surface->gather(U,p);
@@ -165,6 +171,8 @@ int main(int argc,char* argv[])
         {
             if(restore.getOrDefault<word>("constraintScheme","volumePenalty")!=constraintScheme)
                 throw std::runtime_error("Restart constraint scheme differs from checkpoint");
+            if(surfaceExtension&&restore.getOrDefault<word>("surfaceReconstruction","linear")!=reconstruction)
+                throw std::runtime_error("Restart surface reconstruction differs from checkpoint");
             if(!restore.found("ids")) throw std::runtime_error("Missing common coupling checkpoint");
             labelList saved(restore.lookup("ids"));
             if(saved!=ids) throw std::runtime_error("Restart ID mismatch");
@@ -196,7 +204,7 @@ int main(int argc,char* argv[])
             mapGeometry();
             surfaceScalarField advecting(IOobject("advecting",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE),phi);
             label usedCorrectors=0,surfaceCorrectors=0,totalCorrectors=0;
-            scalar equationImpulse=GREAT,targetDefect=0;
+            scalar equationImpulse=GREAT,targetDefect=0,continuityDefect=GREAT;
             for(label outer=0;outer<(surface ? maxSurfaceCorrectors:1);++outer)
             {
                 fvVectorMatrix equation(fvm::ddt(U)+fvm::div(advecting,U)-fvm::laplacian(nu,U)+fvm::Sp(lambda,U)==lambda*rigid);
@@ -221,6 +229,7 @@ int main(int argc,char* argv[])
                     U=HbyA-rAU*fvc::grad(p);U.correctBoundaryConditions();
                     const scalar maxU=gMax(mag(U)().primitiveField());
                     const scalar maxP=gMax(mag(p)().primitiveField());
+                    continuityDefect=gMax(mag(fvc::div(phi))().primitiveField());
                     // residual() is source - A*U, integrated over each cell.
                     // Include the pressure source and sum magnitudes, so opposite
                     // local defects cannot cancel in a global momentum ledger.
@@ -243,13 +252,16 @@ int main(int argc,char* argv[])
                     ++totalCorrectors;
                     if(rank==0) Info<<"M2A_CORRECTION time="<<runTime.value()
                         <<" iteration="<<c+1<<" maxU="<<maxU<<" maxP="<<maxP
-                        <<" equationImpulseL1="<<equationImpulse<<endl;
-                    if(!std::isfinite(maxU)||!std::isfinite(maxP)||!std::isfinite(equationImpulse))
+                        <<" equationImpulseL1="<<equationImpulse<<" continuityMax="<<continuityDefect<<endl;
+                    if(!std::isfinite(maxU)||!std::isfinite(maxP)||!std::isfinite(equationImpulse)||!std::isfinite(continuityDefect))
                         throw std::runtime_error("Nonfinite CFD state before DEM feedback");
-                    if(usedCorrectors>=correctors && (momentumTolerance<0||equationImpulse<=momentumTolerance)) break;
+                    if(usedCorrectors>=correctors && (momentumTolerance<0||equationImpulse<=momentumTolerance)
+                        && (continuityTolerance<0||continuityDefect<=continuityTolerance)) break;
                 }
                 if(momentumTolerance>=0 && equationImpulse>momentumTolerance)
                     throw std::runtime_error("CFD momentum equation did not converge before DEM feedback");
+                if(continuityTolerance>=0&&continuityDefect>continuityTolerance)
+                    throw std::runtime_error("CFD continuity did not converge before DEM feedback");
                 surfaceCorrectors=outer+1;
                 if(!surface) break;
                 surface->gather(U,p);
@@ -270,7 +282,8 @@ int main(int argc,char* argv[])
                 if(targetDefect<=targetTolerance) break;
                 if(surfaceCorrectors==maxSurfaceCorrectors)
                     throw std::runtime_error("Surface target did not converge before DEM feedback");
-                rigid.primitiveFieldRef()=updated;rigid.correctBoundaryConditions();
+                rigid.primitiveFieldRef()+=surfaceRelaxation*(updated-rigid.primitiveField());
+                rigid.correctBoundaryConditions();
             }
             lpbfM2::SphereSurface::Diagnostics stress;
             if(surface) stress=surface->diagnose(asFoamVector(before[0].x),before[0].radius,
@@ -348,6 +361,7 @@ int main(int argc,char* argv[])
                 IOdictionary checkpoint(IOobject("couplingState",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false));
                 checkpoint.add("ids",ids);checkpoint.add("interiorMomentum",previousP);
                 checkpoint.add("constraintScheme",constraintScheme);
+                checkpoint.add("surfaceReconstruction",reconstruction);
                 checkpoint.add("interiorAngular",previousL);checkpoint.add("mappedCentres",previousCentre);
                 checkpoint.regIOobject::write();
                 if(rank==0) std::filesystem::create_directories(runTime.timeName().c_str());

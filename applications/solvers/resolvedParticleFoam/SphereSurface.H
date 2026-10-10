@@ -14,6 +14,7 @@ class SphereSurface
 {
     const Foam::fvMesh& mesh_;
     double h_;
+    bool quadratic_;
     std::array<double,3> origin_;
     std::array<int,3> size_;
     std::vector<int> indices_;
@@ -53,7 +54,7 @@ public:
         Foam::vector pressureForce=Foam::vector::zero,viscousForce=Foam::vector::zero;
         Foam::vector pressureTorque=Foam::vector::zero,viscousTorque=Foam::vector::zero;
     };
-    SphereSurface(const Foam::fvMesh& mesh,double h):mesh_(mesh),h_(h)
+    SphereSurface(const Foam::fvMesh& mesh,double h,bool quadratic=false):mesh_(mesh),h_(h),quadratic_(quadratic)
     {
         double localMin[3]={1e100,1e100,1e100},localMax[3]={-1e100,-1e100,-1e100};
         forAll(mesh_.C(),cell) for(int a=0;a<3;++a)
@@ -107,6 +108,16 @@ public:
         if(distance<=radius-std::sqrt(3.0)*h_ || distance<1e-30) return v+(omega^r);
         const Foam::vector n=r/distance, wall=centre+radius*n;
         const Foam::vector wallVelocity=v+(omega^(radius*n));
+        if(quadratic_)
+        {
+            const double t=(distance-radius)/h_;
+            // One polynomial through the true wall and two fluid-only images.
+            // No fitted radius or force correction. Its outer fixed point is
+            // bounded/relaxed by the caller; convergence is not guaranteed.
+            return (t-2)*(t-3)/6*wallVelocity
+                -t*(t-3)/2*velocity(sample(wall+2*h_*n))
+                +t*(t-2)/3*velocity(sample(wall+3*h_*n));
+        }
         return wallVelocity+(distance-radius)/(2*h_)
             *(velocity(sample(wall+2*h_*n))-wallVelocity);
     }

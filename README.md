@@ -16,7 +16,9 @@ An independent six-fixture [geometry reference](docs/m2a-geometry-reference.zh-C
 passes offline checks; it has not changed the CFD constraint or force scheme.
 An optional stationary true-surface extension candidate and a fourteen-case
 [verification package](docs/m2a-surface-candidate.zh-CN.md) are now delivered.
-Its native compilation and physical gates remain untested.
+Its first native build and all fourteen executions pass, but only three
+individual physical gate sets pass. Wall slip and coarse-grid phase sensitivity
+remain open. A quadratic reconstruction/continuity revision awaits native testing.
 Full CFD/DEM physical verification remains pending.
 This is not validation of resolved CFD forces or heat. See the
 [demo audit](docs/dem-communication-demo.zh-CN.md) and

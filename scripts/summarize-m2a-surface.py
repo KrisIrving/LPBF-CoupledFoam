@@ -20,8 +20,11 @@ def evaluate(case):
     entry,rows,meta=baseline.evaluate(case)
     logs=('log.first','log.restart') if meta['restart'] else ('log.solver',)
     for filename in logs:
-        if 'M2A_CONSTRAINT scheme=surfaceExtension' not in (case/filename).read_text(errors='replace'):
+        text=(case/filename).read_text(errors='replace')
+        if 'M2A_CONSTRAINT scheme=surfaceExtension' not in text:
             raise ValueError('Missing native surfaceExtension scheme marker')
+        if meta['surface_controls'].get('reconstruction')=='quadratic' and 'M2A_RECONSTRUCTION order=quadratic' not in text:
+            raise ValueError('Missing native quadratic reconstruction marker')
     controls=meta['surface_controls']
     metrics,checks=entry['metrics'],entry['checks']
     metrics['surface_target_defect_m_s']=max(abs(r['surface_target_defect']) for r in rows)
@@ -36,6 +39,8 @@ def evaluate(case):
         and r['surface_correctors']*meta['solver_controls']['min_correctors']
         <=r['pressure_correctors_total']<=r['surface_correctors']*meta['solver_controls']['max_correctors'] for r in rows)
     checks['positive_window_cost']=all(r['window_wall_seconds']>0 for r in rows)
+    if 'continuity_per_s' in meta['solver_controls']:
+        checks['continuity_convergence']=metrics['divergence']<=meta['solver_controls']['continuity_per_s']
     radius=meta['radius']
     reference=(6*math.pi*meta['rho']*meta['nu']*radius*meta['reference_flow_speed']
         if meta['mode']=='fixed' else 8*math.pi*meta['rho']*meta['nu']*radius**3*meta['reference_rotation_speed'])

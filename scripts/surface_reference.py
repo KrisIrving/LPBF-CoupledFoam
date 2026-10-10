@@ -23,6 +23,11 @@ def radial_derivative(wall,a,b,c,h):
     return [(-13*x/12+3*y-8*z/3+3*t/4)/h for x,y,z,t in zip(wall,a,b,c)]
 
 
+def quadratic_ghost_target(wall,a,b,distance,h):
+    t=distance/h
+    return [(t-2)*(t-3)/6*x-t*(t-3)/2*y+t*(t-2)/3*z for x,y,z in zip(wall,a,b)]
+
+
 def pressure_wall(a,b,c):
     return 6*a-8*b+3*c
 

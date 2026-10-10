@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: first surface feedback; quadratic extension and continuity candidate
+
+User-tested cd6ddd85, report m2a-surface-20261010-122151-653201.tar.gz SHA256 9ce63f158afb782bb0dd21f2256768a4f003a78a498a6934c86eaef341b9022b. All14 execute40 windows; only3 individual cases pass. Independent summary exact. MPI/serial restart comparisons and linear momentum pass; max momentum4.977e-15 kg m/s. Fixed origin drag errors3.532/0.976/0.191%, but coarse/mid wall slip, coarse phase sensitivity, one divergence and one finest stress mismatch fail. Window time sum1825.54s. No M2A closure.
+
+Analytic-field spatial audit separates geometry/profile bias (omits CFD and Cartesian image interpolation). Quadratic ghost target reproduces quadratic normal profiles and reduces diagnostic slip at all12 grid/phase/mode fixtures. Add selectable quadratic reconstruction, raw target tolerance unchanged, relaxed updates0.5, outer cap32 unchanged, checkpoint order validation. Pressure PCG tolerance1e-14 plus explicit inner phi continuity target1e-7/s guards the independently failed divergence; original physical gates and14-case matrix unchanged. Preserve linear mode and historical summary compatibility. Native revision not run; no WSL/CFD/DEM on developer side. Tests cover quadratic profile, continuity/reconstruction rejection as well as existing contracts.
+
 ## 2026-10-10: M2A-02B static true-surface extension candidate delivered
 
 Added optional surfaceExtension to resolvedParticleFoam; default volumePenalty equations remain. Constrain cell centres inside the actual sphere. Near-wall targets use fluid-only image interpolation at R+2h and linear extension through the true rigid wall; deep interior remains rigid. Frozen geometry/advection/old-time data shared by bounded outer target updates; each inner momentum/PISO solve retains current residual gate. Preserve the last solved source for force accounting and reject unconverged outer updates before DEM. Common checkpoints record/reject mismatched constraint schemes.

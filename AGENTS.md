@@ -93,3 +93,12 @@ Predeclared fine64/stress10% and phase2% gates must not be relaxed after feedbac
 User runs scripts/m2a-surface-test.sh; no WSL/developer-side CFD/DEM. All case
 failures retained. Full global Cartesian field replication is validation-only,
 not production distributed mapping or acceleration.
+
+User-tested cd6ddd85 surface package: all14 execute, 3 individual pass, overall
+failed. MPI/restart and momentum pass; wall slip, coarse phase sensitivity,
+one divergence and one fine stress mismatch fail. Read latest records.
+Quadratic extension with relaxed target updates and explicit continuity guard
+is a pending native candidate. Preserve linear mode, raw target norm and old
+failures. Same14 cases/physics thresholds; no arbitrary radius/drag fit or
+transfer of static evidence to moving/GCL/contact/heat. Analytic geometry audit
+omits CFD and Cartesian image interpolation; never label it CFD validation.

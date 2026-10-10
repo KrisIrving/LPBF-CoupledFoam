@@ -57,6 +57,13 @@ class FormulaTests(unittest.TestCase):
         self.assertAlmostEqual(reference.pressure_wall(1+2*(2*h)+3*(2*h)**2,
             1+2*(3*h)+3*(3*h)**2,1+2*(4*h)+3*(4*h)**2),1)
 
+    def test_quadratic_ghost_profile_and_shared_wall(self):
+        h=.003
+        def profile(t):return [.2+2*t+5*t*t,-.1-4*t-7*t*t,.3+t]
+        for distance in (-math.sqrt(3)*h,-.5*h,0.):
+            actual=reference.quadratic_ghost_target(profile(0),profile(2*h),profile(3*h),distance,h)
+            for a,b in zip(actual,profile(distance)):self.assertAlmostEqual(a,b,places=13)
+
     def test_quadrature_closure_and_pressure_gauge(self):
         nodes=list(reference.sphere_quadrature(.01))
         self.assertEqual(len(nodes),288)
@@ -97,7 +104,7 @@ class SurfaceGateTests(unittest.TestCase):
         case=self.root/name;meta=prepare.prepare(case,name)
         (case/'result.txt').write_text('exit_status=0\n')
         for log in ('log.first','log.restart') if meta['restart'] else ('log.solver',):
-            (case/log).write_text('M2A_CONSTRAINT scheme=surfaceExtension\nM2A_EXECUTION_COMPLETE\n')
+            (case/log).write_text('M2A_CONSTRAINT scheme=surfaceExtension\nM2A_RECONSTRUCTION order=quadratic\nM2A_EXECUTION_COMPLETE\n')
         if meta['restart']:
             (case/'0.002').mkdir()
             for filename in ('couplingState','dem.restart'):(case/'0.002'/filename).write_text('synthetic')
@@ -150,6 +157,15 @@ class SurfaceGateTests(unittest.TestCase):
         (case/'log.solver').write_text('M2A_EXECUTION_COMPLETE\n')
         with self.assertRaisesRegex(ValueError,'scheme marker'):
             audit.evaluate(case)
+
+    def test_continuity_and_reconstruction_cannot_be_hidden(self):
+        case,rows,meta=self.fixture('fixed-coarse')
+        rows[0]['div_max']=2e-7;self.write(case,rows)
+        result,_,_=audit.evaluate(case)
+        self.assertTrue(result['checks']['divergence'])
+        self.assertFalse(result['checks']['continuity_convergence'])
+        (case/'log.solver').write_text('M2A_CONSTRAINT scheme=surfaceExtension\nM2A_EXECUTION_COMPLETE\n')
+        with self.assertRaisesRegex(ValueError,'quadratic'):audit.evaluate(case)
 
     def test_fine_force_stress_and_refinement_failure(self):
         for name in prepare.CASES:self.fixture(name,1.12 if 'finer' in name else 1.)

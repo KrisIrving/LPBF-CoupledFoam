@@ -30,18 +30,27 @@ def prepare(root,selection):
 constraintScheme surfaceExtension;
 maxSurfaceCorrectors 32;
 surfaceTargetTolerance 1e-7;
+surfaceReconstruction quadratic;
+surfaceRelaxation 0.5;
+continuityTolerance 1e-7;
 ''')
+    solution=root/'system/fvSolution'
+    solution.write_text(solution.read_text().replace(
+        'p { solver PCG; preconditioner DIC; tolerance 1e-12;',
+        'p { solver PCG; preconditioner DIC; tolerance 1e-14;'))
     meta.update(package='M2A-02B',selection=selection,mesh_n=n,
                 initial_centre=centre,centre_phase_h=phase,
                 nprocs=2 if selection=='fixed-mpi2' else 1,
                 restart=selection=='fixed-restart')
     meta['surface_controls']={'scheme':'surfaceExtension','max_outer':32,
-                              'target_defect_m_s':1e-7,'stress_z_nodes':12,'stress_phi_nodes':24}
+                              'target_defect_m_s':1e-7,'stress_z_nodes':12,'stress_phi_nodes':24,
+                              'reconstruction':'quadratic','relaxation':.5}
+    meta['solver_controls']['continuity_per_s']=1e-7
     meta['surface_thresholds']={'fine64_reference_relative':.10,
                                 'fine64_stress_ledger_relative':.10,
                                 'phase_load_difference_relative':.02}
     meta['scope']='Static single noncontact sphere. Cell-centre interior constraint with true-radius '
-    meta['scope']+='fluid-side extension; q4 fictitious-fluid volume retained. Wall interpolation slip '
+    meta['scope']+='quadratic fluid-side extension; q4 fictitious-fluid volume retained. Wall interpolation slip '
     meta['scope']+='and one-sided stress diagnostic. No moving geometry/contact/heat/GCL validation.'
     (root/'M2A_META.json').write_text(json.dumps(meta,indent=2)+'\n')
     return meta
