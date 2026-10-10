@@ -9984,6 +9984,26 @@
       ],
       "physical_gate_relaxation": false,
       "budget_increase": false
+    },
+    {
+      "scope": "M2A joint independent-case concurrency",
+      "date": "2026-10-10",
+      "native_build_runtime": "not_evaluated",
+      "offline_checks": {
+        "queue_regressions": 3,
+        "bounded_concurrency": "passed",
+        "failure_collects_remaining_workers": "passed",
+        "serial_and_invalid_limit": "passed",
+        "git_bash_syntax": "passed"
+      },
+      "ordinary_case_mpi_ranks": 1,
+      "comparison_case_mpi_ranks": 2,
+      "case_jobs_default": 1,
+      "case_jobs_cap": 4,
+      "resource_limits": "runtime nproc and MemAvailable; heuristic3GiB per worker",
+      "physical_gate_relaxation": false,
+      "budget_increase": false,
+      "timing_limit": "concurrent elapsed time not directly comparable to historical serial algorithm cost"
     }
   ]
 }

@@ -141,3 +141,5 @@ integrated-force warm start, full momentum predictor per joint correction and
 reuse of explicitly checked response.39 offline checks pass; native revision
 pending. Same scripts/m2a-joint-test.sh14-case entry and900s/96/64/physical gates.
 Never relax gates or label timeout as convergence. No developer-side WSL/native.
+
+User requested parallel test execution. Joint runner now supports bounded independent-case concurrency (JOINT_CASE_JOBS, default1, cap4 with runtime Linux resource limits) and BUILD_JOBS. Preserve serial/MPI2/restart definitions. All workers must complete before archive; concurrent timing is not directly comparable to historical isolated cost. Three Windows Git Bash queue tests pass; native concurrency pending. No developer-side WSL.

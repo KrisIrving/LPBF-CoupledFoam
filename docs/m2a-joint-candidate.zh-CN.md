@@ -1,5 +1,21 @@
 # M2A-02C 原生压力—壁面联合校正候选
 
+## 2026-10-10：用户侧工况并发入口
+
+此前14组逐组执行，只有fixed-mpi2使用2个MPI进程。本次增加独立工况并发，不改变普通工况的串行定义、MPI对照的2进程或共同重启的先后关系。编译一次完成后启动有界队列，每组独立目录/日志/结果；某组失败仍等待其余组，全部完成后才做摘要和打包。Windows Git Bash离线3项队列回归验证并发上限、失败后的完整收集及串行/无效参数；脚本语法检查通过。尚未执行Linux原生并发矩阵。
+
+```bash
+cd ~/LPBF-CoupledFoam
+git pull --ff-only
+export OPENFOAM_BASHRC="$HOME/OpenFOAM/OpenFOAM-v2512/etc/bashrc"
+source .build/demo-liggghts.env
+BUILD_JOBS=8 JOINT_CASE_JOBS=4 bash scripts/m2a-joint-test.sh
+```
+
+JOINT_CASE_JOBS默认1；auto选择保守上限；整数请求也受上限限制。上限为min(4, floor(max(1,可用CPU数-1)/2), floor(MemAvailable/3GiB))且最终至少1。3GiB/工况是启发式余量，非已测内存峰值。用户运行时直接通过nproc和/proc/meminfo取得Linux资源，不从Windows线程数推定WSL资源。resources.txt记录lscpu、free、实际并发度、编译线程和矩阵总墙钟秒数。BUILD_JOBS默认8并限制不超过nproc；OMP/BLAS线程固定1，避免每个工况再扩展线程。
+
+物理门槛、40窗、每次求解900秒不变；并发最多4个工况，包含MPI对照时求解进程最多5个。并发资源竞争可能影响超时；并发耗时不能与历史串行耗时直接解释为算法加速。需要隔离算法成本时使用JOINT_CASE_JOBS=1。此入口缩短整包等待，不保证单个细网格更快；GAMG/热启动等revision2效果仍待原生反馈。当前J映射使用全局场复制，不能据此采用几十MPI进程或声称生产并行可扩展。
+
 ## 2026-10-10：首轮joint原生路径通过，成本与完整细化验收未通过；集中加速修订待反馈
 
 用户测试0e4cc6cc，归档m2a-joint-20261010-203254-763310.tar.gz，原生编译和共享WallGMRES内核通过。14组中6组完成40窗且个例通过，另外8组执行失败，整包exit_status=1；独立复算摘要与归档完全一致。共同重启及MPI全历史比较通过：最大力差分别1.90e−19/4.58e−10 N、力矩差6.76e−22/1.01e−14 N·m；新联合源的节点/网格力、力矩和功交换通过。以上不等于空间精度验收。

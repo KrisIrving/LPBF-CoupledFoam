@@ -126,3 +126,5 @@ and simulation outputs are excluded from project additions.
 完整空间精度仍未通过。已集中修订GAMG、节点力热启动/重启、完整动量预测与响应复用；
 39项离线检查通过，原生效果待反馈。仍运行`bash scripts/m2a-joint-test.sh`，
 原门槛与900秒预算不变。结果与计划见[项目状态](docs/project-status.zh-CN.md)。
+
+User-side joint matrix concurrency: `BUILD_JOBS=8 JOINT_CASE_JOBS=4 bash scripts/m2a-joint-test.sh`. Runtime Linux CPU/memory limits cap concurrency; default remains1. Serial/MPI2/restart controls and gates unchanged. See [joint candidate](docs/m2a-joint-candidate.zh-CN.md).

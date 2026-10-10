@@ -1,5 +1,9 @@
 # Development and verification record
 
+## 2026-10-10: bounded independent-case concurrency
+
+Add opt-in JOINT_CASE_JOBS (default1, auto/explicit bounded by Linux CPU/MemAvailable and cap4), BUILD_JOBS (default8 capped to nproc), per-case isolated workers and wait-all failure collection. Preserve14 cases, serial/MPI2/common restart definitions,40 windows and900s timeout; record resources and matrix wall time.3 Windows Git Bash queue regressions and shell syntax pass; no WSL or native CFD/DEM. Native parallel matrix pending. Concurrent wall time is not a directly comparable algorithm speedup measurement; use jobs1 for isolated cost comparison.
+
 ## 2026-10-10: first joint native feedback; bounded solver-cost revision
 
 User-tested0e4cc6cc, archive m2a-joint-20261010-203254-763310.tar.gz SHA256 af091344d54893545986f0019a62faee662751dbdadfe0788ced59007b9523d0. Native build/shared kernel pass.6/14 complete40 windows and individual gates;6 timeout124,2 fixed64 momentum-budget failures first window (4.137e-11/4.013e-11 vs1e-11). Independent summary exact. MPI/restart comparisons, node constraint and force/torque/work exchange pass. Coarse wall slip1.79–3.37%, phase gaps0.27/0.34%; drag/torque errors13.6/26.0% still do not close spatial accuracy. Fine comparisons not_evaluated.

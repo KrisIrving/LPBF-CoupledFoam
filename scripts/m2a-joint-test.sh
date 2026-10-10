@@ -23,6 +23,33 @@ cd "$repo"
 git rev-parse HEAD > "$report/commit.txt"
 git status --short > "$report/working-tree.txt"
 source scripts/environment.sh > "$report/log.environment" 2>&1
+source scripts/case-queue.sh
+# Case concurrency is opt-in; obtain the resources actually visible to Linux.
+cpu_count="$(nproc)"
+memory_kib="$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)"
+auto_jobs=$(( (cpu_count > 1 ? cpu_count-1 : 1) / 2 ))
+memory_jobs=$(( memory_kib / (3*1024*1024) ))
+if [ "$auto_jobs" -gt "$memory_jobs" ]; then auto_jobs="$memory_jobs"; fi
+if [ "$auto_jobs" -gt 4 ]; then auto_jobs=4; fi
+if [ "$auto_jobs" -lt 1 ]; then auto_jobs=1; fi
+case_jobs="${JOINT_CASE_JOBS:-1}"
+if [ "$case_jobs" = auto ]; then case_jobs="$auto_jobs"; fi
+if ! [[ "$case_jobs" =~ ^[1-9][0-9]*$ ]]; then echo 'Invalid JOINT_CASE_JOBS'; exit 1; fi
+if [ "$case_jobs" -gt "$auto_jobs" ]; then
+    echo "Capping JOINT_CASE_JOBS=$case_jobs to conservative Linux resource limit $auto_jobs."
+    case_jobs="$auto_jobs"
+fi
+build_jobs="${BUILD_JOBS:-8}"
+if ! [[ "$build_jobs" =~ ^[1-9][0-9]*$ ]]; then echo 'Invalid BUILD_JOBS'; exit 1; fi
+if [ "$build_jobs" -gt "$cpu_count" ]; then build_jobs="$cpu_count"; fi
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+{
+    printf 'linux_cpus=%s\nmem_available_kib=%s\ncase_jobs=%s\nauto_case_limit=%s\nbuild_jobs=%s\n' \
+        "$cpu_count" "$memory_kib" "$case_jobs" "$auto_jobs" "$build_jobs"
+    printf 'ordinary_case_ranks=1\nmpi_comparison_ranks=2\nOMP_NUM_THREADS=1\n'
+    lscpu
+    free -h
+} > "$report/resources.txt" 2>&1
 if [ "$WM_PROJECT_VERSION" != v2512 ]; then
     echo 'M2A-02C currently requires OpenCFD v2512.' | tee -a "$report/log.environment"
     exit 1
@@ -74,7 +101,7 @@ g++ -std=c++17 -O2 -Iapplications/solvers/resolvedParticleFoam tests/native/wall
 "$report/wall-gmres-kernel" > "$report/log.kernel-test" 2>&1
 stage=build
 echo 'Building the experimental joint wall/pressure solver.'
-(cd applications/solvers/resolvedParticleFoam && wmake) > "$report/log.build" 2>&1
+(cd applications/solvers/resolvedParticleFoam && wmake -j "$build_jobs") > "$report/log.build" 2>&1
 app="$FOAM_USER_APPBIN/resolvedParticleFoam"
 test -x "$app"
 ldd "$app" > "$report/ldd.solver.txt"
@@ -110,21 +137,35 @@ run_case() {
 case_timeout="${JOINT_CASE_TIMEOUT:-900}"
 if ! [[ "$case_timeout" =~ ^[1-9][0-9]*$ ]]; then echo "Invalid JOINT_CASE_TIMEOUT"; exit 1; fi
 command -v timeout >/dev/null
-failures=0
-for selection in fixed-coarse fixed-coarse-offset fixed-fine fixed-fine-offset fixed-finer fixed-finer-offset rotate-coarse rotate-coarse-offset rotate-fine rotate-fine-offset rotate-finer rotate-finer-offset fixed-restart fixed-mpi2; do
-    stage="$selection"
-    case_dir="$report/$selection"
-    python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --selection "$selection"
-    echo "Running $selection (per solver invocation budget: ${case_timeout}s)"
-    if (run_case "$case_dir" "$selection"); then
+run_selection() {
+    local selection="$1" case_dir="$report/$1" rc
+    # Include generation errors in the worker result, without dropping others.
+    if python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --selection "$selection" \
+        && (run_case "$case_dir" "$selection"); then
         printf 'exit_status=0\n' > "$case_dir/result.txt"
+        return 0
     else
         rc=$?
+        mkdir -p "$case_dir"
         printf 'exit_status=%s\n' "$rc" > "$case_dir/result.txt"
-        failures=$((failures+1))
         echo "Failed: $selection; collecting remaining cases."
+        return "$rc"
     fi
-done
+}
+launch_selection() {
+    local selection="$1"
+    echo "Running $selection (per solver invocation budget: ${case_timeout}s)"
+    run_selection "$selection"
+}
+stage=case-matrix
+echo "Running up to $case_jobs independent cases concurrently; ordinary cases remain serial, MPI comparison uses 2 ranks."
+matrix_started=$SECONDS
+failures=0
+if lpbf_run_case_queue "$case_jobs" launch_selection \
+    fixed-coarse fixed-coarse-offset fixed-fine fixed-fine-offset fixed-finer fixed-finer-offset \
+    rotate-coarse rotate-coarse-offset rotate-fine rotate-fine-offset rotate-finer rotate-finer-offset \
+    fixed-restart fixed-mpi2; then :; else failures=1; fi
+printf 'matrix_wall_seconds=%s\n' "$((SECONDS-matrix_started))" >> "$report/resources.txt"
 stage=summary
 python3 "$repo/scripts/summarize-m2a-joint.py" "$report" --output "$report/summary.json"
 test "$failures" -eq 0
