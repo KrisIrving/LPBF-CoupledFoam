@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: stable eight-case M2A trajectories; startup balance and refinement gates remain open
+
+User-tested f4598d84; archive SHA 7e9d5b6ab8d33987b0ce8732250190c376b72b79040a52ec2055a8503f593ac9. Build and all eight 40-window executions succeed. Four stationary/rotating cases pass individual gates; prescribed/free/free-restart/free-mpi2 fail startup momentum. Restart and serial/MPI full-history comparisons pass. Independent offline summary exactly matches archived summary. Fixed Stokes errors 0.0217730541/0.0861604279; refinement increase 0.0643873737 fails unchanged 0.02 gate. Rotation errors 0.0601330623/0.0711723402. Prior composite PISO revision restores this matrix's stability; no isolated attribution to individual modifications.
+
+Implemented bounded residual-controlled correction candidate: minimum eight, maximum sixty-four; use installed fvMatrix residual source-minus-AU and subtract integrated pressure gradient, then rho*dt sum of cell defect magnitudes. Target 1e-11 kg m/s, stricter than unchanged independent 1e-10 ledger gate; failure aborts before DEM advance. Added iteration/L1/support-volume telemetry and analyzer checks, preserving legacy archived metadata compatibility. New offline test rejects locally unconverged equations even with a balanced global synthetic ledger. No geometry/penalty/reference/physical-threshold tuning; refinement failure remains open. Native revision not run; no WSL or simulation. M1C, contact/GCL/full angular/thermal/LPBF limits remain.
+
 ## 2026-10-09: M2A builds; early CFD divergence drives all runtime failures
 
 User-tested 1bcf1413; archive SHA 581d92eeb1c2560fca1f913308ddabaf7c099ed2fd566b265ff195c054505186. Build/link complete; eight cases start, none complete, one to three recorded windows. Five prescribed/fixed cases end in momentum-smoother FPE; three free variants lose DEM atoms following runaway CFD feedback. Independently recalculated first free-window momentum residual 0.9939401260 kg m/s; applied/measured DEM impulses agree to roundoff. This is not successful force validation, nor evidence that DEM/MPI linking is the cause.

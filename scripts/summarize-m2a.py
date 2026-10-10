@@ -104,6 +104,14 @@ def evaluate(case):
     for key, threshold in mapping.items():
         metrics[key] = maxima[key]
         checks[key] = maxima[key] <= limits[threshold]
+    if 'solver_controls' in meta:
+        controls = meta['solver_controls']
+        metrics['momentum_equation_impulse_L1'] = max(r['momentum_equation_impulse_L1'] for r in rows)
+        metrics['pressure_correctors_max'] = max(r['pressure_correctors'] for r in rows)
+        metrics['support_volume_ratio_max'] = max(r['support_volume_ratio'] for r in rows)
+        checks['equation_convergence'] = metrics['momentum_equation_impulse_L1'] <= controls['momentum_impulse_L1_kg_m_s']
+        checks['correction_count'] = all(r['pressure_correctors'] == int(r['pressure_correctors'])
+            and controls['min_correctors'] <= r['pressure_correctors'] <= controls['max_correctors'] for r in rows)
     for key, column, threshold, divisor in (
         ('volume', 'volume_error', 'volume_relative', 1.),
         ('slip', 'slip_rms', 'slip_relative', scale),

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_on": "2026-10-09",
-  "latest_user_tested_commit": "1bcf1413b2706acd3429f9e4381d3586c64ca635",
+  "updated_on": "2026-10-10",
+  "latest_user_tested_commit": "f4598d84116b228fec8f04f803d83e756cb2cceb",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -603,6 +603,295 @@
       "revision_effectiveness": "not_run",
       "threshold_changes": false,
       "offline_analysis_tests_passed": 8
+    },
+    {
+      "report": "m2a-mechanical-20261010-102458-620528.tar.gz",
+      "archive_sha256": "7e9d5b6ab8d33987b0ce8732250190c376b72b79040a52ec2055a8503f593ac9",
+      "tested_commit": "f4598d84116b228fec8f04f803d83e756cb2cceb",
+      "package": "M2A-01",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "native_build": "passed",
+      "started_case_count": 8,
+      "completed_case_count": 8,
+      "windows_per_case": 40,
+      "independent_summary_exact_match": true,
+      "individual_cases_passed": 4,
+      "cases": {
+        "fixed-coarse": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "stokes_reference": true
+          },
+          "metrics": {
+            "momentum": 2.0957023344648827e-12,
+            "angular": 0.0,
+            "force_decomposition": 1.3540739832339925e-20,
+            "torque_decomposition": 0.0,
+            "fluid_continuity": 0.0,
+            "volume": 0.00417636301529134,
+            "slip": 0.0012218524738879524,
+            "divergence": 9.17475648219315e-14,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.021773054108709555
+          }
+        },
+        "fixed-fine": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "stokes_reference": true
+          },
+          "metrics": {
+            "momentum": 8.62729413005275e-12,
+            "angular": 0.0,
+            "force_decomposition": 1.328038473453886e-20,
+            "torque_decomposition": 0.0,
+            "fluid_continuity": 0.0,
+            "volume": 0.005753551511382016,
+            "slip": 0.0030250770874553808,
+            "divergence": 1.159776040226304e-11,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.0861604278520991
+          }
+        },
+        "rotate-coarse": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "stokes_reference": true
+          },
+          "metrics": {
+            "momentum": 7.926534539508931e-21,
+            "angular": 0.0,
+            "force_decomposition": 0.0,
+            "torque_decomposition": 1.3234889800848443e-23,
+            "fluid_continuity": 0.0,
+            "volume": 0.00417636301529134,
+            "slip": 0.0016134649109851506,
+            "divergence": 2.585673149280937e-13,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.06013306230699034
+          }
+        },
+        "rotate-fine": {
+          "passed": true,
+          "checks": {
+            "momentum": true,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "stokes_reference": true
+          },
+          "metrics": {
+            "momentum": 2.3482681158981252e-21,
+            "angular": 0.0,
+            "force_decomposition": 0.0,
+            "torque_decomposition": 2.6469779601696886e-23,
+            "fluid_continuity": 0.0,
+            "volume": 0.005753551511382016,
+            "slip": 0.004251802990516556,
+            "divergence": 1.2364898455692679e-12,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.07117234024964447
+          }
+        },
+        "translate": {
+          "passed": false,
+          "checks": {
+            "momentum": false,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "motion_across_plane": true
+          },
+          "metrics": {
+            "momentum": 5.8610659413652327e-08,
+            "angular": 0.0,
+            "force_decomposition": 8.368685518872487e-19,
+            "torque_decomposition": 6.974366733788304e-33,
+            "fluid_continuity": 0.0,
+            "volume": 0.00417636301529134,
+            "slip": 0.0034658404535588432,
+            "divergence": 6.033988092276281e-12,
+            "clock": 3.0357660829594124e-18
+          }
+        },
+        "free": {
+          "passed": false,
+          "checks": {
+            "momentum": false,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "actual_response": true
+          },
+          "metrics": {
+            "momentum": 1.953685170460895e-09,
+            "angular": 1.8333661246318353e-36,
+            "force_decomposition": 2.456395547037471e-20,
+            "torque_decomposition": 2.6881661684684795e-35,
+            "fluid_continuity": 0.0,
+            "volume": 0.0030711203549319555,
+            "slip": 0.003463668959156896,
+            "divergence": 3.012756193064868e-13,
+            "clock": 3.0357660829594124e-18
+          }
+        },
+        "free-restart": {
+          "passed": false,
+          "checks": {
+            "momentum": false,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "actual_response": true,
+            "common_checkpoint": true
+          },
+          "metrics": {
+            "momentum": 1.953685170460895e-09,
+            "angular": 1.3066506736922592e-36,
+            "force_decomposition": 2.456395547037471e-20,
+            "torque_decomposition": 2.7657391206349013e-35,
+            "fluid_continuity": 0.0,
+            "volume": 0.0030711203549319555,
+            "slip": 0.003463668959156896,
+            "divergence": 3.012756193064868e-13,
+            "clock": 3.469446951953614e-18
+          }
+        },
+        "free-mpi2": {
+          "passed": false,
+          "checks": {
+            "momentum": false,
+            "angular": true,
+            "force_decomposition": true,
+            "torque_decomposition": true,
+            "fluid_continuity": true,
+            "volume": true,
+            "slip": true,
+            "divergence": true,
+            "clock": true,
+            "actual_response": true,
+            "multi_rank_coverage": true
+          },
+          "metrics": {
+            "momentum": 1.9536851705129875e-09,
+            "angular": 3.287960873860059e-36,
+            "force_decomposition": 4.8916152703935845e-20,
+            "torque_decomposition": 1.0321413404338569e-34,
+            "fluid_continuity": 0.0,
+            "volume": 0.0030711203549327326,
+            "slip": 0.0034636689591603965,
+            "divergence": 5.075331567453723e-13,
+            "clock": 3.0357660829594124e-18
+          }
+        }
+      },
+      "comparisons": {
+        "free-restart": {
+          "passed": true,
+          "checks": {
+            "position": true,
+            "velocity": true,
+            "rotation": true,
+            "force": true,
+            "torque": true,
+            "fluid_momentum": true
+          },
+          "metrics": {
+            "position": 3.448153726799509e-24,
+            "velocity": 3.0970173602488638e-21,
+            "rotation": 3.203041688314171e-18,
+            "force": 1.0299920638612292e-18,
+            "torque": 5.856438738221637e-21,
+            "fluid_momentum": 1.0587911840678754e-22
+          }
+        },
+        "free-mpi2": {
+          "passed": true,
+          "checks": {
+            "position": true,
+            "velocity": true,
+            "rotation": true,
+            "force": true,
+            "torque": true,
+            "fluid_momentum": true
+          },
+          "metrics": {
+            "position": 1.1384122811097797e-18,
+            "velocity": 5.204170427930421e-16,
+            "rotation": 4.426782519162847e-15,
+            "force": 2.5480377356668082e-15,
+            "torque": 5.6119883988210615e-19,
+            "fluid_momentum": 4.752391120167785e-21
+          }
+        },
+        "fixed-refinement": {
+          "passed": false,
+          "error_increase": 0.06438737374338954,
+          "interpretation": "Two resolutions; no asymptotic convergence claim"
+        },
+        "rotate-refinement": {
+          "passed": true,
+          "error_increase": 0.011039277942654135,
+          "interpretation": "Two resolutions; no asymptotic convergence claim"
+        }
+      },
+      "physical_validation": "partial_gates_passed_overall_failed",
+      "open_gates": [
+        "startup momentum",
+        "fixed-sphere refinement"
+      ],
+      "revision": "Bounded residual-controlled PISO (8 to 64, L1 impulse target 1e-11), telemetry; geometry and thresholds unchanged",
+      "revision_native_build": "not_run",
+      "revision_runtime": "not_run",
+      "offline_contract_tests_passed": 9
     }
   ],
   "development_packages": [

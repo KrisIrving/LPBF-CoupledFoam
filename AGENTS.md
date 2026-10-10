@@ -60,3 +60,9 @@ in one to three windows. Pressure/PISO structure revision is pending native
 feedback, not an established physical fix. Preserve failed partial trajectories
 and mark absent restart/comparison evidence not_evaluated. No thermal/GCL
 expansion before assessing this revised concentrated package.
+
+At user-tested f4598d84 all eight cases complete and restart/MPI comparisons
+pass. Startup momentum and fixed-sphere refinement gates fail. Residual-controlled
+PISO candidate is pending native feedback. Do not erase startup windows, loosen
+thresholds or call nonmonotone two-grid errors convergence. Keep refinement
+failure open while investigating geometry/support and force discretization.

@@ -90,6 +90,8 @@ demDeltaT 0.00001;
 penalty 1000;
 quadrature 4;
 correctors 8;
+maxCorrectors 64;
+momentumImpulseTolerance 1e-11;
 ''')
     (root / '0/U').write_text(foam_header('volVectorField', 'U')+'''
 dimensions [0 1 -1 0 0 0 0];
@@ -128,6 +130,8 @@ Velocities
                 'initial_omega': [0., 0., omega], 'delta_t': 1e-4, 'dem_delta_t': 1e-5,
                 'end_time': 0.004, 'expected_rows': 40,
                 'reference_flow_speed': 0.01, 'reference_rotation_speed': 0.1,
+                'solver_controls': {'min_correctors': 8, 'max_correctors': 64,
+                                    'momentum_impulse_L1_kg_m_s': 1e-11},
                 'thresholds': {'volume_relative': 0.05, 'slip_relative': 0.05,
                                'divergence_per_s': 1e-6, 'momentum_residual_kg_m_s': 1e-10,
                                'angular_impulse_residual_kg_m2_s': 1e-12,

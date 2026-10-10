@@ -8,9 +8,10 @@ and a standalone OpenFOAM/LIGGGHTS communication demo are implemented. Full
 resolved particle coupling and optional acceleration remain unimplemented;
 the minimal demo has passed build, serial and two-rank communication checks.
 An experimental single-sphere mechanical solver and eight-case integrated
-package are now implemented; native build passed, but all eight initial
-runtime cases became unstable. A pressure-correction revision awaits user
-execution; CFD/DEM verification remains pending.
+package are now implemented; native build and all eight current
+executions passed. Startup momentum and fixed-sphere refinement gates still
+fail; a bounded residual-controlled correction candidate awaits user execution.
+Full CFD/DEM physical verification remains pending.
 This is not validation of resolved CFD forces or heat. See the
 [demo audit](docs/dem-communication-demo.zh-CN.md) and
 [M2A scope, fixed gates and user-side instructions](docs/m2a-resolved-coupling.zh-CN.md).

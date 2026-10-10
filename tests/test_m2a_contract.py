@@ -48,6 +48,7 @@ class ContractTests(unittest.TestCase):
                    'wx', 'wy', 'wz', 'fx', 'fy', 'fz', 'tx', 'ty', 'tz', 'volume_error',
                    'slip_rms', 'div_max', 'momentum_residual', 'angular_impulse_residual',
                    'clock_error', 'covered_ranks']}
+            row.update(pressure_correctors=8, momentum_equation_impulse_L1=0., support_volume_ratio=1.2)
             for prefix in ['fluid_p', 'old_fluid_p', 'boundary_f', 'constraint_f', 'inertia_f',
                            'constraint_t', 'inertia_t']:
                 row.update({prefix+k: 0. for k in 'xyz'})
@@ -142,6 +143,14 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(entry['diagnostics']['recorded_windows'], 1)
         self.assertEqual(entry['diagnostics']['last_time'], 0.0001)
         self.assertEqual(summary['comparisons']['free-restart']['status'], 'not_evaluated')
+
+    def test_global_balance_does_not_hide_unconverged_local_equations(self):
+        case, rows = self.fixture()
+        rows[0]['momentum_equation_impulse_L1'] = 1e-8
+        self.save(case, rows)
+        result, _, _ = audit.evaluate(case)
+        self.assertTrue(result['checks']['momentum'])
+        self.assertFalse(result['checks']['equation_convergence'])
 
 
 if __name__ == '__main__':

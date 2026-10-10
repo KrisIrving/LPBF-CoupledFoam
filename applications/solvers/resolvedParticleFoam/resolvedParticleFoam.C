@@ -42,8 +42,10 @@ int main(int argc,char* argv[])
         const scalar demDt=readScalar(config.lookup("demDeltaT"));
         const scalar dt=runTime.deltaTValue(), penalty=readScalar(config.lookup("penalty"));
         const label q=readLabel(config.lookup("quadrature")), correctors=readLabel(config.lookup("correctors"));
+        const label maxCorrectors=config.getOrDefault<label>("maxCorrectors",correctors);
+        const scalar momentumTolerance=config.getOrDefault<scalar>("momentumImpulseTolerance",-1);
         const int substeps=static_cast<int>(std::llround(dt/demDt));
-        if(rho<=0||viscosity<=0||penalty<=0||q<2||q>8||correctors<1
+        if(rho<=0||viscosity<=0||penalty<=0||q<2||q>8||correctors<1||maxCorrectors<correctors
             || substeps<1||std::abs(substeps*demDt-dt)>dt*1e-10)
             throw std::runtime_error("Invalid mechanical controls or nonintegral DEM substeps");
         const dimensionedScalar nu("nu",dimViscosity,viscosity);
@@ -153,7 +155,7 @@ int main(int argc,char* argv[])
             if(!history) throw std::runtime_error("Cannot write mechanical history");
             history<<std::setprecision(17);
             if(runTime.value()==0)
-                history<<"time,id,owner,x,y,z,vx,vy,vz,wx,wy,wz,fx,fy,fz,tx,ty,tz,volume_error,slip_rms,div_max,momentum_residual,angular_impulse_residual,clock_error,covered_ranks,force_ratio,torque_ratio,fluid_px,fluid_py,fluid_pz,old_fluid_px,old_fluid_py,old_fluid_pz,boundary_fx,boundary_fy,boundary_fz,constraint_fx,constraint_fy,constraint_fz,inertia_fx,inertia_fy,inertia_fz,constraint_tx,constraint_ty,constraint_tz,inertia_tx,inertia_ty,inertia_tz\n";
+                history<<"time,id,owner,x,y,z,vx,vy,vz,wx,wy,wz,fx,fy,fz,tx,ty,tz,volume_error,slip_rms,div_max,momentum_residual,angular_impulse_residual,clock_error,covered_ranks,force_ratio,torque_ratio,fluid_px,fluid_py,fluid_pz,old_fluid_px,old_fluid_py,old_fluid_pz,boundary_fx,boundary_fy,boundary_fz,constraint_fx,constraint_fy,constraint_fz,inertia_fx,inertia_fy,inertia_fz,constraint_tx,constraint_ty,constraint_tz,inertia_tx,inertia_ty,inertia_tz,pressure_correctors,momentum_equation_impulse_L1,support_volume_ratio\n";
         }
         const scalar refPressure=p[0];
         while(runTime.run())
@@ -169,7 +171,9 @@ int main(int argc,char* argv[])
             // H from corrected U without repeatedly solving the predictor.
             solve(equation==-fvc::grad(p));
             volScalarField rAU("rAU",1.0/equation.A());
-            for(label c=0;c<correctors;++c)
+            label usedCorrectors=0;
+            scalar equationImpulse=GREAT;
+            for(label c=0;c<maxCorrectors;++c)
             {
                 volVectorField HbyA(constrainHbyA(rAU*equation.H(),U,p));
                 surfaceScalarField predicted("predicted",fvc::flux(HbyA));
@@ -185,22 +189,35 @@ int main(int argc,char* argv[])
                 U=HbyA-rAU*fvc::grad(p);U.correctBoundaryConditions();
                 const scalar maxU=gMax(mag(U)().primitiveField());
                 const scalar maxP=gMax(mag(p)().primitiveField());
+                // residual() is source - A*U, integrated over each cell.
+                // Include the pressure source and sum magnitudes, so opposite
+                // local defects cannot cancel in a global momentum ledger.
+                vectorField defect(equation.residual());
+                defect-=mesh.V().field()*fvc::grad(p)().primitiveField();
+                equationImpulse=rho*dt*gSum(mag(defect));
+                usedCorrectors=c+1;
                 if(rank==0) Info<<"M2A_CORRECTION time="<<runTime.value()
-                    <<" iteration="<<c+1<<" maxU="<<maxU<<" maxP="<<maxP<<endl;
-                if(!std::isfinite(maxU)||!std::isfinite(maxP))
+                    <<" iteration="<<c+1<<" maxU="<<maxU<<" maxP="<<maxP
+                    <<" equationImpulseL1="<<equationImpulse<<endl;
+                if(!std::isfinite(maxU)||!std::isfinite(maxP)||!std::isfinite(equationImpulse))
                     throw std::runtime_error("Nonfinite CFD state before DEM feedback");
+                if(usedCorrectors>=correctors && (momentumTolerance<0||equationImpulse<=momentumTolerance)) break;
             }
+            if(momentumTolerance>=0 && equationImpulse>momentumTolerance)
+                throw std::runtime_error("CFD momentum equation did not converge before DEM feedback");
             vector constraint=vector::zero, constraintTorque=vector::zero;
-            scalar volume=0,slip=0;label covered=0;
+            scalar volume=0,slip=0,supportVolume=0;label covered=0;
             forAll(mesh.C(),cell)
             {
                 const vector f=rho*lambda[cell]*(rigid[cell]-U[cell])*mesh.V()[cell];
                 constraint+=f;constraintTorque+=(mesh.C()[cell]-asFoamVector(before[0].x))^f;
                 volume+=solid[cell]*mesh.V()[cell];slip+=solid[cell]*mesh.V()[cell]*magSqr(U[cell]-rigid[cell]);
+                if(solid[cell]>0) supportVolume+=mesh.V()[cell];
             }
             covered=volume>0 ? 1:0;reduce(covered,sumOp<label>());
             reduce(constraint,sumOp<vector>());reduce(constraintTorque,sumOp<vector>());
             reduce(volume,sumOp<scalar>());reduce(slip,sumOp<scalar>());
+            reduce(supportVolume,sumOp<scalar>());
             if(volume<=0) throw std::runtime_error("Sphere outside resolved mesh");
             vector newP,newL;interior(newP,newL);
             const vector inertia=(newP-previousP[0])/dt;
@@ -247,7 +264,7 @@ int main(int argc,char* argv[])
                     <<','<<force.x()/forceRef<<','<<-torque.z()/torqueRef;
                 for(const vector& data:{newPhysical,oldPhysical,boundary,constraint,inertia,constraintTorque,rotationalInertia})
                     for(int k=0;k<3;++k) history<<','<<data[k];
-                history<<'\n';
+                history<<','<<usedCorrectors<<','<<equationImpulse<<','<<supportVolume/exactVolume<<'\n';
                 history.flush();
             }
             previousP[0]=newP;previousL[0]=newL;previousCentre[0]=asFoamVector(before[0].x);
