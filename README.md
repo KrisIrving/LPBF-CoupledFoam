@@ -99,3 +99,10 @@ Parameter gaps must be resolved before claiming reproduction.
 Only code, original project documentation and public references belong here.
 Local manuscripts, private reference documents, credentials, compiled binaries
 and simulation outputs are excluded from project additions.
+
+### 最新反馈（2026-10-10，744930ac）
+
+二次表面包整体未通过：10/14组完成、4组细网格转动个例通过，固定球精度仍失败。
+三组偏移固定球的散度平台已由独立边界通量审计重现，另有一个固定球超时。
+暂停原包重复测试；下一步集中审查边界通量与壁面/压力/受力离散相容性。
+数值、失败原因及接续计划见[项目状态](docs/project-status.zh-CN.md)。当前未修改求解器。

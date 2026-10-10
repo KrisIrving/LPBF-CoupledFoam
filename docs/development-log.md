@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: quadratic surface feedback and discrete boundary compatibility audit
+
+User-tested 744930ac. Ten of fourteen cases complete40 windows; four fine rotation cases pass individually. Three offset fixed cases abort first window on continuity plateau; fixed-finer times out (124) after14 windows. MPI and serial common restart comparisons pass. Summary independently reproduced exactly. Fixed-origin drag/slip/stress errors worsen versus linear candidate; no M2A closure and no unchanged14-case rerun requested.
+
+Independent face-centre analytic boundary flux divided by cell volume predicts all3 observed divergence plateaus to relative1e-6. Higher-order face integration diagnoses the quadrature incompatibility but is not applied to CFD. Add standalone boundary-flux oracle and2 regressions;26 M2A offline tests pass with workspace TEMP/TMP (initial default temporary-directory permission failure corrected). No native execution or solver changes. Freeze both candidates; next concentrated task is boundary mass compatibility plus pressure/wall/force operator audit, then one selected implementation and full package. Preserve all failed/missing gates and cost evidence. See latest Chinese status/plan for numerical table and remaining scope.
+
 ## 2026-10-10: first surface feedback; quadratic extension and continuity candidate
 
 User-tested cd6ddd85, report m2a-surface-20261010-122151-653201.tar.gz SHA256 9ce63f158afb782bb0dd21f2256768a4f003a78a498a6934c86eaef341b9022b. All14 execute40 windows; only3 individual cases pass. Independent summary exact. MPI/serial restart comparisons and linear momentum pass; max momentum4.977e-15 kg m/s. Fixed origin drag errors3.532/0.976/0.191%, but coarse/mid wall slip, coarse phase sensitivity, one divergence and one finest stress mismatch fail. Window time sum1825.54s. No M2A closure.

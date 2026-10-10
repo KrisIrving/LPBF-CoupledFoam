@@ -102,3 +102,12 @@ is a pending native candidate. Preserve linear mode, raw target norm and old
 failures. Same14 cases/physics thresholds; no arbitrary radius/drag fit or
 transfer of static evidence to moving/GCL/contact/heat. Analytic geometry audit
 omits CFD and Cartesian image interpolation; never label it CFD validation.
+
+User-tested744930ac quadratic surface package fails:10/14 complete,4 individual
+fine-rotation passes,3 fixed-offset continuity aborts,1 fixed-finer timeout after14
+windows. MPI/restart comparisons pass. Fixed drag/slip/stress worsen versus linear.
+Offline boundary face-centre flux/cell volume reproduces3 divergence plateaus;
+this explains boundary compatibility, not wall accuracy. Freeze both candidates;
+do not request unchanged14-case reruns or blind budget/tolerance tuning. Read latest
+status/plan: M2A-02C must audit boundary flux and pressure/wall/force compatibility
+before selecting/implementing next operator. No solver fix/native pass claimed.
