@@ -24,9 +24,14 @@ class JointPackageTests(unittest.TestCase):
     def fixture(self,name):
         case,rows,_=self.writer.fixture(name)
         meta=prepare.prepare(case,name)
+        if meta['restart']:
+            size=3*meta['joint_controls']['markers']
+            (case/'0.002/couplingState').write_text('jointWarmStart true;\njointFullPredictor true;\njointLoadSeed '
+                +str(size)+'\n('+ ' '.join('0' for _ in range(size))+');\n')
         for log in ('log.first','log.restart') if meta['restart'] else ('log.solver',):
             (case/log).write_text('M2A_CONSTRAINT scheme=jointSurface\nM2A_JOINT markers='+str(meta['joint_controls']['markers'])+' minPivot=.9\n'
-                'M2A_BOUNDARY treatment=compatibleGauss rawFlux=-4e-14 gaussFlux=7e-18 finalFlux=1e-22 normalCorrection=1e-16\nM2A_EXECUTION_COMPLETE\n')
+                'M2A_BOUNDARY treatment=compatibleGauss rawFlux=-4e-14 gaussFlux=7e-18 finalFlux=1e-22 normalCorrection=1e-16\n'
+                'M2A_JOINT_ALGORITHM warmStart=1 fullPredictor=1 responseReuse=1\nGAMG:  Solving for p,\nM2A_EXECUTION_COMPLETE\n')
         for row in rows:
             row.update(surface_correctors=1,pressure_correctors_total=8,joint_iterations=8,
                 joint_pressure_solves=24,joint_wall_residual=1e-8,joint_markers=meta['joint_controls']['markers'],
@@ -39,6 +44,10 @@ class JointPackageTests(unittest.TestCase):
             properties=(case/'constant/mechanicalProperties').read_text()
             self.assertIn('constraintScheme jointSurface;',properties)
             self.assertIn('boundaryTreatment compatibleGauss;',properties)
+            self.assertIn('jointWarmStart true;',properties)
+            self.assertIn('jointFullPredictor true;',properties)
+            self.assertIn('solver GAMG;',(case/'system/fvSolution').read_text())
+            self.assertIn('tolerance 1e-14;',(case/'system/fvSolution').read_text())
             self.assertNotIn('constraintScheme surfaceExtension;',properties)
             self.assertEqual(meta['package'],'M2A-02C')
         self.assertTrue(summary.summarize(self.root)['passed'])
@@ -72,6 +81,22 @@ class JointPackageTests(unittest.TestCase):
         result=geometry.run();self.assertTrue(result['passed'])
         self.assertEqual([case['markers'] for case in result['cases']],[51,51,90,90,159,159])
         self.assertGreater(min(case['min_normalised_cholesky_pivot'] for case in result['cases']),.9)
+
+    def test_algorithm_evidence_cannot_be_skipped(self):
+        case,rows,meta=self.fixture('fixed-coarse')
+        p=case/'log.solver';p.write_text(p.read_text().replace('fullPredictor=1','fullPredictor=0'))
+        with self.assertRaisesRegex(ValueError,'accelerated joint'):summary.audit.evaluate(case)
+
+    def test_warm_restart_seed_checked_independently(self):
+        case,rows,meta=self.fixture('fixed-restart')
+        checkpoint=case/'0.002/couplingState'
+        text=checkpoint.read_text()
+        checkpoint.write_text(text.replace('(0 ','(nan ',1))
+        self.assertFalse(summary.audit.evaluate(case)[0]['checks']['joint_warm_checkpoint'])
+        checkpoint.write_text(text.replace('jointWarmStart true;','jointWarmStart false;'))
+        self.assertFalse(summary.audit.evaluate(case)[0]['checks']['joint_warm_checkpoint'])
+        checkpoint.write_text('jointWarmStart true; jointFullPredictor true; jointLoadSeed 153{0};')
+        self.assertTrue(summary.audit.evaluate(case)[0]['checks']['joint_warm_checkpoint'])
 
 
 if __name__=='__main__':unittest.main()

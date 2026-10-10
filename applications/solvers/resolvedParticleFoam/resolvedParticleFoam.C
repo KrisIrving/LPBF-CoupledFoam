@@ -62,6 +62,8 @@ int main(int argc,char* argv[])
         const word boundaryTreatment=config.getOrDefault<word>("boundaryTreatment","faceCentre");
         const bool compatibleBoundary=boundaryTreatment=="compatibleGauss";
         const label jointBudget=config.getOrDefault<label>("jointKrylovBudget",64);
+        const bool jointWarmStart=config.getOrDefault<bool>("jointWarmStart",false);
+        const bool jointFullPredictor=config.getOrDefault<bool>("jointFullPredictor",false);
         if(jointConstraint&&(jointBudget<1||jointBudget>256||!compatibleBoundary||targetTolerance<=0||continuityTolerance<=0))
             throw std::runtime_error("Joint surface requires bounded controls and compatible boundary");
         if(boundaryTreatment!="faceCentre"&&!compatibleBoundary)
@@ -114,7 +116,10 @@ int main(int argc,char* argv[])
             mesh.setFluxRequired("jointDeltaP");
             joint.reset(new lpbfM2::JointSphere(mesh,*surface,asFoamVector(particles[0].x),particles[0].radius,h));
             if(rank==0) Info<<"M2A_JOINT markers="<<joint->count()<<" minPivot="<<joint->minPivot()<<endl;
+            if(rank==0) Info<<"M2A_JOINT_ALGORITHM warmStart="<<jointWarmStart
+                <<" fullPredictor="<<jointFullPredictor<<" responseReuse=1"<<endl;
         }
+        std::vector<double> jointPreviousLoads(joint ? 3*joint->count():0,0);
         auto mapGeometry=[&]()
         {
             if(surface) surface->gather(U,p);
@@ -255,6 +260,22 @@ int main(int argc,char* argv[])
                 throw std::runtime_error("Restart surface reconstruction differs from checkpoint");
             if(jointConstraint&&restore.getOrDefault<label>("jointMarkerCount",-1)!=joint->count())
                 throw std::runtime_error("Restart joint marker count differs from checkpoint");
+            if(jointConstraint)
+            {
+                if(restore.getOrDefault<bool>("jointWarmStart",false)!=jointWarmStart
+                    ||restore.getOrDefault<bool>("jointFullPredictor",false)!=jointFullPredictor)
+                    throw std::runtime_error("Restart joint algorithm differs from checkpoint");
+                if(jointWarmStart)
+                {
+                    scalarList seed(restore.lookup("jointLoadSeed"));
+                    if(seed.size()!=label(jointPreviousLoads.size())) throw std::runtime_error("Restart joint load dimensions differ");
+                    forAll(seed,i)
+                    {
+                        if(!std::isfinite(seed[i])) throw std::runtime_error("Nonfinite restart joint load");
+                        jointPreviousLoads[i]=seed[i];
+                    }
+                }
+            }
             if(!restore.found("ids")) throw std::runtime_error("Missing common coupling checkpoint");
             labelList saved(restore.lookup("ids"));
             if(saved!=ids) throw std::runtime_error("Restart ID mismatch");
@@ -290,16 +311,25 @@ int main(int argc,char* argv[])
             label jointIterations=0,jointPressureSolves=0;
             std::vector<double> jointLoads(joint ? 3*joint->count():0,0);
             wallAcceleration=dimensionedVector("zero",dimVelocity/dimTime,vector::zero);
+            if(joint&&jointWarmStart)
+            {
+                jointLoads=jointPreviousLoads;
+                wallAcceleration.primitiveFieldRef()=joint->acceleration(jointLoads,rho);
+            }
             for(label outer=0;outer<(surfaceExtension ? maxSurfaceCorrectors:1);++outer)
             {
                 fvVectorMatrix equation(fvm::ddt(U)+fvm::div(advecting,U)-fvm::laplacian(nu,U)+fvm::Sp(lambda,U)==lambda*rigid+wallAcceleration);
-                // One momentum predictor per outer target update. Each inner PISO
-                // loop corrects H without re-solving the predictor. All outer solves
-                // retain the SAME old-time field and frozen advecting flux/window.
+                // Initial full predictor. Legacy PISO updates H only; the optional
+                // joint full predictor also resolves the accumulated wall source.
+                // All solves retain the SAME old time and frozen advecting window.
                 solve(equation==-fvc::grad(p));
                 volScalarField rAU("rAU",1.0/equation.A());
                 for(label c=0;c<maxCorrectors;++c)
                 {
+                    // Coupled updates changed the wall source. Re-solve the full
+                    // momentum predictor instead of relying only on diagonal H
+                    // propagation of its viscous off-diagonal response.
+                    if(joint&&jointFullPredictor&&c>0) solve(equation==-fvc::grad(p));
                     volVectorField HbyA(constrainHbyA(rAU*equation.H(),U,p));
                     surfaceScalarField predicted("predicted",fvc::flux(HbyA));
                     // Standard transient collocated flux consistency, using the
@@ -328,37 +358,49 @@ int main(int argc,char* argv[])
                         if(targetDefect>targetTolerance)
                         {
                             const auto scaling=joint->inverseDiagonal(rAU,rho);
+                            // Reuse work fields and the final explicitly checked
+                            // response. Commit must not solve the same Poisson RHS
+                            // a second time, or silently substitute a new source.
+                            volVectorField deltaU(IOobject("jointDeltaU",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false),
+                                mesh,dimensionedVector("zero",dimVelocity,vector::zero),U.boundaryField().types());
+                            volScalarField deltaP(IOobject("jointDeltaP",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false),
+                                mesh,dimensionedScalar("zero",p.dimensions(),0),p.boundaryField().types());
+                            surfaceScalarField deltaPhi("jointDeltaPhi",fvc::flux(deltaU));
+                            std::vector<double> lastInput,lastForces,lastResult;
+                            vectorField lastAcceleration(mesh.nCells(),vector::zero);
                             auto response=[&](const std::vector<double>& scaled,bool commit)
                             {
-                                std::vector<double> forces(scaled.size());
-                                for(std::size_t i=0;i<forces.size();++i) forces[i]=scaled[i]/scaling[i/3];
-                                const vectorField acceleration=joint->acceleration(forces,rho);
-                                volVectorField deltaU(IOobject("jointDeltaU",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false),
-                                    mesh,dimensionedVector("zero",dimVelocity,vector::zero),U.boundaryField().types());
-                                deltaU.primitiveFieldRef()=rAU.primitiveField()*acceleration;
-                                deltaU.correctBoundaryConditions();
-                                surfaceScalarField deltaPhi("jointDeltaPhi",fvc::flux(deltaU));
-                                volScalarField deltaP(IOobject("jointDeltaP",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false),
-                                    mesh,dimensionedScalar("zero",p.dimensions(),0),p.boundaryField().types());
-                                constrainPressure(deltaP,deltaU,deltaPhi,rAU);
-                                fvScalarMatrix responsePressure(fvm::laplacian(rAU,deltaP)==fvc::div(deltaPhi));
-                                if(deltaP.needReference()) responsePressure.setReference(rank==0 ? 0:-1,0);
-                                responsePressure.solve(word("p"));++jointPressureSolves;
-                                deltaPhi-=responsePressure.flux();
-                                deltaU-=rAU*fvc::grad(deltaP);deltaU.correctBoundaryConditions();
-                                auto result=joint->interpolate(deltaU,deltaP);
+                                if(lastInput!=scaled)
+                                {
+                                    std::vector<double> forces(scaled.size());
+                                    for(std::size_t i=0;i<forces.size();++i) forces[i]=scaled[i]/scaling[i/3];
+                                    const vectorField acceleration=joint->acceleration(forces,rho);
+                                    deltaU=dimensionedVector("zero",dimVelocity,vector::zero);
+                                    deltaU.primitiveFieldRef()=rAU.primitiveField()*acceleration;
+                                    deltaU.correctBoundaryConditions();
+                                    deltaPhi=fvc::flux(deltaU);
+                                    deltaP=dimensionedScalar("zero",p.dimensions(),0);
+                                    constrainPressure(deltaP,deltaU,deltaPhi,rAU);
+                                    fvScalarMatrix responsePressure(fvm::laplacian(rAU,deltaP)==fvc::div(deltaPhi));
+                                    if(deltaP.needReference()) responsePressure.setReference(rank==0 ? 0:-1,0);
+                                    responsePressure.solve(word("p"));++jointPressureSolves;
+                                    deltaPhi-=responsePressure.flux();
+                                    deltaU-=rAU*fvc::grad(deltaP);deltaU.correctBoundaryConditions();
+                                    lastResult=joint->interpolate(deltaU,deltaP);
+                                    lastInput=scaled;lastForces=forces;lastAcceleration=acceleration;
+                                }
                                 if(commit)
                                 {
                                     U.primitiveFieldRef()+=deltaU.primitiveField();
                                     p.primitiveFieldRef()+=deltaP.primitiveField();phi+=deltaPhi;
                                     U.correctBoundaryConditions();p.correctBoundaryConditions();
-                                    wallAcceleration.primitiveFieldRef()+=acceleration;
-                                    for(std::size_t i=0;i<forces.size();++i) jointLoads[i]+=forces[i];
+                                    wallAcceleration.primitiveFieldRef()+=lastAcceleration;
+                                    for(std::size_t i=0;i<lastForces.size();++i) jointLoads[i]+=lastForces[i];
                                     // Exactly the same source is used by equation.H,
                                     // equation residual and the final force ledger.
-                                    equation.source()+=mesh.V().field()*acceleration;
+                                    equation.source()+=mesh.V().field()*lastAcceleration;
                                 }
-                                return result;
+                                return lastResult;
                             };
                             int iterations=0;
                             const auto correction=lpbfM2::wallGMRES(
@@ -525,6 +567,7 @@ int main(int argc,char* argv[])
                 history.flush();
             }
             previousP[0]=newP;previousL[0]=newL;previousCentre[0]=asFoamVector(before[0].x);
+            if(joint&&jointWarmStart) jointPreviousLoads=jointLoads;
             runTime.write();
             if(runTime.writeTime())
             {
@@ -533,7 +576,18 @@ int main(int argc,char* argv[])
                 checkpoint.add("constraintScheme",constraintScheme);
                 checkpoint.add("surfaceReconstruction",reconstruction);
                 checkpoint.add("boundaryTreatment",boundaryTreatment);
-                if(joint) checkpoint.add("jointMarkerCount",joint->count());
+                if(joint)
+                {
+                    checkpoint.add("jointMarkerCount",joint->count());
+                    checkpoint.add("jointWarmStart",jointWarmStart);
+                    checkpoint.add("jointFullPredictor",jointFullPredictor);
+                    if(jointWarmStart)
+                    {
+                        scalarList seed(jointPreviousLoads.size());
+                        forAll(seed,i) seed[i]=jointPreviousLoads[i];
+                        checkpoint.add("jointLoadSeed",seed);
+                    }
+                }
                 checkpoint.add("interiorAngular",previousL);checkpoint.add("mappedCentres",previousCentre);
                 checkpoint.regIOobject::write();
                 if(rank==0) std::filesystem::create_directories(runTime.timeName().c_str());

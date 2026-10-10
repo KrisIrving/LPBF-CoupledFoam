@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-10",
-  "latest_user_tested_commit": "744930acbe453057e3c28ce20dc91a1a991a75ea",
+  "latest_user_tested_commit": "0e4cc6cc8385ceab103e69d5dd2e882017a80c0c",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -3072,6 +3072,581 @@
           }
         ]
       }
+    },
+    {
+      "report": "m2a-joint-20261010-203254-763310.tar.gz",
+      "archive_sha256": "af091344d54893545986f0019a62faee662751dbdadfe0788ced59007b9523d0",
+      "tested_commit": "0e4cc6cc8385ceab103e69d5dd2e882017a80c0c",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "package": "M2A-02C",
+      "native_build_passed": true,
+      "shared_cpp_kernel_passed": true,
+      "execution_complete_count": 6,
+      "individual_pass_count": 6,
+      "independent_archive_csv_reanalysis": "exact_match",
+      "summary": {
+        "package": "M2A-02C",
+        "cases": {
+          "fixed-coarse": {
+            "passed": true,
+            "checks": {
+              "momentum": true,
+              "angular": true,
+              "force_decomposition": true,
+              "torque_decomposition": true,
+              "fluid_continuity": true,
+              "equation_convergence": true,
+              "correction_count": true,
+              "volume": true,
+              "slip": true,
+              "divergence": true,
+              "clock": true,
+              "stokes_reference": true,
+              "surface_target_convergence": true,
+              "surface_iteration_budget": true,
+              "total_pressure_counts": true,
+              "positive_window_cost": true,
+              "continuity_convergence": true,
+              "joint_wall_constraint": true,
+              "joint_marker_rank": true,
+              "joint_iteration_counts": true,
+              "joint_force_exchange": true,
+              "joint_torque_exchange": true,
+              "joint_work_exchange": true
+            },
+            "metrics": {
+              "momentum": 1.792601473022977e-14,
+              "angular": 0.0,
+              "force_decomposition": 1.3413582500092287e-20,
+              "torque_decomposition": 8.403693544879801e-25,
+              "fluid_continuity": 0.0,
+              "momentum_equation_impulse_L1": 9.94082276305392e-12,
+              "pressure_correctors_max": 41.0,
+              "support_volume_ratio_max": 0.0,
+              "volume": 0.00417636301529134,
+              "slip": 0.017881743428671056,
+              "divergence": 4.0831909782301916e-13,
+              "clock": 3.0357660829594124e-18,
+              "stokes_relative_error": 0.13589620069253083,
+              "surface_target_defect_m_s": 8.174191153873244e-08,
+              "surface_correctors_max": 1.0,
+              "surface_correctors_mean": 1.0,
+              "pressure_correctors_total": 1565.0,
+              "window_wall_seconds_total": 613.620660005,
+              "joint_wall_residual": 8.174191153873244e-08,
+              "joint_iterations_total": 5126.0,
+              "joint_pressure_solves_total": 7126.0,
+              "joint_force_exchange_error": 2.4396107343172787e-19,
+              "joint_torque_exchange_error": 1.1675999192485645e-19,
+              "joint_work_exchange_error": 1.6310967703780014e-23,
+              "stress_ledger_relative": 0.34739853008004784,
+              "stress_stokes_relative": 0.21148529512950776,
+              "mean_reference_load_ratio": 1.1358962006925308
+            }
+          },
+          "fixed-coarse-offset": {
+            "passed": true,
+            "checks": {
+              "momentum": true,
+              "angular": true,
+              "force_decomposition": true,
+              "torque_decomposition": true,
+              "fluid_continuity": true,
+              "equation_convergence": true,
+              "correction_count": true,
+              "volume": true,
+              "slip": true,
+              "divergence": true,
+              "clock": true,
+              "stokes_reference": true,
+              "surface_target_convergence": true,
+              "surface_iteration_budget": true,
+              "total_pressure_counts": true,
+              "positive_window_cost": true,
+              "continuity_convergence": true,
+              "joint_wall_constraint": true,
+              "joint_marker_rank": true,
+              "joint_iteration_counts": true,
+              "joint_force_exchange": true,
+              "joint_torque_exchange": true,
+              "joint_work_exchange": true
+            },
+            "metrics": {
+              "momentum": 1.934472697311228e-14,
+              "angular": 0.0,
+              "force_decomposition": 1.5246736657646325e-20,
+              "torque_decomposition": 3.699264158676972e-24,
+              "fluid_continuity": 0.0,
+              "momentum_equation_impulse_L1": 9.901997490793046e-12,
+              "pressure_correctors_max": 41.0,
+              "support_volume_ratio_max": 0.0,
+              "volume": 0.004176363015292006,
+              "slip": 0.020073935839698433,
+              "divergence": 2.9727059689614287e-12,
+              "clock": 3.0357660829594124e-18,
+              "stokes_relative_error": 0.1331749651867562,
+              "surface_target_defect_m_s": 5.564432229493506e-08,
+              "surface_correctors_max": 1.0,
+              "surface_correctors_mean": 1.0,
+              "pressure_correctors_total": 1601.0,
+              "window_wall_seconds_total": 616.935826969,
+              "joint_wall_residual": 5.564432229493506e-08,
+              "joint_iterations_total": 4927.0,
+              "joint_pressure_solves_total": 6927.0,
+              "joint_force_exchange_error": 1.8977324946098876e-19,
+              "joint_torque_exchange_error": 1.1796731591479524e-19,
+              "joint_work_exchange_error": 1.5538717053779336e-23,
+              "stress_ledger_relative": 0.3420265403954005,
+              "stress_stokes_relative": 0.2087873783936277,
+              "mean_reference_load_ratio": 1.1331749651867562
+            }
+          },
+          "fixed-fine": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 11,
+              "completion": false,
+              "last_time": 0.0011000000000000003,
+              "last_vx": 0.0,
+              "last_fx": 0.00020750862755207727,
+              "last_tz": 3.970855999680132e-11,
+              "last_slip_rms": 0.00012586958406936614,
+              "last_momentum_residual": 1.6110914873828255e-14
+            }
+          },
+          "fixed-fine-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 11,
+              "completion": false,
+              "last_time": 0.0011000000000000003,
+              "last_vx": 0.0,
+              "last_fx": 0.0002072544266486324,
+              "last_tz": 1.1858236804938277e-09,
+              "last_slip_rms": 0.00012085603445097419,
+              "last_momentum_residual": 7.151545163327443e-15
+            }
+          },
+          "fixed-finer": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "fixed-finer-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "rotate-coarse": {
+            "passed": true,
+            "checks": {
+              "momentum": true,
+              "angular": true,
+              "force_decomposition": true,
+              "torque_decomposition": true,
+              "fluid_continuity": true,
+              "equation_convergence": true,
+              "correction_count": true,
+              "volume": true,
+              "slip": true,
+              "divergence": true,
+              "clock": true,
+              "stokes_reference": true,
+              "surface_target_convergence": true,
+              "surface_iteration_budget": true,
+              "total_pressure_counts": true,
+              "positive_window_cost": true,
+              "continuity_convergence": true,
+              "joint_wall_constraint": true,
+              "joint_marker_rank": true,
+              "joint_iteration_counts": true,
+              "joint_force_exchange": true,
+              "joint_torque_exchange": true,
+              "joint_work_exchange": true
+            },
+            "metrics": {
+              "momentum": 8.206618145209116e-16,
+              "angular": 0.0,
+              "force_decomposition": 4.974100522781486e-23,
+              "torque_decomposition": 2.6263163423872416e-23,
+              "fluid_continuity": 0.0,
+              "momentum_equation_impulse_L1": 9.831530974809203e-12,
+              "pressure_correctors_max": 27.0,
+              "support_volume_ratio_max": 0.0,
+              "volume": 0.00417636301529134,
+              "slip": 0.03220673075215604,
+              "divergence": 9.390879246867733e-16,
+              "clock": 3.0357660829594124e-18,
+              "stokes_relative_error": 0.26025912291979214,
+              "surface_target_defect_m_s": 8.36807141200058e-08,
+              "surface_correctors_max": 1.0,
+              "surface_correctors_mean": 1.0,
+              "pressure_correctors_total": 1041.0,
+              "window_wall_seconds_total": 367.903979482,
+              "joint_wall_residual": 8.36807141200058e-08,
+              "joint_iterations_total": 3164.0,
+              "joint_pressure_solves_total": 4446.0,
+              "joint_force_exchange_error": 4.6794166378445066e-21,
+              "joint_torque_exchange_error": 1.906658346209161e-21,
+              "joint_work_exchange_error": 3.970466940254533e-23,
+              "stress_ledger_relative": 0.5421538955063692,
+              "stress_stokes_relative": 0.2818619368759795,
+              "mean_reference_load_ratio": 1.2602591229197921
+            }
+          },
+          "rotate-coarse-offset": {
+            "passed": true,
+            "checks": {
+              "momentum": true,
+              "angular": true,
+              "force_decomposition": true,
+              "torque_decomposition": true,
+              "fluid_continuity": true,
+              "equation_convergence": true,
+              "correction_count": true,
+              "volume": true,
+              "slip": true,
+              "divergence": true,
+              "clock": true,
+              "stokes_reference": true,
+              "surface_target_convergence": true,
+              "surface_iteration_budget": true,
+              "total_pressure_counts": true,
+              "positive_window_cost": true,
+              "continuity_convergence": true,
+              "joint_wall_constraint": true,
+              "joint_marker_rank": true,
+              "joint_iteration_counts": true,
+              "joint_force_exchange": true,
+              "joint_torque_exchange": true,
+              "joint_work_exchange": true
+            },
+            "metrics": {
+              "momentum": 2.780873230668437e-15,
+              "angular": 0.0,
+              "force_decomposition": 1.123017639172393e-22,
+              "torque_decomposition": 2.636653598577172e-23,
+              "fluid_continuity": 0.0,
+              "momentum_equation_impulse_L1": 9.264194251196177e-12,
+              "pressure_correctors_max": 28.0,
+              "support_volume_ratio_max": 0.0,
+              "volume": 0.004176363015292006,
+              "slip": 0.03374481201821159,
+              "divergence": 1.6501136629779166e-15,
+              "clock": 3.0357660829594124e-18,
+              "stokes_relative_error": 0.2568897565673962,
+              "surface_target_defect_m_s": 6.77776461864488e-08,
+              "surface_correctors_max": 1.0,
+              "surface_correctors_mean": 1.0,
+              "pressure_correctors_total": 1042.0,
+              "window_wall_seconds_total": 346.367201505,
+              "joint_wall_residual": 6.77776461864488e-08,
+              "joint_iterations_total": 2852.0,
+              "joint_pressure_solves_total": 4058.0,
+              "joint_force_exchange_error": 4.079508864647033e-21,
+              "joint_torque_exchange_error": 2.9158606150243437e-21,
+              "joint_work_exchange_error": 5.293955920339377e-23,
+              "stress_ledger_relative": 0.5279148891846992,
+              "stress_stokes_relative": 0.2709692043838392,
+              "mean_reference_load_ratio": 1.2568897565673962
+            }
+          },
+          "rotate-fine": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 20,
+              "completion": false,
+              "last_time": 0.0020000000000000005,
+              "last_vx": 0.0,
+              "last_fx": -5.282871553867058e-10,
+              "last_tz": -2.9609212594287396e-07,
+              "last_slip_rms": 2.3042752050485933e-05,
+              "last_momentum_residual": 8.269492386557965e-17
+            }
+          },
+          "rotate-fine-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 19,
+              "completion": false,
+              "last_time": 0.0019000000000000006,
+              "last_vx": 0.0,
+              "last_fx": -1.7417300325208552e-08,
+              "last_tz": -2.95139696477263e-07,
+              "last_slip_rms": 2.2285010202637764e-05,
+              "last_momentum_residual": 4.002728344658036e-17
+            }
+          },
+          "rotate-finer": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 3,
+              "completion": false,
+              "last_time": 0.00030000000000000003,
+              "last_vx": 0.0,
+              "last_fx": 1.2925276402737525e-07,
+              "last_tz": -2.8948781671419097e-07,
+              "last_slip_rms": 1.697553298982588e-05,
+              "last_momentum_residual": 1.7827465410897795e-16
+            }
+          },
+          "rotate-finer-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 3,
+              "completion": false,
+              "last_time": 0.00030000000000000003,
+              "last_vx": 0.0,
+              "last_fx": -2.9233236982205767e-08,
+              "last_tz": -2.8787529369533536e-07,
+              "last_slip_rms": 1.5867951649200526e-05,
+              "last_momentum_residual": 1.62042014262346e-15
+            }
+          },
+          "fixed-restart": {
+            "passed": true,
+            "checks": {
+              "momentum": true,
+              "angular": true,
+              "force_decomposition": true,
+              "torque_decomposition": true,
+              "fluid_continuity": true,
+              "equation_convergence": true,
+              "correction_count": true,
+              "volume": true,
+              "slip": true,
+              "divergence": true,
+              "clock": true,
+              "stokes_reference": true,
+              "common_checkpoint": true,
+              "surface_target_convergence": true,
+              "surface_iteration_budget": true,
+              "total_pressure_counts": true,
+              "positive_window_cost": true,
+              "continuity_convergence": true,
+              "joint_wall_constraint": true,
+              "joint_marker_rank": true,
+              "joint_iteration_counts": true,
+              "joint_force_exchange": true,
+              "joint_torque_exchange": true,
+              "joint_work_exchange": true
+            },
+            "metrics": {
+              "momentum": 1.792601473022977e-14,
+              "angular": 0.0,
+              "force_decomposition": 1.3023226160915191e-20,
+              "torque_decomposition": 8.403693544879801e-25,
+              "fluid_continuity": 0.0,
+              "momentum_equation_impulse_L1": 9.94082276305392e-12,
+              "pressure_correctors_max": 41.0,
+              "support_volume_ratio_max": 0.0,
+              "volume": 0.00417636301529134,
+              "slip": 0.017881743428671056,
+              "divergence": 4.0831909782301916e-13,
+              "clock": 3.469446951953614e-18,
+              "stokes_relative_error": 0.1358962006925306,
+              "surface_target_defect_m_s": 8.174191153873244e-08,
+              "surface_correctors_max": 1.0,
+              "surface_correctors_mean": 1.0,
+              "pressure_correctors_total": 1565.0,
+              "window_wall_seconds_total": 598.124960124,
+              "joint_wall_residual": 8.174191153873244e-08,
+              "joint_iterations_total": 5126.0,
+              "joint_pressure_solves_total": 7126.0,
+              "joint_force_exchange_error": 2.4396107343172787e-19,
+              "joint_torque_exchange_error": 1.1675999192485645e-19,
+              "joint_work_exchange_error": 1.6310967703780014e-23,
+              "stress_ledger_relative": 0.34739853008004773,
+              "stress_stokes_relative": 0.21148529512950776,
+              "mean_reference_load_ratio": 1.1358962006925306
+            }
+          },
+          "fixed-mpi2": {
+            "passed": true,
+            "checks": {
+              "momentum": true,
+              "angular": true,
+              "force_decomposition": true,
+              "torque_decomposition": true,
+              "fluid_continuity": true,
+              "equation_convergence": true,
+              "correction_count": true,
+              "volume": true,
+              "slip": true,
+              "divergence": true,
+              "clock": true,
+              "stokes_reference": true,
+              "multi_rank_coverage": true,
+              "surface_target_convergence": true,
+              "surface_iteration_budget": true,
+              "total_pressure_counts": true,
+              "positive_window_cost": true,
+              "continuity_convergence": true,
+              "joint_wall_constraint": true,
+              "joint_marker_rank": true,
+              "joint_iteration_counts": true,
+              "joint_force_exchange": true,
+              "joint_torque_exchange": true,
+              "joint_work_exchange": true
+            },
+            "metrics": {
+              "momentum": 1.6013847246109823e-14,
+              "angular": 0.0,
+              "force_decomposition": 1.3416062347661769e-20,
+              "torque_decomposition": 7.671746960934268e-25,
+              "fluid_continuity": 0.0,
+              "momentum_equation_impulse_L1": 9.940820738079305e-12,
+              "pressure_correctors_max": 41.0,
+              "support_volume_ratio_max": 0.0,
+              "volume": 0.004176363015293005,
+              "slip": 0.017881772878434943,
+              "divergence": 1.0278496660747157e-12,
+              "clock": 3.0357660829594124e-18,
+              "stokes_relative_error": 0.13589618957080396,
+              "surface_target_defect_m_s": 8.174189312426197e-08,
+              "surface_correctors_max": 1.0,
+              "surface_correctors_mean": 1.0,
+              "pressure_correctors_total": 1565.0,
+              "window_wall_seconds_total": 337.92285132,
+              "joint_wall_residual": 8.174189312426197e-08,
+              "joint_iterations_total": 5126.0,
+              "joint_pressure_solves_total": 7126.0,
+              "joint_force_exchange_error": 1.898231979497085e-19,
+              "joint_torque_exchange_error": 1.168416100021593e-19,
+              "joint_work_exchange_error": 1.1147551223859162e-23,
+              "stress_ledger_relative": 0.34739852678470545,
+              "stress_stokes_relative": 0.21148530295598533,
+              "mean_reference_load_ratio": 1.135896189570804
+            }
+          }
+        },
+        "comparisons": {
+          "fixed-restart": {
+            "passed": true,
+            "checks": {
+              "position": true,
+              "velocity": true,
+              "rotation": true,
+              "force": true,
+              "torque": true,
+              "fluid_momentum": true
+            },
+            "metrics": {
+              "position": 0.0,
+              "velocity": 0.0,
+              "rotation": 0.0,
+              "force": 1.8973538018496328e-19,
+              "torque": 6.758065604558236e-22,
+              "fluid_momentum": 3.3881317890172014e-21
+            }
+          },
+          "fixed-mpi2": {
+            "passed": true,
+            "checks": {
+              "position": true,
+              "velocity": true,
+              "rotation": true,
+              "force": true,
+              "torque": true,
+              "fluid_momentum": true
+            },
+            "metrics": {
+              "position": 0.0,
+              "velocity": 0.0,
+              "rotation": 0.0,
+              "force": 4.5778518513927766e-10,
+              "torque": 1.008597346352222e-14,
+              "fluid_momentum": 3.132509103997115e-15
+            }
+          },
+          "fixed-coarse-to-fine": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-fine-to-finer": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-coarse-to-fine-offset": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-fine-to-finer-offset": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-coarse-phase": {
+            "passed": true,
+            "load_difference_relative": 0.002721235505774633
+          },
+          "fixed-fine-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-finer-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-coarse-to-fine": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-fine-to-finer": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-coarse-to-fine-offset": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-fine-to-finer-offset": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-coarse-phase": {
+            "passed": true,
+            "load_difference_relative": 0.0033693663523959305
+          },
+          "rotate-fine-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-finer-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          }
+        },
+        "scope": "Static noncontact single-sphere surface candidate only. No moving GCL, general angular conservation, contact, heat or LPBF validation.",
+        "passed": false
+      },
+      "execution_failure_diagnosis": {
+        "timeout124": {
+          "fixed-fine": 11,
+          "fixed-fine-offset": 11,
+          "rotate-fine": 20,
+          "rotate-fine-offset": 19,
+          "rotate-finer": 3,
+          "rotate-finer-offset": 3
+        },
+        "momentum_budget96_first_window": {
+          "fixed-finer": 4.137314903898906e-11,
+          "fixed-finer-offset": 4.012843556895584e-11
+        }
+      },
+      "scope": "First native coupling path established; fine physical gates and efficiency not closed."
     }
   ],
   "development_packages": [
@@ -9393,6 +9968,22 @@
         ]
       },
       "scope": "Geometric/gate regression only; native CFD/DEM, projected Schur convergence, force accuracy and cost pending."
+    },
+    {
+      "date": "2026-10-10",
+      "stage": "M2A-02C-joint-cost-revision2",
+      "native_build_runtime": "not_evaluated",
+      "offline_m2a_test_count": 39,
+      "offline_tests_passed": true,
+      "old_joint_summary": "exact_match",
+      "changes": [
+        "GAMG same tolerance",
+        "checkpointed force warm start",
+        "full momentum predictor per coupled correction",
+        "reuse explicitly checked response"
+      ],
+      "physical_gate_relaxation": false,
+      "budget_increase": false
     }
   ]
 }

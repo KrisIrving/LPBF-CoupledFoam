@@ -33,6 +33,10 @@ def evaluate(case):
                 raise ValueError('Invalid native boundary compatibility diagnostics')
             if abs(float(match.group(3)))>meta['joint_controls']['boundary_net_flux_m3_s'] or abs(float(match.group(4)))>meta['joint_controls']['boundary_correction_m_s']:
                 raise ValueError('Native boundary compatibility threshold exceeded')
+            if 'joint_algorithm' in meta:
+                marker=re.search(r'M2A_JOINT_ALGORITHM warmStart=(1|true) fullPredictor=(1|true) responseReuse=1',text)
+                if not marker or 'GAMG:  Solving for p,' not in text:
+                    raise ValueError('Missing accelerated joint algorithm/GAMG native evidence')
         if meta['surface_controls'].get('reconstruction')=='quadratic' and 'M2A_RECONSTRUCTION order=quadratic' not in text:
             raise ValueError('Missing native quadratic reconstruction marker')
     controls=meta['surface_controls']
@@ -63,6 +67,23 @@ def evaluate(case):
         for name,limit in (('force','force_exchange_N'),('torque','torque_exchange_N_m'),('work','work_exchange_W')):
             metrics['joint_'+name+'_exchange_error']=max(abs(r['joint_'+name+'_exchange_error']) for r in rows)
             checks['joint_'+name+'_exchange']=metrics['joint_'+name+'_exchange_error']<=joint[limit]
+        if meta['restart'] and meta.get('joint_algorithm',{}).get('warm_start'):
+            checkpoint=(case/'0.002/couplingState').read_text()
+            match=re.search(r'jointLoadSeed\s+(?:(\d+)\s*)?\(([^)]*)\)\s*;',checkpoint,re.S)
+            uniform=re.search(r'jointLoadSeed\s+(\d+)\s*\{\s*([^}]+)\}\s*;',checkpoint,re.S)
+            size=3*joint['markers']
+            if match:
+                seed=[float(x) for x in match.group(2).split()]
+                declared=int(match.group(1)) if match.group(1) else len(seed)
+            elif uniform:
+                declared=int(uniform.group(1))
+                seed=[float(uniform.group(2))] if declared==size else []
+            else:raise ValueError('Missing joint warm-start load seed')
+            checks['joint_warm_checkpoint']=bool(
+                declared==size and (len(seed)==size if match else len(seed)==1)
+                and all(math.isfinite(x) for x in seed)
+                and re.search(r'jointWarmStart\s+(?:1|true|on)\s*;',checkpoint)
+                and re.search(r'jointFullPredictor\s+(?:1|true|on)\s*;',checkpoint))
     radius=meta['radius']
     reference=(6*math.pi*meta['rho']*meta['nu']*radius*meta['reference_flow_speed']
         if meta['mode']=='fixed' else 8*math.pi*meta['rho']*meta['nu']*radius**3*meta['reference_rotation_speed'])

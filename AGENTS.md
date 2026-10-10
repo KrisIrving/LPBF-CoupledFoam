@@ -132,3 +132,12 @@ quadratic summary exact; native build/kernel/CFD still pending. User entry is
 scripts/m2a-joint-test.sh (14 cases and actual shared kernel), not old surface
 runner. Preserve all physical gates, budgets, failures; no more review-only turns
 before processing this full feedback. No developer-side WSL/native simulations.
+
+User-tested0e4cc6cc joint: native build/kernel pass,6/14 complete and individual
+pass,6 timeout124,2 fixed64 momentum-budget96 failures. MPI/restart and exchange
+pass; coarse load errors13.6/26% do not close precision, fine comparisons missing.
+Read latest docs. Revision2 groups GAMG unchanged pressure tolerance, checkpointed
+integrated-force warm start, full momentum predictor per joint correction and
+reuse of explicitly checked response.39 offline checks pass; native revision
+pending. Same scripts/m2a-joint-test.sh14-case entry and900s/96/64/physical gates.
+Never relax gates or label timeout as convergence. No developer-side WSL/native.

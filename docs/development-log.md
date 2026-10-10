@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-10: first joint native feedback; bounded solver-cost revision
+
+User-tested0e4cc6cc, archive m2a-joint-20261010-203254-763310.tar.gz SHA256 af091344d54893545986f0019a62faee662751dbdadfe0788ced59007b9523d0. Native build/shared kernel pass.6/14 complete40 windows and individual gates;6 timeout124,2 fixed64 momentum-budget failures first window (4.137e-11/4.013e-11 vs1e-11). Independent summary exact. MPI/restart comparisons, node constraint and force/torque/work exchange pass. Coarse wall slip1.79–3.37%, phase gaps0.27/0.34%; drag/torque errors13.6/26.0% still do not close spatial accuracy. Fine comparisons not_evaluated.
+
+Cost diagnosis: coarse fixed7126 pressure responses/40windows; fine/finer response PCG about200/250–275 iterations; fine fixed11windows865.35s. Implement grouped candidate: cached-agglomeration GAMG at unchanged1e-14/relTol0; converged integrated-load warm start with checkpoint seed/mode guards; full momentum predictor each coupled correction instead of diagonal-only off-diagonal propagation; reuse work fields and final explicitly checked response at commit. No new iteration/time budgets or physical gate relaxation. Native effect pending.39 M2A offline regressions pass, old archive exact; read-only v2512 source/API checks, no WSL/native simulation. New metadata/log/checkpoint gates prevent old algorithm evidence masquerading as accelerated candidate. Same14-case user runner remains. M2A/GCL/angular-fluid/contact/heat limits and all failures preserved.
+
 ## 2026-10-10: native jointSurface candidate and concentrated user package
 
 Implement paired trilinear J/integrated-force transpose spread at true sphere nodes, compatibleGauss outer boundary and matrix-free nonsymmetric GMRES using actual FV face-flux pressure response. No ghost penalty in joint mode. rAU diagonal response is approximate; PISO iterations retain full momentum residual/continuity/wall constraints and bounded fail-before-DEM control. Same solved source in equation.H/residual, force/torque and fictitious-fluid inertia inventory. Native force/torque/work exchange guards, source/cost CSV and marker checkpoint guard. Each window/restart resets source identically; common restart remains pending native validation.

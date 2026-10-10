@@ -119,3 +119,10 @@ and simulation outputs are excluded from project additions.
 原生编译/运行、精度和成本待验证，M2A仍未关闭。集中用户入口：
 `bash scripts/m2a-joint-test.sh`。完整命令与限制见[原生联合候选](docs/m2a-joint-candidate.zh-CN.md)。
 旧surface包保留作历史对照，当前测试使用新joint包。
+
+### 首轮joint反馈与成本修订
+
+首轮原生编译/内核、粗网格6组、MPI/共同重启通过；6组超时、2组动量预算失败，
+完整空间精度仍未通过。已集中修订GAMG、节点力热启动/重启、完整动量预测与响应复用；
+39项离线检查通过，原生效果待反馈。仍运行`bash scripts/m2a-joint-test.sh`，
+原门槛与900秒预算不变。结果与计划见[项目状态](docs/project-status.zh-CN.md)。
