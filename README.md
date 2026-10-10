@@ -128,3 +128,5 @@ and simulation outputs are excluded from project additions.
 原门槛与900秒预算不变。结果与计划见[项目状态](docs/project-status.zh-CN.md)。
 
 User-side joint matrix concurrency: `BUILD_JOBS=8 JOINT_CASE_JOBS=4 bash scripts/m2a-joint-test.sh`. Runtime Linux CPU/memory limits cap concurrency; default remains1. Serial/MPI2/restart controls and gates unchanged. See [joint candidate](docs/m2a-joint-candidate.zh-CN.md).
+
+2026-10-11: user-tested4aa89072 revision2 fails first window in all14 cases (11 explicit residual failures,3 timeouts); build/kernel pass, comparisons not_evaluated. Revision3 disables repeated full momentum predictor while retaining diagonal Schur response, GAMG/warm seed/response reuse/concurrency.42 offline M2A tests and independent archive summary pass; native pending. Read latest docs, preserve budgets and no developer-side WSL.

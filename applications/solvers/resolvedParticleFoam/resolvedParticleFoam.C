@@ -326,9 +326,10 @@ int main(int argc,char* argv[])
                 volScalarField rAU("rAU",1.0/equation.A());
                 for(label c=0;c<maxCorrectors;++c)
                 {
-                    // Coupled updates changed the wall source. Re-solve the full
-                    // momentum predictor instead of relying only on diagonal H
-                    // propagation of its viscous off-diagonal response.
+                    // Experimental only: a full predictor is not the same
+                    // response as the diagonal pressure/wall Schur operator.
+                    // Revision3 disables this after first-window divergence;
+                    // retain the switch for historical checkpoint identification.
                     if(joint&&jointFullPredictor&&c>0) solve(equation==-fvc::grad(p));
                     volVectorField HbyA(constrainHbyA(rAU*equation.H(),U,p));
                     surfaceScalarField predicted("predicted",fvc::flux(HbyA));

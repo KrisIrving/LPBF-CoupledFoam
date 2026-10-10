@@ -143,3 +143,5 @@ pending. Same scripts/m2a-joint-test.sh14-case entry and900s/96/64/physical gate
 Never relax gates or label timeout as convergence. No developer-side WSL/native.
 
 User requested parallel test execution. Joint runner now supports bounded independent-case concurrency (JOINT_CASE_JOBS, default1, cap4 with runtime Linux resource limits) and BUILD_JOBS. Preserve serial/MPI2/restart definitions. All workers must complete before archive; concurrent timing is not directly comparable to historical isolated cost. Three Windows Git Bash queue tests pass; native concurrency pending. No developer-side WSL.
+
+2026-10-11: user-tested4aa89072 revision2 fails first window in all14 cases (11 explicit residual failures,3 timeouts); build/kernel pass, comparisons not_evaluated. Revision3 disables repeated full momentum predictor while retaining diagonal Schur response, GAMG/warm seed/response reuse/concurrency.42 offline M2A tests and independent archive summary pass; native pending. Read latest docs, preserve budgets and no developer-side WSL.

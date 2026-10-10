@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_on": "2026-10-10",
-  "latest_user_tested_commit": "0e4cc6cc8385ceab103e69d5dd2e882017a80c0c",
+  "updated_on": "2026-10-11",
+  "latest_user_tested_commit": "4aa8907254068385c8e375dc1dcc37393589525b",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -3647,6 +3647,553 @@
         }
       },
       "scope": "First native coupling path established; fine physical gates and efficiency not closed."
+    },
+    {
+      "report": "m2a-joint-20261010-233603-803487.tar.gz",
+      "archive_sha256": "87e49191873ee48b23b13d01ac08c169430fd18a1461991a61d7e3be88b4043a",
+      "native_build": "passed",
+      "native_shared_kernel": "passed",
+      "cases": {
+        "fixed-coarse": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 18,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.009083455940432585,
+            "maxP": 0.16537914367618484,
+            "equationImpulseL1": 1.5082343942848898e-07,
+            "continuityMax": 3.379227189723064e-13
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 18.0,
+            "maxU": 4985252.046255667,
+            "maxP": 105379506610.89182,
+            "equationImpulseL1": 185919.70353344563,
+            "continuityMax": 0.009915080244968946
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "fixed-coarse-offset": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 18,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.009096518405280517,
+            "maxP": 0.1388154999136651,
+            "equationImpulseL1": 1.522882728919198e-07,
+            "continuityMax": 2.9001655379629784e-12
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 18.0,
+            "maxU": 5182624.194204315,
+            "maxP": 106424355929.59909,
+            "equationImpulseL1": 188830.86174910693,
+            "continuityMax": 0.002270844056644189
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "fixed-fine": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 13,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.009087886799635483,
+            "maxP": 0.18932705577687933,
+            "equationImpulseL1": 3.1556372850885237e-07,
+            "continuityMax": 2.597823579449326e-12
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 13.0,
+            "maxU": 1882698.0870998409,
+            "maxP": 66928620806.82402,
+            "equationImpulseL1": 111365.86826318633,
+            "continuityMax": 0.0006354585632969175
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "fixed-fine-offset": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 13,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.00909764585121071,
+            "maxP": 0.20398371774508,
+            "equationImpulseL1": 3.1733729796373646e-07,
+            "continuityMax": 2.9683475543138775e-12
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 13.0,
+            "maxU": 1921117.4481161146,
+            "maxP": 66735636683.4645,
+            "equationImpulseL1": 111194.70084619192,
+            "continuityMax": 0.0071094708242246734
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "fixed-finer": {
+          "exit_status": 124,
+          "completed_windows": 0,
+          "correction_records": 9,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.00909153899151433,
+            "maxP": 0.5998819298865674,
+            "equationImpulseL1": 6.236364989887962e-07,
+            "continuityMax": 8.388763336881491e-13
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 9.0,
+            "maxU": 34919.66108923668,
+            "maxP": 2117102550.3261206,
+            "equationImpulseL1": 3141.186722032597,
+            "continuityMax": 6.648048366952475e-06
+          },
+          "native_failures": []
+        },
+        "fixed-finer-offset": {
+          "exit_status": 124,
+          "completed_windows": 0,
+          "correction_records": 9,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.009098716424316387,
+            "maxP": 0.5587376255954265,
+            "equationImpulseL1": 6.294127141005336e-07,
+            "continuityMax": 2.281662061496104e-11
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 9.0,
+            "maxU": 35365.628145141534,
+            "maxP": 2114130276.1779702,
+            "equationImpulseL1": 3133.5586552371083,
+            "continuityMax": 0.0004363125424189348
+          },
+          "native_failures": []
+        },
+        "fixed-mpi2": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 18,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.009084219724684183,
+            "maxP": 0.16897260770174632,
+            "equationImpulseL1": 1.4094840895141326e-07,
+            "continuityMax": 1.0053371185234725e-12
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 18.0,
+            "maxU": 4670761.686832033,
+            "maxP": 99985543237.28087,
+            "equationImpulseL1": 176177.0918018644,
+            "continuityMax": 0.008210595691469508
+          },
+          "native_failures": [
+            "M2A_FAIL rank=1: Joint wall explicit residual exceeds tolerance",
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "fixed-restart": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 18,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.009083455940432585,
+            "maxP": 0.16537914367618484,
+            "equationImpulseL1": 1.5082343942848898e-07,
+            "continuityMax": 3.379227189723064e-13
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 18.0,
+            "maxU": 4985252.046255667,
+            "maxP": 105379506610.89182,
+            "equationImpulseL1": 185919.70353344563,
+            "continuityMax": 0.009915080244968946
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "rotate-coarse": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 23,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.0013287629985900837,
+            "maxP": 0.015721218018281684,
+            "equationImpulseL1": 1.3668298562191016e-08,
+            "continuityMax": 2.2366952262135933e-16
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 23.0,
+            "maxU": 20401294.05855817,
+            "maxP": 101994785646.03879,
+            "equationImpulseL1": 251127.97640792505,
+            "continuityMax": 0.003823381611312011
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "rotate-coarse-offset": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 22,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.0013478404043969939,
+            "maxP": 0.019787799609468304,
+            "equationImpulseL1": 1.4285421413665329e-08,
+            "continuityMax": 8.848294246985844e-16
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 22.0,
+            "maxU": 8100170.138805302,
+            "maxP": 83160527002.16733,
+            "equationImpulseL1": 175738.27876328054,
+            "continuityMax": 0.019223160688253114
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "rotate-fine": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 18,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.0012463607072710355,
+            "maxP": 0.024152961636650035,
+            "equationImpulseL1": 1.6786503031695417e-08,
+            "continuityMax": 6.469035153583592e-15
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 18.0,
+            "maxU": 127331217.41710721,
+            "maxP": 709161185450.5753,
+            "equationImpulseL1": 2477029.409034165,
+            "continuityMax": 0.0817042291600952
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "rotate-fine-offset": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 17,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.001250549818035099,
+            "maxP": 0.025186499071280972,
+            "equationImpulseL1": 1.6654354570589503e-08,
+            "continuityMax": 3.002450194568977e-15
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 17.0,
+            "maxU": 17577496.208005883,
+            "maxP": 141736647897.96378,
+            "equationImpulseL1": 372739.7391196673,
+            "continuityMax": 0.014108891832620369
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        },
+        "rotate-finer": {
+          "exit_status": 124,
+          "completed_windows": 0,
+          "correction_records": 14,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.0013339441467247319,
+            "maxP": 0.03289615775155408,
+            "equationImpulseL1": 2.226496029874881e-08,
+            "continuityMax": 1.0404874050101865e-14
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 14.0,
+            "maxU": 40215827.12679885,
+            "maxP": 449134267958.48413,
+            "equationImpulseL1": 1229913.9772141601,
+            "continuityMax": 0.09743175892422369
+          },
+          "native_failures": []
+        },
+        "rotate-finer-offset": {
+          "exit_status": 1,
+          "completed_windows": 0,
+          "correction_records": 14,
+          "first_correction": {
+            "time": 0.0001,
+            "iteration": 1.0,
+            "maxU": 0.0013269452261681443,
+            "maxP": 0.0325808810009874,
+            "equationImpulseL1": 2.1445872445761304e-08,
+            "continuityMax": 1.9202435635513902e-15
+          },
+          "last_correction": {
+            "time": 0.0001,
+            "iteration": 14.0,
+            "maxU": 40159081.20699183,
+            "maxP": 468676846911.5861,
+            "equationImpulseL1": 1274213.6760095777,
+            "continuityMax": 0.06613002504444157
+          },
+          "native_failures": [
+            "M2A_FAIL rank=0: Joint wall explicit residual exceeds tolerance"
+          ]
+        }
+      },
+      "tested_commit": "4aa8907254068385c8e375dc1dcc37393589525b",
+      "exit_status": 1,
+      "last_stage": "summary",
+      "resources": {
+        "linux_cpus": 32,
+        "mem_available_kib": 30673988,
+        "case_jobs": 4,
+        "auto_case_limit": 4,
+        "build_jobs": 8,
+        "ordinary_case_ranks": 1,
+        "mpi_comparison_ranks": 2,
+        "OMP_NUM_THREADS": 1,
+        "matrix_wall_seconds": 1886
+      },
+      "summary": {
+        "package": "M2A-02C",
+        "cases": {
+          "fixed-coarse": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "fixed-coarse-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "fixed-fine": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "fixed-fine-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "fixed-finer": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "fixed-finer-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "rotate-coarse": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "rotate-coarse-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "rotate-fine": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "rotate-fine-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "rotate-finer": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "rotate-finer-offset": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "fixed-restart": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          },
+          "fixed-mpi2": {
+            "passed": false,
+            "error": "Case execution failed; inspect retained logs",
+            "diagnostics": {
+              "recorded_windows": 0,
+              "completion": false
+            }
+          }
+        },
+        "comparisons": {
+          "fixed-restart": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-mpi2": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-coarse-to-fine": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-fine-to-finer": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-coarse-to-fine-offset": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-fine-to-finer-offset": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-coarse-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-fine-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "fixed-finer-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-coarse-to-fine": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-fine-to-finer": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-coarse-to-fine-offset": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-fine-to-finer-offset": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-coarse-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-fine-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          },
+          "rotate-finer-phase": {
+            "passed": false,
+            "status": "not_evaluated"
+          }
+        },
+        "scope": "Static noncontact single-sphere surface candidate only. No moving GCL, general angular conservation, contact, heat or LPBF validation.",
+        "passed": false
+      },
+      "independent_summary_exact": true,
+      "classification": {
+        "completed": 0,
+        "explicit_residual_failure": 11,
+        "timeout": 3,
+        "comparison_status": "not_evaluated",
+        "algorithm_revision": 2
+      },
+      "scope": "Static noncontact joint coupling; concurrent runtime feedback. No completed window, spatial accuracy, MPI/restart or revision2 speedup validation."
     }
   ],
   "development_packages": [
@@ -10004,6 +10551,21 @@
       "physical_gate_relaxation": false,
       "budget_increase": false,
       "timing_limit": "concurrent elapsed time not directly comparable to historical serial algorithm cost"
+    },
+    {
+      "date": "2026-10-11",
+      "scope": "joint revision3: disable incompatible repeated full predictor",
+      "native_build_runtime": "not_evaluated",
+      "offline_m2a_tests": 42,
+      "independent_feedback_summary_exact": true,
+      "structural_counterexample": "SPD I plus graph Laplacian; D/J exact each iteration; H-only error norm1.36e-16 after100 vs full predictor1.98e12 after12; not CFD evidence",
+      "changes": [
+        "full_predictor=false with original diagonal wall/pressure response",
+        "log/checkpoint evidence must match requested metadata for both true and false",
+        "retain GAMG/warm seed/response reuse/concurrency"
+      ],
+      "physical_gate_relaxation": false,
+      "budget_increase": false
     }
   ]
 }

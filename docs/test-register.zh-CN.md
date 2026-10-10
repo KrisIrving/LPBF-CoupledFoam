@@ -1,5 +1,17 @@
 # 测试台账与阶段结论
 
+## 2026-10-11：revision2首窗回归；关闭重复完整预测的revision3待验证
+
+反馈m2a-joint-20261010-233603-803487.tar.gz，用户提交4aa89072；SHA256 87e49191873ee48b23b13d01ac08c169430fd18a1461991a61d7e3be88b4043a。原生编译及共享WallGMRES内核通过，独立复算摘要完全一致。实际4组并发、8线程编译，Linux可见32线程，MemAvailable30673988KiB、总内存约31GiB；矩阵1886秒（31分26秒）。这是并发失败矩阵耗时，不是加速比或物理通过证据。
+
+14组全部没有完整首窗：11组exit1（Joint wall explicit residual exceeds tolerance），3组exit124（fixed-finer、fixed-finer-offset、rotate-finer）。共同重启尚未到检查点；MPI对照也未完成，全部比较not_evaluated。历史0e4cc6cc的重启/MPI通过不能作为本次revision2通过。固定粗网格首窗动量冲量L1从1.508e−7升到1.859e5kg·m/s，maxU到4.985e6m/s；固定64³原位置第9次校正冲量3141.19kg·m/s、maxU34919.66m/s。壁面小残差没有阻止整体动量/压力发散；后期GAMG触及1000次且残差约1e−14，是发散轨迹的一部分，不能据此单独归因GAMG或并发。
+
+首窗上一窗热启动种子仍零，因此热启动不解释这次首次发散。revision2每次完整预测改变了动量/压力/累计节点力的迭代，而J壁面校正仍使用rAU对角响应；二者不能因各自线性求解通过就认为组合稳定。新增无CFD的SPD离散反例：A=I加正权图Laplacian，D/J每次约束精确，H更新100步状态范数1.36e−16，重复完整预测12步1.98e12。该反例证明这种混合迭代可以失稳，不等于原生因果隔离或准确复现。
+
+revision3生成器关闭jointFullPredictor，恢复首轮H-only路径；保留GAMG原1e−14/relTol0、节点力热启动/检查点、同输入响应复用及工况并发。摘要改为按元数据核验实际开关，检查点也匹配false/true，禁止将旧模式接续或伪装新结果。42项M2A离线检查通过，原归档精确复算；未运行WSL或原生CFD/DEM。原14组/40窗/900秒及物理门槛不变。
+
+下一次继续BUILD_JOBS=8 JOINT_CASE_JOBS=4 bash scripts/m2a-joint-test.sh。先检验关闭实验预测能否恢复完整稳定轨迹，再评估成本与细化；若仍出现首窗回归，下一步需隔离GAMG及工作场复用，不能扩大预算。首轮固定64³动量预算、最细应力/受力精度仍为开放问题。M2A/GCL/流体角动量/接触/热/LPBF未关闭。详细入口见[联合候选](m2a-joint-candidate.zh-CN.md)。
+
 ## 2026-10-10：集中测试支持独立工况并发
 
 下一次用户入口：BUILD_JOBS=8 JOINT_CASE_JOBS=4 bash scripts/m2a-joint-test.sh。默认并发1；auto或整数请求受运行时Linux CPU/MemAvailable保守限制，最大4组。普通工况保持串行，MPI对照2进程，共同重启两阶段顺序不变。独立目录、日志、结果，失败后继续，全部结束才汇总打包；resources.txt记录实际资源、并发度、编译线程和矩阵墙钟耗时。3项Windows Git Bash队列回归及脚本语法通过，未启动WSL或原生仿真。阈值/40窗/900秒预算不变；并发耗时不能作为历史串行的算法加速证据。revision2和并发原生效果均待反馈。详见[联合候选入口](m2a-joint-candidate.zh-CN.md)。

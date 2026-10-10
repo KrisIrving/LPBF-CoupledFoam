@@ -34,8 +34,13 @@ def evaluate(case):
             if abs(float(match.group(3)))>meta['joint_controls']['boundary_net_flux_m3_s'] or abs(float(match.group(4)))>meta['joint_controls']['boundary_correction_m_s']:
                 raise ValueError('Native boundary compatibility threshold exceeded')
             if 'joint_algorithm' in meta:
-                marker=re.search(r'M2A_JOINT_ALGORITHM warmStart=(1|true) fullPredictor=(1|true) responseReuse=1',text)
-                if not marker or 'GAMG:  Solving for p,' not in text:
+                algorithm=meta['joint_algorithm']
+                marker=re.search(r'M2A_JOINT_ALGORITHM warmStart=(0|1|true|false) fullPredictor=(0|1|true|false) responseReuse=(0|1)',text)
+                truth=lambda value:value in ('1','true')
+                if (not marker or truth(marker.group(1))!=algorithm['warm_start']
+                    or truth(marker.group(2))!=algorithm['full_predictor']
+                    or truth(marker.group(3))!=algorithm['response_reuse']
+                    or algorithm['pressure_solver']+':  Solving for p,' not in text):
                     raise ValueError('Missing accelerated joint algorithm/GAMG native evidence')
         if meta['surface_controls'].get('reconstruction')=='quadratic' and 'M2A_RECONSTRUCTION order=quadratic' not in text:
             raise ValueError('Missing native quadratic reconstruction marker')
@@ -83,7 +88,9 @@ def evaluate(case):
                 declared==size and (len(seed)==size if match else len(seed)==1)
                 and all(math.isfinite(x) for x in seed)
                 and re.search(r'jointWarmStart\s+(?:1|true|on)\s*;',checkpoint)
-                and re.search(r'jointFullPredictor\s+(?:1|true|on)\s*;',checkpoint))
+                and re.search(r'jointFullPredictor\s+(?:'+
+                    ('1|true|on' if meta['joint_algorithm']['full_predictor'] else '0|false|off')+
+                    r')\s*;',checkpoint))
     radius=meta['radius']
     reference=(6*math.pi*meta['rho']*meta['nu']*radius*meta['reference_flow_speed']
         if meta['mode']=='fixed' else 8*math.pi*meta['rho']*meta['nu']*radius**3*meta['reference_rotation_speed'])

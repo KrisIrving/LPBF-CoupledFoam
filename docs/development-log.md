@@ -1,5 +1,9 @@
 # Development and verification record
 
+## 2026-10-11: revision2 regression and consistent H-update revision3
+
+Archive m2a-joint-20261010-233603-803487.tar.gz SHA25687e49191873ee48b23b13d01ac08c169430fd18a1461991a61d7e3be88b4043a at4aa89072. Build/shared kernel pass;4 concurrent workers,32 Linux CPUs, matrix1886s.0/14 complete;11 explicit residual failures,3 timeouts (fixed-finer, fixed-finer-offset, rotate-finer). All comparisons not_evaluated; independent summary exact. First-window momentum/pressure explode, even while wall constraint initially small. Zero prior-window seed excludes warm start as initial cause. SPD dense counterexample shows repeated full momentum predictor paired with diagonal wall response may diverge despite exact D/J constraints; not CFD causality proof. Revision3 disables full predictor, retains GAMG/warm seed/response reuse/concurrency and original gates/budgets. Metadata-driven log/checkpoint mode evidence covers both true and false.42 M2A offline checks pass; native revision3 pending, no WSL/CFD/DEM. Fine64 momentum budget and spatial stress/force accuracy remain open.
+
 ## 2026-10-10: bounded independent-case concurrency
 
 Add opt-in JOINT_CASE_JOBS (default1, auto/explicit bounded by Linux CPU/MemAvailable and cap4), BUILD_JOBS (default8 capped to nproc), per-case isolated workers and wait-all failure collection. Preserve14 cases, serial/MPI2/common restart definitions,40 windows and900s timeout; record resources and matrix wall time.3 Windows Git Bash queue regressions and shell syntax pass; no WSL or native CFD/DEM. Native parallel matrix pending. Concurrent wall time is not a directly comparable algorithm speedup measurement; use jobs1 for isolated cost comparison.
