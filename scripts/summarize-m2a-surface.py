@@ -45,6 +45,8 @@ def evaluate(case):
             if 'outer_mix' in meta:
                 if 'M2A_OUTER_MODE enabled=1' not in text:
                     raise ValueError('Missing joint outer mixing mode')
+                if 'history_depth' in meta['outer_mix'] and 'M2A_OUTER_HISTORY depth='+str(meta['outer_mix']['history_depth']) not in text:
+                    raise ValueError('Missing joint outer mixing history depth')
                 trials=re.findall(r'M2A_OUTER_MIX ([^\n]+)',text)
                 accepted=0
                 for line in trials:
@@ -62,6 +64,10 @@ def evaluate(case):
                             or values['div']>meta['outer_mix']['divergence_per_s']):
                             raise ValueError('Accepted joint outer mixing failed safeguards')
                         accepted+=1
+                    if 'history_depth' in meta['outer_mix']:
+                        depth=float(dict(re.findall(r'(\w+)=(\S+)',line)).get('history','nan'))
+                        if not 1<=depth<=meta['outer_mix']['history_depth'] or depth!=int(depth):
+                            raise ValueError('Invalid joint outer mixing history count')
                 entry.setdefault('outer_mix',{})[filename]={'trials':len(trials),'accepted':accepted}
             if 'pressure_polish' in meta:
                 limits=meta['pressure_polish']
@@ -154,6 +160,9 @@ def evaluate(case):
             checkpoint=(case/'0.002/couplingState').read_text()
             if 'outer_mix' in meta:
                 checks['joint_outer_checkpoint']=bool(re.search(r'jointOuterMix\s+(?:1|true|on)\s*;',checkpoint))
+                if 'history_depth' in meta['outer_mix']:
+                    checks['joint_outer_history_checkpoint']=bool(re.search(
+                        r'jointOuterHistory\s+'+str(meta['outer_mix']['history_depth'])+r'\s*;',checkpoint))
             match=re.search(r'jointLoadSeed\s+(?:(\d+)\s*)?\(([^)]*)\)\s*;',checkpoint,re.S)
             uniform=re.search(r'jointLoadSeed\s+(\d+)\s*\{\s*([^}]+)\}\s*;',checkpoint,re.S)
             size=3*joint['markers']

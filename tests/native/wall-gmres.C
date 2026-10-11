@@ -54,6 +54,20 @@ int main()
     if(factor<1||factor>4||lpbfM2::jointOuterFactor(-5,1)!=4
        ||lpbfM2::jointOuterFactor(1,1)!=1||lpbfM2::jointOuterFactor(1,0)!=1) return 10;
     std::cout<<"JOINT_OUTER_MIX_NATIVE_KERNEL_PASS\n";
+    auto dotProduct=[](const std::vector<double>& a,const std::vector<double>& b)
+    {double value=0;for(std::size_t i=0;i<a.size();++i) value+=a[i]*b[i];return value;};
+    const std::vector<std::vector<double>> directions{{1,0},{1,0},{0,1}};
+    const auto weights=lpbfM2::jointOuterWeights(directions,{1,1},dotProduct);
+    double affine=0;for(double w:weights) affine+=w;
+    std::vector<double> mixedResidual{weights.back(),weights.back()};
+    for(int h=0;h<3;++h) for(int i=0;i<2;++i) mixedResidual[i]+=weights[h]*directions[h][i];
+    if(std::abs(affine-1)>1e-12||std::hypot(mixedResidual[0],mixedResidual[1])>1e-12) return 12;
+    const auto scaledWeights=lpbfM2::jointOuterWeights(directions,{1,1},
+        [&](const auto& a,const auto& b){return 7*dotProduct(a,b);});
+    for(int i=0;i<4;++i) if(std::abs(weights[i]-scaledWeights[i])>1e-12) return 13;
+    const auto unsafe=lpbfM2::jointOuterWeights({{.9,0}},{1,0},dotProduct);
+    if(unsafe[0]!=0||unsafe[1]!=1) return 14;
+    std::cout<<"JOINT_OUTER_SUBSPACE_NATIVE_KERNEL_PASS\n";
     std::cout<<"JOINT_RESPONSE_AUDIT_NATIVE_KERNEL_PASS\n";
     std::cout<<"WALL_GMRES_NATIVE_KERNEL_PASS\n";
 }
