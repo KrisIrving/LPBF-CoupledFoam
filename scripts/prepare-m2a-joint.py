@@ -24,6 +24,7 @@ jointFullPredictor false;
 jointOperatorAudit true;
 jointOuterMix true;
 jointOuterHistory 4;
+jointSparseTransfer true;
 ''')
     solution=root/'system/fvSolution'
     old='p { solver PCG; preconditioner DIC; tolerance 1e-14; relTol 0; }'
@@ -53,7 +54,7 @@ jointOuterHistory 4;
     meta['joint_controls']={'markers':marker_count,'min_rank_pivot':1e-8,'krylov_budget':64,
         'force_exchange_N':1e-12,'torque_exchange_N_m':1e-14,'work_exchange_W':1e-14,
         'boundary_net_flux_m3_s':1e-18,'boundary_correction_m_s':1e-10}
-    meta['joint_algorithm']={'revision':7,'warm_start':True,'full_predictor':False,
+    meta['joint_algorithm']={'revision':8,'warm_start':True,'full_predictor':False,
                              'response_reuse':True,'pressure_solver':'GAMG',
                              'pressure_tolerance':1e-14,'pressure_relTol':0.}
     meta['pressure_polish']={'gamg_iterations':80,'total_iterations':1000,
@@ -61,6 +62,8 @@ jointOuterHistory 4;
     meta['outer_mix']={'enabled':True,'factor_max':8.,'history_depth':4,'kind':'residual_subspace',
                        'divergence_per_s':1e-7,
                        'accept':'actual momentum L1 decreases; original wall/div gates'}
+    meta['transfer']={'sparse':True,'reference_relative':1e-12,'scaling':'once_per_frozen_matrix',
+                      'profiling':'rank0 response phases; includes first-window response probes'}
     meta['operator_audit']={'version':1,'relative_tolerance':1e-8,
                             'divergence_per_s':1e-7,'manufactured_residual_m_s':2e-8,
                             'divergence_speed_factor':1e6,

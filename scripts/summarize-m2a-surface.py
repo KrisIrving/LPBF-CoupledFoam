@@ -69,6 +69,26 @@ def evaluate(case):
                         if not 1<=depth<=meta['outer_mix']['history_depth'] or depth!=int(depth):
                             raise ValueError('Invalid joint outer mixing history count')
                 entry.setdefault('outer_mix',{})[filename]={'trials':len(trials),'accepted':accepted}
+            if 'transfer' in meta:
+                if 'M2A_TRANSFER sparse=1' not in text:raise ValueError('Missing sparse transfer mode')
+                audits=re.findall(r'M2A_TRANSFER_AUDIT interpolation=(\S+) spreading=(\S+) scaling=(\S+)',text)
+                if not audits or any(not math.isfinite(float(v)) or not 0<=float(v)<=meta['transfer']['reference_relative'] for values in audits for v in values):
+                    raise ValueError('Missing or failed sparse transfer reference audit')
+                lines=re.findall(r'M2A_RESPONSE_COST ([^\n]+)',text)
+                if not lines:raise ValueError('Missing sparse transfer cost evidence')
+                costs=[]
+                for line in lines:
+                    raw=dict(re.findall(r'(\w+)=(\S+)',line))
+                    keys=('response','spread','projection','interpolation','scaling')
+                    if any(k not in raw for k in keys):raise ValueError('Incomplete sparse transfer cost evidence')
+                    values={k:float(raw[k]) for k in keys}
+                    if (any(not math.isfinite(v) or v<0 for v in values.values())
+                        or sum(values[k] for k in ('spread','projection','interpolation'))>values['response']*(1+1e-6)+1e-8):
+                        raise ValueError('Invalid sparse transfer cost evidence')
+                    costs.append(values)
+                entry.setdefault('transfer',{})[filename]={
+                    'audits':[{k:float(v) for k,v in zip(('interpolation','spreading','scaling'),values)} for values in audits],
+                    'cost_windows':len(costs),'cost_seconds':{k:sum(v[k] for v in costs) for k in keys}}
             if 'pressure_polish' in meta:
                 limits=meta['pressure_polish']
                 lines=re.findall(r'M2A_PRESSURE_SOLVE ([^\n]+)',text)
@@ -163,6 +183,8 @@ def evaluate(case):
                 if 'history_depth' in meta['outer_mix']:
                     checks['joint_outer_history_checkpoint']=bool(re.search(
                         r'jointOuterHistory\s+'+str(meta['outer_mix']['history_depth'])+r'\s*;',checkpoint))
+            if 'transfer' in meta:
+                checks['joint_transfer_checkpoint']=bool(re.search(r'jointSparseTransfer\s+(?:1|true|on)\s*;',checkpoint))
             match=re.search(r'jointLoadSeed\s+(?:(\d+)\s*)?\(([^)]*)\)\s*;',checkpoint,re.S)
             uniform=re.search(r'jointLoadSeed\s+(\d+)\s*\{\s*([^}]+)\}\s*;',checkpoint,re.S)
             size=3*joint['markers']

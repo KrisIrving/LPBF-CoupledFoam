@@ -115,6 +115,7 @@ int main(int argc,char* argv[])
         const bool jointOperatorAudit=config.getOrDefault<bool>("jointOperatorAudit",false);
         const bool jointOuterMix=config.getOrDefault<bool>("jointOuterMix",false);
         const label jointOuterHistory=config.getOrDefault<label>("jointOuterHistory",1);
+        const bool jointSparseTransfer=config.getOrDefault<bool>("jointSparseTransfer",false);
         if(jointOuterHistory<1||jointOuterHistory>4)
             throw std::runtime_error("Outer history outside1..4");
         if(jointOuterMix&&(!jointConstraint||momentumTolerance<=0))
@@ -171,16 +172,18 @@ int main(int argc,char* argv[])
         if(jointConstraint)
         {
             mesh.setFluxRequired("jointDeltaP");
-            joint.reset(new lpbfM2::JointSphere(mesh,*surface,asFoamVector(particles[0].x),particles[0].radius,h));
+            joint.reset(new lpbfM2::JointSphere(mesh,*surface,asFoamVector(particles[0].x),particles[0].radius,h,jointSparseTransfer));
             if(rank==0) Info<<"M2A_JOINT markers="<<joint->count()<<" minPivot="<<joint->minPivot()<<endl;
             if(rank==0) Info<<"M2A_JOINT_ALGORITHM warmStart="<<jointWarmStart
                 <<" fullPredictor="<<jointFullPredictor<<" responseReuse=1"<<endl;
             if(rank==0) Info<<"M2A_OUTER_MODE enabled="<<jointOuterMix<<endl;
             if(rank==0) Info<<"M2A_OUTER_HISTORY depth="<<jointOuterHistory<<endl;
+            if(rank==0) Info<<"M2A_TRANSFER sparse="<<jointSparseTransfer<<endl;
         }
         std::vector<double> jointPreviousLoads(joint ? 3*joint->count():0,0);
         bool operatorAudited=false;
         bool commitAudited=false;
+        bool transferAudited=false;
         // Same coupled-interface residual convention for the response audit and
         // final equation gate. No change to the solved momentum matrix.
         auto matrixResidual=[&](const fvVectorMatrix& equation)
@@ -344,6 +347,8 @@ int main(int argc,char* argv[])
                     throw std::runtime_error("Restart outer mixing differs from checkpoint");
                 if(restore.getOrDefault<label>("jointOuterHistory",1)!=jointOuterHistory)
                     throw std::runtime_error("Restart outer history differs from checkpoint");
+                if(restore.getOrDefault<bool>("jointSparseTransfer",false)!=jointSparseTransfer)
+                    throw std::runtime_error("Restart transfer mode differs from checkpoint");
                 if(jointWarmStart)
                 {
                     scalarList seed(restore.lookup("jointLoadSeed"));
@@ -388,6 +393,9 @@ int main(int argc,char* argv[])
             label usedCorrectors=0,surfaceCorrectors=0,totalCorrectors=0;
             scalar equationImpulse=GREAT,targetDefect=0,continuityDefect=GREAT;
             label jointIterations=0,jointPressureSolves=0;
+            double responseSeconds=0,spreadSeconds=0,projectionSeconds=0,interpolationSeconds=0,scalingSeconds=0;
+            auto seconds=[](const auto& start)
+            {return std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();};
             std::vector<double> jointLoads(joint ? 3*joint->count():0,0);
             wallAcceleration=dimensionedVector("zero",dimVelocity/dimTime,vector::zero);
             if(joint&&jointWarmStart)
@@ -402,6 +410,22 @@ int main(int argc,char* argv[])
                 // All solves retain the SAME old time and frozen advecting window.
                 solve(equation==-fvc::grad(p));
                 volScalarField rAU("rAU",1.0/equation.A());
+                std::vector<double> jointScaling;
+                if(joint)
+                {
+                    const auto scalingStart=std::chrono::steady_clock::now();
+                    jointScaling=joint->inverseDiagonal(rAU,rho);
+                    scalingSeconds+=seconds(scalingStart);
+                    if(jointSparseTransfer&&!transferAudited)
+                    {
+                        const auto audit=joint->auditTransfer(U,p,rAU,rho);
+                        if(rank==0) Info<<"M2A_TRANSFER_AUDIT interpolation="<<audit[0]
+                            <<" spreading="<<audit[1]<<" scaling="<<audit[2]<<endl;
+                        for(double error:audit) if(!std::isfinite(error)||error>1e-12)
+                            throw std::runtime_error("Sparse transfer differs from dense reference");
+                        transferAudited=true;
+                    }
+                }
                 std::deque<std::unique_ptr<JointOuterState>> outerHistory;
                 for(label c=0;c<maxCorrectors;++c)
                 {
@@ -438,7 +462,7 @@ int main(int argc,char* argv[])
                         }
                         if(targetDefect>targetTolerance)
                         {
-                            const auto scaling=joint->inverseDiagonal(rAU,rho);
+                            const auto& scaling=jointScaling;
                             // Reuse work fields and the final explicitly checked
                             // response. Commit must not solve the same Poisson RHS
                             // a second time, or silently substitute a new source.
@@ -453,6 +477,7 @@ int main(int argc,char* argv[])
                             {
                                 if(lastInput!=scaled)
                                 {
+                                    const auto responseStart=std::chrono::steady_clock::now();
                                     std::vector<double> forces(scaled.size());
                                     for(std::size_t i=0;i<forces.size();++i) forces[i]=scaled[i]/scaling[i/3];
                                     const vectorField acceleration=joint->acceleration(forces,rho);
@@ -461,14 +486,20 @@ int main(int argc,char* argv[])
                                     deltaU.correctBoundaryConditions();
                                     deltaPhi=fvc::flux(deltaU);
                                     deltaP=dimensionedScalar("zero",p.dimensions(),0);
+                                    spreadSeconds+=seconds(responseStart);
+                                    const auto projectionStart=std::chrono::steady_clock::now();
                                     constrainPressure(deltaP,deltaU,deltaPhi,rAU);
                                     fvScalarMatrix responsePressure(fvm::laplacian(rAU,deltaP)==fvc::div(deltaPhi));
                                     if(deltaP.needReference()) responsePressure.setReference(rank==0 ? 0:-1,0);
                                     solveJointPressure(responsePressure);++jointPressureSolves;
                                     deltaPhi-=responsePressure.flux();
                                     deltaU-=rAU*fvc::grad(deltaP);deltaU.correctBoundaryConditions();
+                                    projectionSeconds+=seconds(projectionStart);
+                                    const auto interpolationStart=std::chrono::steady_clock::now();
                                     lastResult=joint->interpolate(deltaU,deltaP);
+                                    interpolationSeconds+=seconds(interpolationStart);
                                     lastInput=scaled;lastForces=forces;lastAcceleration=acceleration;
+                                    responseSeconds+=seconds(responseStart);
                                 }
                                 if(commit)
                                 {
@@ -753,6 +784,10 @@ int main(int argc,char* argv[])
                 rigid.primitiveFieldRef()+=surfaceRelaxation*(updated-rigid.primitiveField());
                 rigid.correctBoundaryConditions();
             }
+            if(joint&&rank==0) Info<<"M2A_RESPONSE_COST time="<<runTime.value()
+                <<" response="<<responseSeconds<<" spread="<<spreadSeconds
+                <<" projection="<<projectionSeconds<<" interpolation="<<interpolationSeconds
+                <<" scaling="<<scalingSeconds<<endl;
             lpbfM2::SphereSurface::Diagnostics stress;
             if(surface) surface->gather(U,p);
             if(surface) stress=surface->diagnose(asFoamVector(before[0].x),before[0].radius,
@@ -857,6 +892,7 @@ int main(int argc,char* argv[])
                     checkpoint.add("jointFullPredictor",jointFullPredictor);
                     checkpoint.add("jointOuterMix",jointOuterMix);
                     checkpoint.add("jointOuterHistory",jointOuterHistory);
+                    checkpoint.add("jointSparseTransfer",jointSparseTransfer);
                     if(jointWarmStart)
                     {
                         scalarList seed(jointPreviousLoads.size());
