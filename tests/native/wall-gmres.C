@@ -1,6 +1,7 @@
 // Actual shared C++ kernel regression, executed only by the user's test script.
 #include "WallGMRES.H"
 #include "JointResponseAudit.H"
+#include "JointOuterMix.H"
 #include <iostream>
 int main()
 {
@@ -34,6 +35,25 @@ int main()
     {auto s=linear(x);s.flux[0]+=1e-3*(++calls);return s;};
     const auto staleAudit=lpbfM2::auditJointResponse(stale,9);
     if(staleAudit.zero<.1||staleAudit.repeat<.1) return 7;
+    // Two feasible states of u0+u1=3 with residual A*u+G*p-S*F-b.
+    // Same affine mix must carry p and the load F, not only velocity.
+    const std::vector<double> previous{1,2,2,1},current{1.2,1.8,1.6,1.2};
+    auto residual=[](const std::vector<double>& x)
+    {return std::vector<double>{3*x[0]+x[1]+x[2]-x[3]-4,
+                               x[0]+4*x[1]-x[2]-2*x[3]-3};};
+    const auto rp=residual(previous),rc=residual(current);
+    double dot=0,norm=0;
+    for(int i=0;i<2;++i){const double d=rc[i]-rp[i];dot+=rp[i]*d;norm+=d*d;}
+    const double factor=lpbfM2::jointOuterFactor(dot,norm);
+    std::vector<double> mixed(4);
+    for(int i=0;i<4;++i) mixed[i]=previous[i]+factor*(current[i]-previous[i]);
+    const auto rm=residual(mixed);
+    if(std::abs(mixed[0]+mixed[1]-3)>1e-12) return 8;
+    for(int i=0;i<2;++i) if(std::abs(rm[i]-rp[i]-factor*(rc[i]-rp[i]))>1e-12) return 9;
+    if(rm[0]*rm[0]+rm[1]*rm[1]>=rc[0]*rc[0]+rc[1]*rc[1]) return 11;
+    if(factor<1||factor>4||lpbfM2::jointOuterFactor(-5,1)!=4
+       ||lpbfM2::jointOuterFactor(1,1)!=1||lpbfM2::jointOuterFactor(1,0)!=1) return 10;
+    std::cout<<"JOINT_OUTER_MIX_NATIVE_KERNEL_PASS\n";
     std::cout<<"JOINT_RESPONSE_AUDIT_NATIVE_KERNEL_PASS\n";
     std::cout<<"WALL_GMRES_NATIVE_KERNEL_PASS\n";
 }

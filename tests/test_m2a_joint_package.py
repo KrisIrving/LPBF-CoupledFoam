@@ -26,13 +26,15 @@ class JointPackageTests(unittest.TestCase):
         meta=prepare.prepare(case,name)
         if meta['restart']:
             size=3*meta['joint_controls']['markers']
-            (case/'0.002/couplingState').write_text('jointWarmStart true;\njointFullPredictor false;\njointLoadSeed '
+            (case/'0.002/couplingState').write_text('jointWarmStart true;\njointFullPredictor false;\njointOuterMix true;\njointLoadSeed '
                 +str(size)+'\n('+ ' '.join('0' for _ in range(size))+');\n')
         for log in ('log.first','log.restart') if meta['restart'] else ('log.solver',):
             (case/log).write_text('M2A_CONSTRAINT scheme=jointSurface\nM2A_JOINT markers='+str(meta['joint_controls']['markers'])+' minPivot=.9\n'
                 'M2A_BOUNDARY treatment=compatibleGauss rawFlux=-4e-14 gaussFlux=7e-18 finalFlux=1e-22 normalCorrection=1e-16\n'
                 'M2A_JOINT_ALGORITHM warmStart=1 fullPredictor=0 responseReuse=1\nGAMG:  Solving for p,\n'
                 'M2A_PRESSURE_SOLVE gamg=80 pcg=12 residual=9e-15 tolerance=1e-14 budget=1000\n'
+                'M2A_OUTER_MODE enabled=1\n'
+                'M2A_OUTER_MIX factor=2 accepted=1 before=2e-10 after=1e-10 wall=1e-8 div=1e-12 linear=2e-12\n'
                 'M2A_OPERATOR_AUDIT time=.0001 zero=0 repeat=0 linear=1e-12 scale=1e-12 div=1e-12 gauge=0 diagonal=1e-15 fullImpulse=1e-6 normalGain=.1 manufactured=1e-9 iterations=12 pressureSolves=21 seconds=.1\n'
                 'M2A_OPERATOR_COMMIT time=.0001 source=1e-15 velocity=1e-15 pressure=1e-15 flux=1e-15 acceleration=1e-15\nM2A_EXECUTION_COMPLETE\n')
         for row in rows:
@@ -70,6 +72,22 @@ class JointPackageTests(unittest.TestCase):
                              ('tolerance=1e-14','tolerance=2e-14')]:
             p.write_text(original.replace(before,after))
             with self.assertRaisesRegex(ValueError,'[Pp]ressure polish'):summary.audit.evaluate(case)
+
+    def test_outer_mix_rejects_inconsistent_accepted_state_and_missing_mode(self):
+        case,_,_=self.fixture('fixed-coarse');p=case/'log.solver';original=p.read_text()
+        for before,after in [('M2A_OUTER_MODE enabled=1','M2A_OUTER_MODE enabled=0'),
+                             ('factor=2','factor=5'),('after=1e-10','after=3e-10'),
+                             ('linear=2e-12','linear=1e-5'),('wall=1e-8','wall=1e-5'),
+                             ('div=1e-12','div=1e-3')]:
+            p.write_text(original.replace(before,after))
+            with self.assertRaisesRegex(ValueError,'[Oo]uter mixing'):summary.audit.evaluate(case)
+        p.write_text(original.replace('accepted=1','accepted=0').replace('after=1e-10','after=3e-10'))
+        self.assertTrue(summary.audit.evaluate(case)[0]['passed'])
+
+    def test_outer_mix_checkpoint_required(self):
+        case,_,_=self.fixture('fixed-restart');p=case/'0.002/couplingState'
+        p.write_text(p.read_text().replace('jointOuterMix true;','jointOuterMix false;'))
+        self.assertFalse(summary.audit.evaluate(case)[0]['passed'])
 
     def test_joint_failure_gates(self):
         case,rows,meta=self.fixture('fixed-coarse')

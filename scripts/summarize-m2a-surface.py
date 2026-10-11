@@ -42,6 +42,27 @@ def evaluate(case):
                     or truth(marker.group(3))!=algorithm['response_reuse']
                     or algorithm['pressure_solver']+':  Solving for p,' not in text):
                     raise ValueError('Missing accelerated joint algorithm/GAMG native evidence')
+            if 'outer_mix' in meta:
+                if 'M2A_OUTER_MODE enabled=1' not in text:
+                    raise ValueError('Missing joint outer mixing mode')
+                trials=re.findall(r'M2A_OUTER_MIX ([^\n]+)',text)
+                accepted=0
+                for line in trials:
+                    values=dict(re.findall(r'(\w+)=(\S+)',line))
+                    keys=('factor','accepted','before','after','wall','div','linear')
+                    if any(k not in values for k in keys):raise ValueError('Incomplete joint outer mixing evidence')
+                    values={k:float(values[k]) for k in keys}
+                    if (not 1<=values['factor']<=meta['outer_mix']['factor_max']
+                        or values['accepted'] not in (0,1)):
+                        raise ValueError('Invalid joint outer mixing factor/status')
+                    if values['accepted']:
+                        if (any(not math.isfinite(v) or v<0 for v in values.values())
+                            or values['after']>=values['before'] or values['linear']>1e-8
+                            or values['wall']>meta['surface_controls']['target_defect_m_s']
+                            or values['div']>meta['outer_mix']['divergence_per_s']):
+                            raise ValueError('Accepted joint outer mixing failed safeguards')
+                        accepted+=1
+                entry.setdefault('outer_mix',{})[filename]={'trials':len(trials),'accepted':accepted}
             if 'pressure_polish' in meta:
                 limits=meta['pressure_polish']
                 lines=re.findall(r'M2A_PRESSURE_SOLVE ([^\n]+)',text)
@@ -131,6 +152,8 @@ def evaluate(case):
             checks['joint_'+name+'_exchange']=metrics['joint_'+name+'_exchange_error']<=joint[limit]
         if meta['restart'] and meta.get('joint_algorithm',{}).get('warm_start'):
             checkpoint=(case/'0.002/couplingState').read_text()
+            if 'outer_mix' in meta:
+                checks['joint_outer_checkpoint']=bool(re.search(r'jointOuterMix\s+(?:1|true|on)\s*;',checkpoint))
             match=re.search(r'jointLoadSeed\s+(?:(\d+)\s*)?\(([^)]*)\)\s*;',checkpoint,re.S)
             uniform=re.search(r'jointLoadSeed\s+(\d+)\s*\{\s*([^}]+)\}\s*;',checkpoint,re.S)
             size=3*joint['markers']

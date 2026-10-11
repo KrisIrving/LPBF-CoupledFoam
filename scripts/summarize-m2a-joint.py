@@ -26,6 +26,7 @@ def summarize(root):
                     for key,pattern in [('probe',r'M2A_OPERATOR_PROBE [^\n]+'),
                                         ('audit',r'M2A_OPERATOR_AUDIT [^\n]+'),
                                         ('commit',r'M2A_OPERATOR_COMMIT [^\n]+'),
+                                        ('outer_mix',r'M2A_OUTER_MIX [^\n]+'),
                                         ('last_correction',r'M2A_CORRECTION [^\n]+')]:
                         matches=re.findall(pattern,text)
                         if matches:diagnostic[key]=matches[-1]

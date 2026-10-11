@@ -7,6 +7,7 @@
 #include "SphereSurface.H"
 #include "JointSphere.H"
 #include "JointResponseAudit.H"
+#include "JointOuterMix.H"
 #include <fstream>
 #include <filesystem>
 #include <iomanip>
@@ -98,6 +99,9 @@ int main(int argc,char* argv[])
         const bool jointWarmStart=config.getOrDefault<bool>("jointWarmStart",false);
         const bool jointFullPredictor=config.getOrDefault<bool>("jointFullPredictor",false);
         const bool jointOperatorAudit=config.getOrDefault<bool>("jointOperatorAudit",false);
+        const bool jointOuterMix=config.getOrDefault<bool>("jointOuterMix",false);
+        if(jointOuterMix&&(!jointConstraint||momentumTolerance<=0))
+            throw std::runtime_error("Outer mixing requires joint constraints and a positive momentum gate");
         if(jointConstraint&&jointFullPredictor)
             throw std::runtime_error("Repeated full predictor is incompatible with the current diagonal joint response");
         if(jointConstraint&&(jointBudget<1||jointBudget>256||!compatibleBoundary||targetTolerance<=0||continuityTolerance<=0))
@@ -154,6 +158,7 @@ int main(int argc,char* argv[])
             if(rank==0) Info<<"M2A_JOINT markers="<<joint->count()<<" minPivot="<<joint->minPivot()<<endl;
             if(rank==0) Info<<"M2A_JOINT_ALGORITHM warmStart="<<jointWarmStart
                 <<" fullPredictor="<<jointFullPredictor<<" responseReuse=1"<<endl;
+            if(rank==0) Info<<"M2A_OUTER_MODE enabled="<<jointOuterMix<<endl;
         }
         std::vector<double> jointPreviousLoads(joint ? 3*joint->count():0,0);
         bool operatorAudited=false;
@@ -317,6 +322,8 @@ int main(int argc,char* argv[])
                 if(restore.getOrDefault<bool>("jointWarmStart",false)!=jointWarmStart
                     ||restore.getOrDefault<bool>("jointFullPredictor",false)!=jointFullPredictor)
                     throw std::runtime_error("Restart joint algorithm differs from checkpoint");
+                if(restore.getOrDefault<bool>("jointOuterMix",false)!=jointOuterMix)
+                    throw std::runtime_error("Restart outer mixing differs from checkpoint");
                 if(jointWarmStart)
                 {
                     scalarList seed(restore.lookup("jointLoadSeed"));
@@ -371,11 +378,14 @@ int main(int argc,char* argv[])
             for(label outer=0;outer<(surfaceExtension ? maxSurfaceCorrectors:1);++outer)
             {
                 fvVectorMatrix equation(fvm::ddt(U)+fvm::div(advecting,U)-fvm::laplacian(nu,U)+fvm::Sp(lambda,U)==lambda*rigid+wallAcceleration);
-                // Initial full predictor. Legacy PISO updates H only; the optional
-                // joint full predictor also resolves the accumulated wall source.
+                // Initial full predictor; subsequent joint corrections update H.
                 // All solves retain the SAME old time and frozen advecting window.
                 solve(equation==-fvc::grad(p));
                 volScalarField rAU("rAU",1.0/equation.A());
+                vectorField previousU,previousDefect;
+                scalarField previousPressure;
+                std::vector<double> previousLoads;
+                std::unique_ptr<surfaceScalarField> previousFlux;
                 for(label c=0;c<maxCorrectors;++c)
                 {
                     // Experimental only: a full predictor is not the same
@@ -582,8 +592,6 @@ int main(int argc,char* argv[])
                                 throw std::runtime_error("Joint wall explicit residual did not converge");
                         }
                     }
-                    const scalar maxU=gMax(mag(U)().primitiveField());
-                    const scalar maxP=gMax(mag(p)().primitiveField());
                     continuityDefect=gMax(mag(fvc::div(phi))().primitiveField());
                     // residual() is source - A*U, integrated over each cell.
                     // Include the pressure source and sum magnitudes, so opposite
@@ -595,6 +603,72 @@ int main(int argc,char* argv[])
                     // the momentum matrix and pressure solve remain unchanged.
                     defect-=mesh.V().field()*fvc::grad(p)().primitiveField();
                     equationImpulse=rho*dt*gSum(mag(defect));
+                    if(joint&&jointOuterMix)
+                    {
+                        if(previousFlux && equationImpulse>momentumTolerance)
+                        {
+                            const vectorField difference(defect-previousDefect);
+                            const scalar factor=lpbfM2::jointOuterFactor(
+                                gSum(previousDefect & difference),gSum(magSqr(difference)));
+                            if(factor>1+1e-6)
+                            {
+                                const vectorField savedU(U.primitiveField()),savedSource(equation.source());
+                                const vectorField savedAcceleration(wallAcceleration.primitiveField());
+                                const scalarField savedPressure(p.primitiveField());
+                                surfaceScalarField savedFlux(IOobject("outerSavedFlux",runTime.timeName(),mesh,
+                                    IOobject::NO_READ,IOobject::NO_WRITE,false),phi);
+                                const auto savedLoads=jointLoads;
+                                const scalar original=equationImpulse;
+                                U.primitiveFieldRef()=previousU+factor*(savedU-previousU);
+                                p.primitiveFieldRef()=previousPressure+factor*(savedPressure-previousPressure);
+                                phi=(*previousFlux)+factor*(savedFlux-(*previousFlux));
+                                for(std::size_t i=0;i<jointLoads.size();++i)
+                                    jointLoads[i]=previousLoads[i]+factor*(savedLoads[i]-previousLoads[i]);
+                                wallAcceleration.primitiveFieldRef()=joint->acceleration(jointLoads,rho);
+                                equation.source()=savedSource+mesh.V().field()
+                                    *(wallAcceleration.primitiveField()-savedAcceleration);
+                                U.correctBoundaryConditions();p.correctBoundaryConditions();
+                                vectorField candidateDefect(matrixResidual(equation));
+                                candidateDefect-=mesh.V().field()*fvc::grad(p)().primitiveField();
+                                const scalar candidate=rho*dt*gSum(mag(candidateDefect));
+                                const vectorField predictedDefect(previousDefect+factor*(defect-previousDefect));
+                                const scalar linearity=rho*dt*gSum(mag(candidateDefect-predictedDefect))
+                                    /Foam::max(Foam::max(original,candidate),scalar(1e-30));
+                                const scalar candidateDiv=gMax(mag(fvc::div(phi))().primitiveField());
+                                const auto values=joint->interpolate(U,p);
+                                const auto desired=joint->desired(asFoamVector(before[0].x),asFoamVector(before[0].v),asFoamVector(before[0].omega));
+                                scalar candidateWall=0;
+                                for(int i=0;i<joint->count();++i)
+                                {
+                                    scalar norm=0;for(int a=0;a<3;++a) norm+=sqr(values[3*i+a]-desired[3*i+a]);
+                                    candidateWall=Foam::max(candidateWall,std::sqrt(norm));
+                                }
+                                const bool accept=std::isfinite(candidate)&&std::isfinite(candidateDiv)
+                                    &&std::isfinite(candidateWall)&&std::isfinite(linearity)&&linearity<=1e-8&&candidate<original
+                                    &&candidateDiv<=continuityTolerance&&candidateWall<=targetTolerance;
+                                if(rank==0) Info<<"M2A_OUTER_MIX time="<<runTime.value()<<" iteration="<<c+1
+                                    <<" factor="<<factor<<" accepted="<<accept<<" before="<<original
+                                    <<" after="<<candidate<<" wall="<<candidateWall<<" div="<<candidateDiv
+                                    <<" linear="<<linearity<<endl;
+                                if(accept)
+                                { defect=candidateDefect;equationImpulse=candidate;continuityDefect=candidateDiv;targetDefect=candidateWall; }
+                                else
+                                {
+                                    U.primitiveFieldRef()=savedU;p.primitiveFieldRef()=savedPressure;phi=savedFlux;
+                                    jointLoads=savedLoads;wallAcceleration.primitiveFieldRef()=savedAcceleration;
+                                    equation.source()=savedSource;
+                                    U.correctBoundaryConditions();p.correctBoundaryConditions();
+                                }
+                            }
+                        }
+                        previousU=U.primitiveField();previousPressure=p.primitiveField();
+                        previousLoads=jointLoads;previousDefect=defect;
+                        if(!previousFlux) previousFlux=std::make_unique<surfaceScalarField>(
+                            IOobject("outerPreviousFlux",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false),phi);
+                        else *previousFlux=phi;
+                    }
+                    const scalar maxU=gMax(mag(U)().primitiveField());
+                    const scalar maxP=gMax(mag(p)().primitiveField());
                     usedCorrectors=c+1;
                     ++totalCorrectors;
                     if(rank==0) Info<<"M2A_CORRECTION time="<<runTime.value()
@@ -741,6 +815,7 @@ int main(int argc,char* argv[])
                     checkpoint.add("jointMarkerCount",joint->count());
                     checkpoint.add("jointWarmStart",jointWarmStart);
                     checkpoint.add("jointFullPredictor",jointFullPredictor);
+                    checkpoint.add("jointOuterMix",jointOuterMix);
                     if(jointWarmStart)
                     {
                         scalarList seed(jointPreviousLoads.size());
