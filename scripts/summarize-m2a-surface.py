@@ -42,6 +42,32 @@ def evaluate(case):
                     or truth(marker.group(3))!=algorithm['response_reuse']
                     or algorithm['pressure_solver']+':  Solving for p,' not in text):
                     raise ValueError('Missing accelerated joint algorithm/GAMG native evidence')
+            if 'pressure_polish' in meta:
+                limits=meta['pressure_polish']
+                lines=re.findall(r'M2A_PRESSURE_SOLVE ([^\n]+)',text)
+                count=len(re.findall(r'GAMG:  Solving for (?:p|jointDeltaP),',text))
+                if not lines or len(lines)!=count:
+                    raise ValueError('Missing pressure polish evidence for each pressure solve')
+                values=[]
+                for line in lines:
+                    data=dict(re.findall(r'(\w+)=(\S+)',line))
+                    keys=('gamg','pcg','residual','tolerance','budget')
+                    if any(key not in data for key in keys):raise ValueError('Incomplete pressure polish evidence')
+                    data={key:float(data[key]) for key in keys}
+                    if (any(not math.isfinite(v) or v<0 for v in data.values())
+                        or any(data[k]!=int(data[k]) for k in ('gamg','pcg','budget'))
+                        or data['gamg']>limits['gamg_iterations']
+                        or data['gamg']+data['pcg']>limits['total_iterations']
+                        or data['budget']!=limits['total_iterations']
+                        or data['tolerance']!=limits['tolerance']
+                        or data['residual']>limits['tolerance']):
+                        raise ValueError('Pressure polish tolerance/budget not met')
+                    values.append(data)
+                entry.setdefault('pressure_polish',{})[filename]={
+                    'solves':len(values),'fallback_solves':sum(v['pcg']>0 for v in values),
+                    'gamg_iterations':sum(v['gamg'] for v in values),
+                    'pcg_iterations':sum(v['pcg'] for v in values),
+                    'max_final_residual':max(v['residual'] for v in values)}
             if 'operator_audit' in meta:
                 lines=re.findall(r'M2A_OPERATOR_AUDIT ([^\n]+)',text)
                 if not lines:raise ValueError('Missing actual joint operator audit')

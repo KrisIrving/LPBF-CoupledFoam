@@ -39,6 +39,8 @@ jointOperatorAudit true;
         nFinestSweeps 2;
         mergeLevels 1;
         maxIter 1000;
+        jointPressurePolish true;
+        jointGAMGIterations 80;
     }'''
     text=solution.read_text()
     if old not in text:raise ValueError('Expected baseline pressure controls not found')
@@ -49,9 +51,11 @@ jointOperatorAudit true;
     meta['joint_controls']={'markers':marker_count,'min_rank_pivot':1e-8,'krylov_budget':64,
         'force_exchange_N':1e-12,'torque_exchange_N_m':1e-14,'work_exchange_W':1e-14,
         'boundary_net_flux_m3_s':1e-18,'boundary_correction_m_s':1e-10}
-    meta['joint_algorithm']={'revision':4,'warm_start':True,'full_predictor':False,
+    meta['joint_algorithm']={'revision':5,'warm_start':True,'full_predictor':False,
                              'response_reuse':True,'pressure_solver':'GAMG',
                              'pressure_tolerance':1e-14,'pressure_relTol':0.}
+    meta['pressure_polish']={'gamg_iterations':80,'total_iterations':1000,
+                            'tolerance':1e-14,'fallback':'PCG/DIC'}
     meta['operator_audit']={'version':1,'relative_tolerance':1e-8,
                             'divergence_per_s':1e-7,'manufactured_residual_m_s':2e-8,
                             'divergence_speed_factor':1e6,

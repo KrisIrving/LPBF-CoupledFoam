@@ -12,8 +12,40 @@
 #include <iomanip>
 #include <memory>
 #include <chrono>
+#include <cmath>
 
 using namespace Foam;
+// Preserve the pressure tolerance and total iteration budget. GAMG can stagnate
+// near roundoff; use its iterate as a PCG initial guess, not as an accepted solve.
+static void solveJointPressure(fvScalarMatrix& matrix)
+{
+    dictionary controls(matrix.solverDict("p"));
+    if(!controls.getOrDefault<bool>("jointPressurePolish",false))
+    { matrix.solve(word("p"));return; }
+    const label budget=controls.get<label>("maxIter");
+    const label first=controls.get<label>("jointGAMGIterations");
+    const scalar tolerance=controls.get<scalar>("tolerance");
+    if(first<1||first>=budget||tolerance<=0||controls.get<scalar>("relTol")!=0)
+        throw std::runtime_error("Invalid joint pressure polish controls");
+    controls.set("maxIter",first);
+    auto performance=matrix.solve(controls);
+    const label gamgIterations=performance.nIterations();
+    label pcgIterations=0;
+    if(std::isfinite(performance.finalResidual())&&performance.finalResidual()>tolerance)
+    {
+        controls.set("solver",word("PCG"));
+        controls.set("preconditioner",word("DIC"));
+        controls.set("maxIter",budget-gamgIterations);
+        performance=matrix.solve(controls);
+        pcgIterations=performance.nIterations();
+    }
+    Info<<"M2A_PRESSURE_SOLVE gamg="<<gamgIterations<<" pcg="<<pcgIterations
+        <<" residual="<<performance.finalResidual()<<" tolerance="<<tolerance
+        <<" budget="<<budget<<nl;
+    if(!std::isfinite(performance.finalResidual())||performance.finalResidual()>tolerance
+       ||gamgIterations+pcgIterations>budget)
+        throw std::runtime_error("Joint pressure solve did not meet original tolerance/budget");
+}
 static vector asFoamVector(const double* p) {return vector(p[0],p[1],p[2]);}
 static vector analytical(const vector& x,const vector& centre,scalar radius,
                          const vector& speed,const vector& omega,bool translation)
@@ -360,7 +392,8 @@ int main(int argc,char* argv[])
                     constrainPressure(p,U,predicted,rAU);
                     fvScalarMatrix pressure(fvm::laplacian(rAU,p)==fvc::div(predicted));
                     if(p.needReference()) pressure.setReference(rank==0 ? 0:-1,refPressure);
-                    pressure.solve();
+                    if(jointConstraint) solveJointPressure(pressure);
+                    else pressure.solve();
                     phi=predicted-pressure.flux();
                     U=HbyA-rAU*fvc::grad(p);U.correctBoundaryConditions();
                     if(joint)
@@ -404,7 +437,7 @@ int main(int argc,char* argv[])
                                     constrainPressure(deltaP,deltaU,deltaPhi,rAU);
                                     fvScalarMatrix responsePressure(fvm::laplacian(rAU,deltaP)==fvc::div(deltaPhi));
                                     if(deltaP.needReference()) responsePressure.setReference(rank==0 ? 0:-1,0);
-                                    responsePressure.solve(word("p"));++jointPressureSolves;
+                                    solveJointPressure(responsePressure);++jointPressureSolves;
                                     deltaPhi-=responsePressure.flux();
                                     deltaU-=rAU*fvc::grad(deltaP);deltaU.correctBoundaryConditions();
                                     lastResult=joint->interpolate(deltaU,deltaP);

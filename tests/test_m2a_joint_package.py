@@ -32,6 +32,7 @@ class JointPackageTests(unittest.TestCase):
             (case/log).write_text('M2A_CONSTRAINT scheme=jointSurface\nM2A_JOINT markers='+str(meta['joint_controls']['markers'])+' minPivot=.9\n'
                 'M2A_BOUNDARY treatment=compatibleGauss rawFlux=-4e-14 gaussFlux=7e-18 finalFlux=1e-22 normalCorrection=1e-16\n'
                 'M2A_JOINT_ALGORITHM warmStart=1 fullPredictor=0 responseReuse=1\nGAMG:  Solving for p,\n'
+                'M2A_PRESSURE_SOLVE gamg=80 pcg=12 residual=9e-15 tolerance=1e-14 budget=1000\n'
                 'M2A_OPERATOR_AUDIT time=.0001 zero=0 repeat=0 linear=1e-12 scale=1e-12 div=1e-12 gauge=0 diagonal=1e-15 fullImpulse=1e-6 normalGain=.1 manufactured=1e-9 iterations=12 pressureSolves=21 seconds=.1\n'
                 'M2A_OPERATOR_COMMIT time=.0001 source=1e-15 velocity=1e-15 pressure=1e-15 flux=1e-15 acceleration=1e-15\nM2A_EXECUTION_COMPLETE\n')
         for row in rows:
@@ -60,6 +61,15 @@ class JointPackageTests(unittest.TestCase):
         result=summary.summarize(self.root)
         self.assertFalse(result['passed'])
         self.assertTrue(all(not entry['passed'] for entry in result['cases'].values()))
+
+    def test_pressure_polish_rejects_missing_unconverged_and_excess_budget(self):
+        case,_,_=self.fixture('fixed-coarse');p=case/'log.solver';original=p.read_text()
+        for before,after in [('M2A_PRESSURE_SOLVE','OLD_PRESSURE_SOLVE'),
+                             ('residual=9e-15','residual=1.5e-14'),
+                             ('pcg=12','pcg=921'),('gamg=80','gamg=81'),
+                             ('tolerance=1e-14','tolerance=2e-14')]:
+            p.write_text(original.replace(before,after))
+            with self.assertRaisesRegex(ValueError,'[Pp]ressure polish'):summary.audit.evaluate(case)
 
     def test_joint_failure_gates(self):
         case,rows,meta=self.fixture('fixed-coarse')

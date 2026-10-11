@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-11",
-  "latest_user_tested_commit": "4aa8907254068385c8e375dc1dcc37393589525b",
+  "latest_user_tested_commit": "2aa86d9d848d83deea9832ba097f2b38d016a7ed",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -4194,6 +4194,334 @@
         "algorithm_revision": 2
       },
       "scope": "Static noncontact joint coupling; concurrent runtime feedback. No completed window, spatial accuracy, MPI/restart or revision2 speedup validation."
+    },
+    {
+      "date": "2026-10-11",
+      "report": "m2a-joint-20261011-100331-944041.tar.gz",
+      "archive_sha256": "7d40185d5d554056ed35a553ea1cb4cca4267e3eebce4f058474c08717c5c802",
+      "tested_commit": "2aa86d9d848d83deea9832ba097f2b38d016a7ed",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "independent_summary": "exact_match",
+      "native_build": "passed",
+      "native_shared_gmres_and_audit": "passed",
+      "cases": {
+        "fixed-coarse": {
+          "exit_status": 124,
+          "windows": 12,
+          "individual_gate": false
+        },
+        "fixed-coarse-offset": {
+          "exit_status": 124,
+          "windows": 12,
+          "individual_gate": false
+        },
+        "fixed-fine": {
+          "exit_status": 124,
+          "windows": 1,
+          "individual_gate": false
+        },
+        "fixed-fine-offset": {
+          "exit_status": 124,
+          "windows": 0,
+          "individual_gate": false
+        },
+        "fixed-finer": {
+          "exit_status": 124,
+          "windows": 0,
+          "individual_gate": false
+        },
+        "fixed-finer-offset": {
+          "exit_status": 124,
+          "windows": 0,
+          "individual_gate": false
+        },
+        "rotate-coarse": {
+          "exit_status": 0,
+          "windows": 40,
+          "individual_gate": true,
+          "metrics": {
+            "momentum": 4.633297161265213e-15,
+            "angular": 0.0,
+            "force_decomposition": 5.476910192065697e-23,
+            "torque_decomposition": 2.6314844986976225e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.831530974844152e-12,
+            "pressure_correctors_max": 27.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.00417636301529134,
+            "slip": 0.03220673075215606,
+            "divergence": 1.0542469755906402e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.2593861289922612,
+            "surface_target_defect_m_s": 9.796197289994911e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 351.0,
+            "window_wall_seconds_total": 142.094347706,
+            "joint_wall_residual": 9.796197289994911e-08,
+            "joint_iterations_total": 405.0,
+            "joint_pressure_solves_total": 513.0,
+            "joint_force_exchange_error": 3.304503635552482e-21,
+            "joint_torque_exchange_error": 1.800805927591549e-21,
+            "joint_work_exchange_error": 5.293955920339377e-23,
+            "stress_ledger_relative": 0.5416234277962723,
+            "stress_stokes_relative": 0.28220460869360364,
+            "mean_reference_load_ratio": 1.2593861289922612
+          }
+        },
+        "rotate-coarse-offset": {
+          "exit_status": 0,
+          "windows": 40,
+          "individual_gate": true,
+          "metrics": {
+            "momentum": 8.0263884603647e-15,
+            "angular": 0.0,
+            "force_decomposition": 4.7427939772590085e-23,
+            "torque_decomposition": 2.5694318845323226e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.100080071193313e-12,
+            "pressure_correctors_max": 28.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.004176363015292006,
+            "slip": 0.033744812018211605,
+            "divergence": 1.527277342013792e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.2561609524977344,
+            "surface_target_defect_m_s": 9.912382096284536e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 352.0,
+            "window_wall_seconds_total": 126.120535911,
+            "joint_wall_residual": 9.912382096284536e-08,
+            "joint_iterations_total": 350.0,
+            "joint_pressure_solves_total": 447.0,
+            "joint_force_exchange_error": 1.9652258588572685e-21,
+            "joint_torque_exchange_error": 2.918728007086532e-21,
+            "joint_work_exchange_error": 3.970466940254533e-23,
+            "stress_ledger_relative": 0.5275565734393697,
+            "stress_stokes_relative": 0.2713396209823802,
+            "mean_reference_load_ratio": 1.2561609524977344
+          }
+        },
+        "rotate-fine": {
+          "exit_status": 0,
+          "windows": 40,
+          "individual_gate": true,
+          "metrics": {
+            "momentum": 1.1420006139395861e-14,
+            "angular": 0.0,
+            "force_decomposition": 6.411486801293953e-24,
+            "torque_decomposition": 2.6056190850556786e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.108082546362515e-12,
+            "pressure_correctors_max": 47.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.005753551511382016,
+            "slip": 0.02608908800914742,
+            "divergence": 8.389334945625437e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.17567148372173436,
+            "surface_target_defect_m_s": 9.819999189186176e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 383.0,
+            "window_wall_seconds_total": 700.51839567,
+            "joint_wall_residual": 9.819999189186176e-08,
+            "joint_iterations_total": 530.0,
+            "joint_pressure_solves_total": 685.0,
+            "joint_force_exchange_error": 3.4381431555594124e-21,
+            "joint_torque_exchange_error": 2.968931326224772e-21,
+            "joint_work_exchange_error": 5.293955920339377e-23,
+            "stress_ledger_relative": 0.4067495046532894,
+            "stress_stokes_relative": 0.23107575924519874,
+            "mean_reference_load_ratio": 1.1756714837217344
+          }
+        },
+        "rotate-fine-offset": {
+          "exit_status": 0,
+          "windows": 40,
+          "individual_gate": true,
+          "metrics": {
+            "momentum": 6.194448498286583e-15,
+            "angular": 0.0,
+            "force_decomposition": 3.308722450212111e-24,
+            "torque_decomposition": 2.574599708374018e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.634671470897366e-12,
+            "pressure_correctors_max": 46.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.005753551511382238,
+            "slip": 0.024987237525331607,
+            "divergence": 4.318494549140839e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.17151499162460748,
+            "surface_target_defect_m_s": 9.502701317241865e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 381.0,
+            "window_wall_seconds_total": 430.926078016,
+            "joint_wall_residual": 9.502701317241865e-08,
+            "joint_iterations_total": 546.0,
+            "joint_pressure_solves_total": 706.0,
+            "joint_force_exchange_error": 2.7585043807714926e-21,
+            "joint_torque_exchange_error": 3.1765196555598156e-21,
+            "joint_work_exchange_error": 4.963083675318166e-23,
+            "stress_ledger_relative": 0.407883165745824,
+            "stress_stokes_relative": 0.23636454600839107,
+            "mean_reference_load_ratio": 1.1715149916246075
+          }
+        },
+        "rotate-finer": {
+          "exit_status": 124,
+          "windows": 5,
+          "individual_gate": false
+        },
+        "rotate-finer-offset": {
+          "exit_status": 124,
+          "windows": 21,
+          "individual_gate": false
+        },
+        "fixed-restart": {
+          "exit_status": 124,
+          "windows": 17,
+          "individual_gate": false
+        },
+        "fixed-mpi2": {
+          "exit_status": 0,
+          "windows": 40,
+          "individual_gate": true,
+          "metrics": {
+            "momentum": 3.465315443156366e-14,
+            "angular": 0.0,
+            "force_decomposition": 1.3387103025299241e-20,
+            "torque_decomposition": 8.85701350850956e-25,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.738908933804646e-12,
+            "pressure_correctors_max": 41.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.004176363015293005,
+            "slip": 0.017881772878434937,
+            "divergence": 1.022489535705372e-12,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.13592672103640835,
+            "surface_target_defect_m_s": 9.934680638636698e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 431.0,
+            "window_wall_seconds_total": 725.03149141,
+            "joint_wall_residual": 9.934680638636698e-08,
+            "joint_iterations_total": 800.0,
+            "joint_pressure_solves_total": 997.0,
+            "joint_force_exchange_error": 2.1694104284866067e-19,
+            "joint_torque_exchange_error": 1.1668582110858904e-19,
+            "joint_work_exchange_error": 7.52540486967188e-24,
+            "stress_ledger_relative": 0.3474610985661305,
+            "stress_stokes_relative": 0.21151735156774287,
+            "mean_reference_load_ratio": 1.1359267210364083
+          }
+        }
+      },
+      "comparisons": {
+        "fixed-restart": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "fixed-mpi2": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "fixed-coarse-to-fine": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "fixed-fine-to-finer": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "fixed-coarse-to-fine-offset": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "fixed-fine-to-finer-offset": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "fixed-coarse-phase": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "fixed-fine-phase": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "fixed-finer-phase": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "rotate-coarse-to-fine": {
+          "passed": true,
+          "error_increase": -0.08371464527052686,
+          "interpretation": "No asymptotic order claim"
+        },
+        "rotate-fine-to-finer": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "rotate-coarse-to-fine-offset": {
+          "passed": true,
+          "error_increase": -0.08464596087312692,
+          "interpretation": "No asymptotic order claim"
+        },
+        "rotate-fine-to-finer-offset": {
+          "passed": false,
+          "status": "not_evaluated"
+        },
+        "rotate-coarse-phase": {
+          "passed": true,
+          "load_difference_relative": 0.0032251764945268047
+        },
+        "rotate-fine-phase": {
+          "passed": true,
+          "load_difference_relative": 0.004156492097126874
+        },
+        "rotate-finer-phase": {
+          "passed": false,
+          "status": "not_evaluated"
+        }
+      },
+      "operator_audit": {
+        "invocations": 14,
+        "scope": "First-window probes only; no full-rank/full-A or full-history proof",
+        "max_linearity_relative": 5.058054396162452e-14,
+        "max_divergence_per_s": 4.526439323594999e-14,
+        "max_manufactured_residual_m_s": 8.977811615573442e-09,
+        "manufactured_iterations_range": [
+          10.0,
+          11.0
+        ],
+        "max_commit_relative": 2.100183538089139e-16
+      },
+      "cost": {
+        "case_jobs": 4,
+        "matrix_wall_seconds": 3089,
+        "pressure_solves_logged": 10320,
+        "pressure_budget_hits": 1211,
+        "pressure_iterations_logged": 1498727,
+        "budget_hit_iterations": 1211000,
+        "budget_hit_final_residual_range": [
+          1.0172086823807387e-14,
+          3.84429052373599e-14
+        ]
+      },
+      "pressure_linear_tolerance_gate": "Historical summary did not gate each solve;1211 budget-hit solves fail original1e-14 tolerance",
+      "limitations": [
+        "9 timeout124; no explicit residual aborts",
+        "5 complete individual passes do not mean every pressure linear solve attained tolerance",
+        "Fixed MPI2 individual pass but serial comparison and common restart not_evaluated",
+        "Finest force/stress, GCL, free-body, heat and LPBF not validated"
+      ],
+      "next": "revision5 GAMG80 then PCG/DIC remaining original1000 budget, unchanged1e-14/relTol0; enforce each pressure solve; native pending"
     }
   ],
   "development_packages": [
@@ -10626,6 +10954,22 @@
         "no general projected-Schur rank proof",
         "no GCL free-body heat or LPBF validation"
       ]
+    },
+    {
+      "date": "2026-10-11",
+      "scope": "revision5 pressure plateau correction",
+      "document": "docs/m2a-joint-revision5.zh-CN.md",
+      "native_build_runtime": "not_evaluated",
+      "offline_m2a_tests": 46,
+      "independent_revision4_summary_exact": true,
+      "changes": [
+        "GAMG80 then PCG/DIC remaining original1000 budget",
+        "same matrix/RHS with GAMG pressure iterate as PCG initial guess",
+        "fail each pressure solve above original1e-14 tolerance",
+        "per-solve pressure evidence required by summary"
+      ],
+      "physical_gate_relaxation": false,
+      "budget_increase": false
     }
   ]
 }
