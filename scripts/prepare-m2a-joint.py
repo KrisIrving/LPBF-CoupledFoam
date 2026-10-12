@@ -10,7 +10,9 @@ surface=importlib.util.module_from_spec(spec);spec.loader.exec_module(surface)
 CASES=surface.CASES
 
 
-def prepare(root,selection,ranks=None):
+def prepare(root,selection,ranks=None,spatial_only=False):
+    if spatial_only and selection in ('fixed-restart','fixed-mpi2'):
+        raise ValueError('Spatial reference uses twelve geometry cases only')
     if ranks is not None and ranks not in (1,2,4,8):
         raise ValueError('Joint ranks must be 1, 2, 4 or 8')
     if ranks is not None and selection=='fixed-restart' and ranks!=1:
@@ -86,6 +88,13 @@ jointSparseTransfer true;
     meta['scope']='Static single noncontact sphere; paired trilinear J and integrated-force transpose spread. '
     meta['scope']+='FV face-flux pressure-projected GMRES correction plus residual-controlled PISO. '
     meta['scope']+='No ghost penalty. q4 inventory retained; no moving GCL/contact/heat/scalable mapping validation.'
+    if spatial_only:
+        reference_spec=importlib.util.spec_from_file_location('spatial_reference',Path(__file__).with_name('audit-m2a-spatial-consistency.py'))
+        reference=importlib.util.module_from_spec(reference_spec);reference_spec.loader.exec_module(reference)
+        meta['spatial_reference']=reference.fixture(meta['mode'],meta['mesh_n'],meta['centre_phase_h'])
+        surface.baseline.control(root,end=0)
+        with p.open('a') as stream:stream.write('spatialAuditOnly true;\n')
+        meta['scope']='Analytic-field native J/stress consistency only; no CFD/DEM time advancement or physical pass.'
     (root/'M2A_META.json').write_text(json.dumps(meta,indent=2)+'\n')
     return meta
 
@@ -95,6 +104,7 @@ if __name__=='__main__':
     parser.add_argument('case',type=Path)
     parser.add_argument('--selection',choices=CASES)
     parser.add_argument('--ranks',type=int,choices=(1,2,4,8))
+    parser.add_argument('--spatial-only',action='store_true')
     parser.add_argument('--half',action='store_true')
     parser.add_argument('--restart',action='store_true')
     args=parser.parse_args()
@@ -103,5 +113,5 @@ if __name__=='__main__':
         surface.baseline.control(args.case,start=.002)
         surface.baseline.write_dem(args.case,meta['mode'],restart=True)
     elif args.half:surface.baseline.control(args.case,end=.002)
-    elif args.selection:prepare(args.case,args.selection,args.ranks)
+    elif args.selection:prepare(args.case,args.selection,args.ranks,args.spatial_only)
     else:parser.error('Provide selection, half or restart')

@@ -63,6 +63,19 @@ public:
         }
     }
     int count() const {return points_.size();}
+    std::array<double,2> rigidResidual(const std::vector<double>& values,
+        const Foam::vector& centre,const Foam::vector& v,const Foam::vector& omega) const
+    {
+        double sum=0,maximum=0;
+        for(int i=0;i<count();++i)
+        {
+            const Foam::vector target=v+(omega^(points_[i]-centre));
+            const Foam::vector value(values[3*i],values[3*i+1],values[3*i+2]);
+            const double error=Foam::mag(value-target);
+            sum+=error*error;maximum=std::max(maximum,error);
+        }
+        return {std::sqrt(sum/count()),maximum};
+    }
     std::vector<double> normalProbe(const Foam::vector& centre,double amplitude) const
     {
         std::vector<double> result(3*count());

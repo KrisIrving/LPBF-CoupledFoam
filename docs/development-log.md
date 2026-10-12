@@ -1,5 +1,7 @@
 # Development and verification record
 
+2026-10-12: User01cfe2dc runs all14 trajectories/40windows successfully, finer8MPI. Native build/shared kernels,16099 pressure solves,15 transfer audits pass;10 cases pass, four finest fail physical force/stress gates, all existing comparisons pass. Independent summary exact. Added revision10 opt-in no-time-advance native analytic J/stress reference and independent Cartesian/Fibonacci Python oracle with12 geometry cases, native rank/count/finite match gates.55 offline M2A/3 mock queue checks,8 archive summaries exact; new native path pending. Solver physics unchanged, no force/radius fitting/gate relaxation. Next spatial interface J/S/traction candidate, not more runtime tuning; docs/m2a-joint-revision10.zh-CN.md.
+
 2026-10-12: Reviewed user-tested0fd9e979; independent summary exact. Sparse/dense15 audits and14319 pressure solves pass,10 complete trajectories plus MPI/restart; four64^3 timeout with6/8/35/35 windows. Projection99.33..99.56% of recorded response;1829s vs1837s not material speedup. Revision9 retains C++ revision8, adds optional fine MPI1/2/4/8 with decomposition/owner/coverage/native rank evidence, resource rank reservations, and diagnostic progress-cost report for failures.53 offline M2A tests,3 Windows Git Bash mock queue tests and shell syntax pass; native fine MPI pending. No gate/budget relaxation or developer WSL execution. See docs/m2a-joint-revision9.zh-CN.md.
 
 ## 2026-10-11：revision7改善收束但最细超时；revision8传递成本包待测

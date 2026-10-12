@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-12",
-  "latest_user_tested_commit": "0fd9e97983be45423b6d68b0cfd763aa4ebd39a2",
+  "latest_user_tested_commit": "01cfe2dc19d3bf6a58dc2aedd52d6ffc14e3dd6e",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -7050,6 +7050,870 @@
         }
       },
       "interpretation": "Sparse/dense native transfer equivalent; 10 full trajectories pass and four64^3 cases timeout. Projection99.33..99.56% of recorded response, not total package. No material speedup versus1837s; finest precision not_evaluated. Next optional fine MPI with unchanged physics/gates and progress cost report."
+    },
+    {
+      "date": "2026-10-12",
+      "report": "m2a-joint-20261012-102328-1271869.tar.gz",
+      "archive_sha256": "e8d7196d0ee94b877209806be5c00185be4a15c1abeda991b431ded992993bf6",
+      "tested_commit": "01cfe2dc19d3bf6a58dc2aedd52d6ffc14e3dd6e",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "independent_summary": "exact_match",
+      "native_build": "passed",
+      "native_shared_kernels": "passed",
+      "completed_trajectories": 14,
+      "complete_individual_passes": 10,
+      "physics_failed_cases": 4,
+      "execution_failed_cases": 0,
+      "pressure_solves": 16099,
+      "max_pressure_residual": 9.999716817486167e-15,
+      "transfer_audits": 15,
+      "matrix_wall_seconds": 2025,
+      "comparisons": {
+        "fixed-restart": {
+          "passed": true,
+          "checks": {
+            "position": true,
+            "velocity": true,
+            "rotation": true,
+            "force": true,
+            "torque": true,
+            "fluid_momentum": true
+          },
+          "metrics": {
+            "position": 0.0,
+            "velocity": 0.0,
+            "rotation": 0.0,
+            "force": 2.439454888092385e-19,
+            "torque": 3.0688400725717327e-22,
+            "fluid_momentum": 3.3881317890172014e-21
+          }
+        },
+        "fixed-mpi2": {
+          "passed": true,
+          "checks": {
+            "position": true,
+            "velocity": true,
+            "rotation": true,
+            "force": true,
+            "torque": true,
+            "fluid_momentum": true
+          },
+          "metrics": {
+            "position": 0.0,
+            "velocity": 0.0,
+            "rotation": 0.0,
+            "force": 7.709350226346029e-11,
+            "torque": 1.6548272402997581e-13,
+            "fluid_momentum": 1.4154496531023492e-15
+          }
+        },
+        "fixed-coarse-to-fine": {
+          "passed": true,
+          "error_increase": -0.045019031525516784,
+          "interpretation": "No asymptotic order claim"
+        },
+        "fixed-fine-to-finer": {
+          "passed": true,
+          "error_increase": -0.02539630201853349,
+          "interpretation": "No asymptotic order claim"
+        },
+        "fixed-coarse-to-fine-offset": {
+          "passed": true,
+          "error_increase": -0.04346121276892001,
+          "interpretation": "No asymptotic order claim"
+        },
+        "fixed-fine-to-finer-offset": {
+          "passed": true,
+          "error_increase": -0.028000069555402574,
+          "interpretation": "No asymptotic order claim"
+        },
+        "fixed-coarse-phase": {
+          "passed": true,
+          "load_difference_relative": 0.0027483741688045793
+        },
+        "fixed-fine-phase": {
+          "passed": true,
+          "load_difference_relative": 0.0011905554122078055
+        },
+        "fixed-finer-phase": {
+          "passed": true,
+          "load_difference_relative": 0.0037943229490768893
+        },
+        "rotate-coarse-to-fine": {
+          "passed": true,
+          "error_increase": -0.08371432991827077,
+          "interpretation": "No asymptotic order claim"
+        },
+        "rotate-fine-to-finer": {
+          "passed": true,
+          "error_increase": -0.04688203993723161,
+          "interpretation": "No asymptotic order claim"
+        },
+        "rotate-coarse-to-fine-offset": {
+          "passed": true,
+          "error_increase": -0.08452660417863078,
+          "interpretation": "No asymptotic order claim"
+        },
+        "rotate-fine-to-finer-offset": {
+          "passed": true,
+          "error_increase": -0.049019435947519785,
+          "interpretation": "No asymptotic order claim"
+        },
+        "rotate-coarse-phase": {
+          "passed": true,
+          "load_difference_relative": 0.003224198639481868
+        },
+        "rotate-fine-phase": {
+          "passed": true,
+          "load_difference_relative": 0.004036472899841881
+        },
+        "rotate-finer-phase": {
+          "passed": true,
+          "load_difference_relative": 0.006173868910130054
+        }
+      },
+      "cases": {
+        "fixed-coarse": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 5.393123386884179e-13,
+            "angular": 0.0,
+            "force_decomposition": 1.3448313093278698e-20,
+            "torque_decomposition": 8.863718975931213e-25,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.607160428139615e-12,
+            "pressure_correctors_max": 17.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.00417636301529134,
+            "slip": 0.01788295597664901,
+            "divergence": 3.772303416808262e-13,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.135927387339158,
+            "surface_target_defect_m_s": 9.910353005608191e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 344.0,
+            "window_wall_seconds_total": 187.58782664,
+            "joint_wall_residual": 9.910353005608191e-08,
+            "joint_iterations_total": 681.0,
+            "joint_pressure_solves_total": 846.0,
+            "joint_force_exchange_error": 2.981621140533106e-19,
+            "joint_torque_exchange_error": 1.1677809982048656e-19,
+            "joint_work_exchange_error": 1.8650337873656546e-23,
+            "stress_ledger_relative": 0.3474613128344573,
+            "stress_stokes_relative": 0.211516899496344,
+            "mean_reference_load_ratio": 1.135927387339158
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 1,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 155.553674429,
+                "spread": 0.57534571,
+                "projection": 154.882679383,
+                "interpolation": 0.004595294000000001,
+                "scaling": 0.000156742
+              },
+              "projection_fraction_of_response": 0.9956864082544944,
+              "explicit_failures": []
+            }
+          }
+        },
+        "fixed-coarse-offset": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 7.869052076109332e-13,
+            "angular": 0.0,
+            "force_decomposition": 1.3545930719309555e-20,
+            "torque_decomposition": 2.340191208209045e-24,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.820986740542824e-12,
+            "pressure_correctors_max": 18.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.004176363015292006,
+            "slip": 0.020073738534910467,
+            "divergence": 2.971991284912183e-12,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.1331790131703534,
+            "surface_target_defect_m_s": 9.967730650511846e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 344.0,
+            "window_wall_seconds_total": 186.150296723,
+            "joint_wall_residual": 9.967730650511846e-08,
+            "joint_iterations_total": 676.0,
+            "joint_pressure_solves_total": 838.0,
+            "joint_force_exchange_error": 2.439482920163195e-19,
+            "joint_torque_exchange_error": 1.1757430492058102e-19,
+            "joint_work_exchange_error": 9.235503850897232e-24,
+            "stress_ledger_relative": 0.34205454416249886,
+            "stress_stokes_relative": 0.20881135612985047,
+            "mean_reference_load_ratio": 1.1331790131703534
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 1,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 151.548975228,
+                "spread": 0.564141354,
+                "projection": 150.88873563,
+                "interpolation": 0.004314862,
+                "scaling": 0.000147448
+              },
+              "projection_fraction_of_response": 0.9956433912073198,
+              "explicit_failures": []
+            }
+          }
+        },
+        "fixed-fine": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 1.1686362895772652e-12,
+            "angular": 0.0,
+            "force_decomposition": 1.397605028787165e-20,
+            "torque_decomposition": 4.863934718522858e-26,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.98777637516207e-12,
+            "pressure_correctors_max": 26.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.005753551511382016,
+            "slip": 0.014053126034889708,
+            "divergence": 2.6283167655504805e-12,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.0909083558136412,
+            "surface_target_defect_m_s": 9.663748611841453e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 371.0,
+            "window_wall_seconds_total": 563.556510273,
+            "joint_wall_residual": 9.663748611841453e-08,
+            "joint_iterations_total": 725.0,
+            "joint_pressure_solves_total": 909.0,
+            "joint_force_exchange_error": 2.4394606323954314e-19,
+            "joint_torque_exchange_error": 1.7059263652944063e-19,
+            "joint_work_exchange_error": 7.871140516324904e-24,
+            "stress_ledger_relative": 0.2585457168239853,
+            "stress_stokes_relative": 0.16763579729283828,
+            "mean_reference_load_ratio": 1.0909083558136412
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 1,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 467.657242761,
+                "spread": 1.662095821,
+                "projection": 465.738152807,
+                "interpolation": 0.008723231,
+                "scaling": 0.000281457
+              },
+              "projection_fraction_of_response": 0.9958963749974877,
+              "explicit_failures": []
+            }
+          }
+        },
+        "fixed-fine-offset": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 1.2806386852443525e-12,
+            "angular": 0.0,
+            "force_decomposition": 1.3433207930660873e-20,
+            "torque_decomposition": 8.271806125530277e-25,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.94954743467866e-12,
+            "pressure_correctors_max": 25.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.005753551511382238,
+            "slip": 0.013330598179694245,
+            "divergence": 3.0801294335718427e-12,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.0897178004014334,
+            "surface_target_defect_m_s": 9.64644576477274e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 369.0,
+            "window_wall_seconds_total": 585.843417626,
+            "joint_wall_residual": 9.64644576477274e-08,
+            "joint_iterations_total": 752.0,
+            "joint_pressure_solves_total": 939.0,
+            "joint_force_exchange_error": 3.252610055758702e-19,
+            "joint_torque_exchange_error": 1.7215396289409305e-19,
+            "joint_work_exchange_error": 5.557619740590655e-24,
+            "stress_ledger_relative": 0.25498795608400754,
+            "stress_stokes_relative": 0.1652670675165384,
+            "mean_reference_load_ratio": 1.0897178004014334
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 1,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 483.840817518,
+                "spread": 1.744961394,
+                "projection": 481.82177716800004,
+                "interpolation": 0.009450684,
+                "scaling": 0.000306876
+              },
+              "projection_fraction_of_response": 0.9958270565919651,
+              "explicit_failures": []
+            }
+          }
+        },
+        "fixed-finer": {
+          "individual_gate": false,
+          "failed_checks": [
+            "fine64_stress_ledger"
+          ],
+          "metrics": {
+            "momentum": 1.7848658225226064e-12,
+            "angular": 0.0,
+            "force_decomposition": 1.345450886178191e-20,
+            "torque_decomposition": 8.337181012898494e-25,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.890555341358979e-12,
+            "pressure_correctors_max": 34.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.003218185291472775,
+            "slip": 0.010002727765104583,
+            "divergence": 9.746337550195663e-12,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.06551205379510772,
+            "surface_target_defect_m_s": 9.815765725654048e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 467.0,
+            "window_wall_seconds_total": 575.862938092,
+            "joint_wall_residual": 9.815765725654048e-08,
+            "joint_iterations_total": 902.0,
+            "joint_pressure_solves_total": 1113.0,
+            "joint_force_exchange_error": 1.6265605260158756e-19,
+            "joint_torque_exchange_error": 1.4698217590279757e-19,
+            "joint_work_exchange_error": 2.5283938645419694e-24,
+            "stress_ledger_relative": 0.20616319898713273,
+            "stress_stokes_relative": 0.14063702223686458,
+            "mean_reference_load_ratio": 1.0655120537951077
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 8,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 461.24308158100007,
+                "spread": 2.397680828,
+                "projection": 458.431421265,
+                "interpolation": 0.0989144,
+                "scaling": 0.003404842
+              },
+              "projection_fraction_of_response": 0.9939041680444017,
+              "explicit_failures": []
+            }
+          }
+        },
+        "fixed-finer-offset": {
+          "individual_gate": false,
+          "failed_checks": [
+            "fine64_stress_ledger"
+          ],
+          "metrics": {
+            "momentum": 4.335540638693866e-13,
+            "angular": 0.0,
+            "force_decomposition": 1.343134608026362e-20,
+            "torque_decomposition": 1.065797824068516e-25,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.992693144486019e-12,
+            "pressure_correctors_max": 38.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.003218185291473219,
+            "slip": 0.009752436780968527,
+            "divergence": 5.852992959788628e-11,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.06171773084603083,
+            "surface_target_defect_m_s": 9.935489123560842e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 449.0,
+            "window_wall_seconds_total": 544.715556021,
+            "joint_wall_residual": 9.935489123560842e-08,
+            "joint_iterations_total": 861.0,
+            "joint_pressure_solves_total": 1071.0,
+            "joint_force_exchange_error": 1.8982384573002073e-19,
+            "joint_torque_exchange_error": 1.467972731153929e-19,
+            "joint_work_exchange_error": 1.7921657589173035e-24,
+            "stress_ledger_relative": 0.19304282465196368,
+            "stress_stokes_relative": 0.13128505175468774,
+            "mean_reference_load_ratio": 1.0617177308460308
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 8,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 439.996685062,
+                "spread": 2.312515851,
+                "projection": 437.285051112,
+                "interpolation": 0.091685844,
+                "scaling": 0.004334926
+              },
+              "projection_fraction_of_response": 0.9938371491375716,
+              "explicit_failures": []
+            }
+          }
+        },
+        "rotate-coarse": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 4.631811390958864e-15,
+            "angular": 0.0,
+            "force_decomposition": 2.5198479451093528e-23,
+            "torque_decomposition": 2.636648607190557e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.542606119047433e-12,
+            "pressure_correctors_max": 14.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.00417636301529134,
+            "slip": 0.03220527472328248,
+            "divergence": 1.0402518835760502e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.2593856259908276,
+            "surface_target_defect_m_s": 9.792475498834134e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 331.0,
+            "window_wall_seconds_total": 93.369409576,
+            "joint_wall_residual": 9.792475498834134e-08,
+            "joint_iterations_total": 370.0,
+            "joint_pressure_solves_total": 467.0,
+            "joint_force_exchange_error": 2.995392958336568e-21,
+            "joint_torque_exchange_error": 1.9068711889010734e-21,
+            "joint_work_exchange_error": 5.293955920339377e-23,
+            "stress_ledger_relative": 0.5416232394303855,
+            "stress_stokes_relative": 0.28220492329947455,
+            "mean_reference_load_ratio": 1.2593856259908276
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 1,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 65.93558540999999,
+                "spread": 0.345021755,
+                "projection": 65.537180611,
+                "interpolation": 0.002526929,
+                "scaling": 0.000154403
+              },
+              "projection_fraction_of_response": 0.9939576664630695,
+              "explicit_failures": []
+            }
+          }
+        },
+        "rotate-coarse-offset": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 8.038118401295392e-15,
+            "angular": 0.0,
+            "force_decomposition": 1.3234889800848443e-22,
+            "torque_decomposition": 2.6107941380186764e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 8.664639611299336e-12,
+            "pressure_correctors_max": 14.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.004176363015292006,
+            "slip": 0.03374567415463923,
+            "divergence": 1.240077648395967e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.2561614273513457,
+            "surface_target_defect_m_s": 9.913619920498928e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 329.0,
+            "window_wall_seconds_total": 84.184882611,
+            "joint_wall_residual": 9.913619920498928e-08,
+            "joint_iterations_total": 328.0,
+            "joint_pressure_solves_total": 418.0,
+            "joint_force_exchange_error": 1.7493921507572133e-21,
+            "joint_torque_exchange_error": 3.122995754783445e-21,
+            "joint_work_exchange_error": 3.970466940254533e-23,
+            "stress_ledger_relative": 0.5275567123616246,
+            "stress_stokes_relative": 0.27133928482393865,
+            "mean_reference_load_ratio": 1.2561614273513457
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 1,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 57.766758265,
+                "spread": 0.298570918,
+                "projection": 57.42162996799999,
+                "interpolation": 0.0022085449999999997,
+                "scaling": 0.000152259
+              },
+              "projection_fraction_of_response": 0.9940254861556059,
+              "explicit_failures": []
+            }
+          }
+        },
+        "rotate-fine": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 1.1348852907185811e-14,
+            "angular": 0.0,
+            "force_decomposition": 6.4892534466045345e-24,
+            "torque_decomposition": 2.517731235486602e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.558482129535364e-12,
+            "pressure_correctors_max": 21.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.005753551511382016,
+            "slip": 0.026087033809270094,
+            "divergence": 8.502245099238926e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.17567129607255683,
+            "surface_target_defect_m_s": 9.713237771860179e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 338.0,
+            "window_wall_seconds_total": 316.350551643,
+            "joint_wall_residual": 9.713237771860179e-08,
+            "joint_iterations_total": 468.0,
+            "joint_pressure_solves_total": 605.0,
+            "joint_force_exchange_error": 2.010462095934891e-21,
+            "joint_torque_exchange_error": 3.074668141045573e-21,
+            "joint_work_exchange_error": 4.963083675318166e-23,
+            "stress_ledger_relative": 0.40674951128824616,
+            "stress_stokes_relative": 0.23107595349810883,
+            "mean_reference_load_ratio": 1.1756712960725568
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 1,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 233.76504053099998,
+                "spread": 1.077589946,
+                "projection": 232.51808252400002,
+                "interpolation": 0.0055193889999999995,
+                "scaling": 0.00023433
+              },
+              "projection_fraction_of_response": 0.9946657635197826,
+              "explicit_failures": []
+            }
+          }
+        },
+        "rotate-fine-offset": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 9.556009159673795e-15,
+            "angular": 0.0,
+            "force_decomposition": 3.308722450212111e-24,
+            "torque_decomposition": 2.6211286604364147e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.712688310716274e-12,
+            "pressure_correctors_max": 22.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.005753551511382238,
+            "slip": 0.02499287755028548,
+            "divergence": 3.9967212908577124e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.17163482317271495,
+            "surface_target_defect_m_s": 9.863551224935836e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 339.0,
+            "window_wall_seconds_total": 318.024574734,
+            "joint_wall_residual": 9.863551224935836e-08,
+            "joint_iterations_total": 476.0,
+            "joint_pressure_solves_total": 613.0,
+            "joint_force_exchange_error": 1.9329322943584526e-21,
+            "joint_torque_exchange_error": 2.911821715318135e-21,
+            "joint_work_exchange_error": 3.639594695233322e-23,
+            "stress_ledger_relative": 0.40799906515810486,
+            "stress_stokes_relative": 0.2363606167607114,
+            "mean_reference_load_ratio": 1.171634823172715
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 1,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 231.996135669,
+                "spread": 1.114546518,
+                "projection": 230.704931133,
+                "interpolation": 0.0057208829999999995,
+                "scaling": 0.000260233
+              },
+              "projection_fraction_of_response": 0.994434370502437,
+              "explicit_failures": []
+            }
+          }
+        },
+        "rotate-finer": {
+          "individual_gate": false,
+          "failed_checks": [
+            "fine64_reference",
+            "fine64_stress_ledger"
+          ],
+          "metrics": {
+            "momentum": 5.305951206381248e-15,
+            "angular": 0.0,
+            "force_decomposition": 1.993831316637074e-23,
+            "torque_decomposition": 2.553920345658671e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.997096635242804e-12,
+            "pressure_correctors_max": 25.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.003218185291472775,
+            "slip": 0.018455991249311254,
+            "divergence": 1.1005402906681814e-14,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.12878925613532521,
+            "surface_target_defect_m_s": 9.8722788007169e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 347.0,
+            "window_wall_seconds_total": 284.266317632,
+            "joint_wall_residual": 9.8722788007169e-08,
+            "joint_iterations_total": 490.0,
+            "joint_pressure_solves_total": 627.0,
+            "joint_force_exchange_error": 5.780367713340218e-21,
+            "joint_torque_exchange_error": 2.599511664442543e-21,
+            "joint_work_exchange_error": 3.970466940254533e-23,
+            "stress_ledger_relative": 0.3499702395756478,
+            "stress_stokes_relative": 0.22115999808763132,
+            "mean_reference_load_ratio": 1.1287892561353252
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 8,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 201.851966933,
+                "spread": 1.367926252,
+                "projection": 200.23529211000002,
+                "interpolation": 0.063364095,
+                "scaling": 0.004466322
+              },
+              "projection_fraction_of_response": 0.9919907898468158,
+              "explicit_failures": []
+            }
+          }
+        },
+        "rotate-finer-offset": {
+          "individual_gate": false,
+          "failed_checks": [
+            "fine64_reference",
+            "fine64_stress_ledger"
+          ],
+          "metrics": {
+            "momentum": 2.054882014622676e-15,
+            "angular": 0.0,
+            "force_decomposition": 1.374215643035234e-23,
+            "torque_decomposition": 2.522900888978168e-23,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.895076784831218e-12,
+            "pressure_correctors_max": 26.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.003218185291473219,
+            "slip": 0.017284693723740002,
+            "divergence": 7.277501839895982e-15,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.12261538722519516,
+            "surface_target_defect_m_s": 9.370218523690499e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 347.0,
+            "window_wall_seconds_total": 274.126603728,
+            "joint_wall_residual": 9.370218523690499e-08,
+            "joint_iterations_total": 473.0,
+            "joint_pressure_solves_total": 604.0,
+            "joint_force_exchange_error": 7.747126854472712e-21,
+            "joint_torque_exchange_error": 2.383595221766931e-21,
+            "joint_work_exchange_error": 4.301339185275744e-23,
+            "stress_ledger_relative": 0.3349323500564893,
+            "stress_stokes_relative": 0.21231247391912833,
+            "mean_reference_load_ratio": 1.1226153872251952
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 8,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 194.115080584,
+                "spread": 1.378978156,
+                "projection": 192.500109327,
+                "interpolation": 0.051917644,
+                "scaling": 0.00387361
+              },
+              "projection_fraction_of_response": 0.9916803411041464,
+              "explicit_failures": []
+            }
+          }
+        },
+        "fixed-restart": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 5.393123386884179e-13,
+            "angular": 0.0,
+            "force_decomposition": 1.3464022178653867e-20,
+            "torque_decomposition": 8.863718975931213e-25,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.607160428139615e-12,
+            "pressure_correctors_max": 17.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.00417636301529134,
+            "slip": 0.01788295597664901,
+            "divergence": 3.772303416808262e-13,
+            "clock": 3.469446951953614e-18,
+            "stokes_relative_error": 0.13592738733915755,
+            "surface_target_defect_m_s": 9.910353005608191e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 344.0,
+            "window_wall_seconds_total": 189.647558325,
+            "joint_wall_residual": 9.910353005608191e-08,
+            "joint_iterations_total": 681.0,
+            "joint_pressure_solves_total": 846.0,
+            "joint_force_exchange_error": 2.981599760096746e-19,
+            "joint_torque_exchange_error": 1.1677809982048656e-19,
+            "joint_work_exchange_error": 1.8650337873656546e-23,
+            "stress_ledger_relative": 0.34746131283445714,
+            "stress_stokes_relative": 0.211516899496344,
+            "mean_reference_load_ratio": 1.1359273873391575
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.first": {
+              "native_ranks": 1,
+              "cost_windows": 20,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 106.302333996,
+                "spread": 0.42718704599999996,
+                "projection": 105.805646596,
+                "interpolation": 0.0030248239999999997,
+                "scaling": 8.0155e-05
+              },
+              "projection_fraction_of_response": 0.9953275964757398,
+              "explicit_failures": []
+            },
+            "log.restart": {
+              "native_ranks": 1,
+              "cost_windows": 20,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 51.281451231000005,
+                "spread": 0.186019705,
+                "projection": 51.066124983,
+                "interpolation": 0.001377999,
+                "scaling": 8.0809e-05
+              },
+              "projection_fraction_of_response": 0.9958010890325616,
+              "explicit_failures": []
+            }
+          }
+        },
+        "fixed-mpi2": {
+          "individual_gate": true,
+          "failed_checks": [],
+          "metrics": {
+            "momentum": 5.172661423091663e-13,
+            "angular": 0.0,
+            "force_decomposition": 1.3342440039006233e-20,
+            "torque_decomposition": 8.982737107455682e-25,
+            "fluid_continuity": 0.0,
+            "momentum_equation_impulse_L1": 9.607162746040009e-12,
+            "pressure_correctors_max": 17.0,
+            "support_volume_ratio_max": 0.0,
+            "volume": 0.004176363015293005,
+            "slip": 0.017882928392198554,
+            "divergence": 1.0349965065671738e-12,
+            "clock": 3.0357660829594124e-18,
+            "stokes_relative_error": 0.13592738658271153,
+            "surface_target_defect_m_s": 9.910353636691676e-08,
+            "surface_correctors_max": 1.0,
+            "surface_correctors_mean": 1.0,
+            "pressure_correctors_total": 344.0,
+            "window_wall_seconds_total": 97.407871404,
+            "joint_wall_residual": 9.910353636691676e-08,
+            "joint_iterations_total": 681.0,
+            "joint_pressure_solves_total": 846.0,
+            "joint_force_exchange_error": 1.6273639658272543e-19,
+            "joint_torque_exchange_error": 1.1628087632439809e-19,
+            "joint_work_exchange_error": 6.211932529817171e-24,
+            "stress_ledger_relative": 0.34746131259240265,
+            "stress_stokes_relative": 0.2115169000106405,
+            "mean_reference_load_ratio": 1.1359273865827115
+          },
+          "completed_windows": 40,
+          "execution": "exit_status=0",
+          "logs": {
+            "log.solver": {
+              "native_ranks": 2,
+              "cost_windows": 40,
+              "invalid_cost_records": 0,
+              "cost_seconds": {
+                "response": 79.66381229299999,
+                "spread": 0.334331266,
+                "projection": 79.267967674,
+                "interpolation": 0.006229806,
+                "scaling": 0.000222969
+              },
+              "projection_fraction_of_response": 0.9950310610601449,
+              "explicit_failures": []
+            }
+          }
+        }
+      },
+      "interpretation": "All14 execution/40windows complete; finest8MPI works, all comparisons pass. Finest fixed drag passes but stress/ledger fails; rotation reference and stress/ledger fail. Shift from iteration/runtime to spatial geometry/force audit; no physical gate relaxation."
     }
   ],
   "development_packages": [
@@ -13587,6 +14451,145 @@
         "Optional64^3 1/2/4/8 MPI ranks with matched decomposition and rank evidence",
         "CPU rank reservation limits simultaneous case workers; serial coarse/fine and common restart retained",
         "Separate progress-cost diagnostic retains timeout completed-window evidence without passing gates"
+      ],
+      "physical_gate_relaxation": false,
+      "budget_increase": false
+    },
+    {
+      "date": "2026-10-12",
+      "scope": "revision10 spatial consistency reference",
+      "document": "docs/m2a-joint-revision10.zh-CN.md",
+      "offline_m2a_tests": 55,
+      "windows_git_bash_queue_tests": 3,
+      "historical_summary_exact_count": 8,
+      "native_build_reference": "not_evaluated",
+      "physical_fix": "not_implemented",
+      "analytic_sampling_oracles": [
+        {
+          "mode": "fixed",
+          "mesh_n": 36,
+          "phase_h": 0.0,
+          "markers": 51,
+          "wall_rms_m_s": 0.0006132342031162985,
+          "wall_max_m_s": 0.0009878458197272618,
+          "stress_load_ratio": 0.8919034204850755,
+          "reference_speed_m_s": 0.01
+        },
+        {
+          "mode": "fixed",
+          "mesh_n": 36,
+          "phase_h": 0.25,
+          "markers": 51,
+          "wall_rms_m_s": 0.0006502411769074775,
+          "wall_max_m_s": 0.001066397755444753,
+          "stress_load_ratio": 0.8939446428911184,
+          "reference_speed_m_s": 0.01
+        },
+        {
+          "mode": "fixed",
+          "mesh_n": 48,
+          "phase_h": 0.0,
+          "markers": 90,
+          "wall_rms_m_s": 0.0005078196308191532,
+          "wall_max_m_s": 0.0007961682351195075,
+          "stress_load_ratio": 0.9382642057275353,
+          "reference_speed_m_s": 0.01
+        },
+        {
+          "mode": "fixed",
+          "mesh_n": 48,
+          "phase_h": 0.25,
+          "markers": 90,
+          "wall_rms_m_s": 0.0004921824411587154,
+          "wall_max_m_s": 0.0008010051416128254,
+          "stress_load_ratio": 0.9356734538188299,
+          "reference_speed_m_s": 0.01
+        },
+        {
+          "mode": "fixed",
+          "mesh_n": 64,
+          "phase_h": 0.0,
+          "markers": 159,
+          "wall_rms_m_s": 0.00038975773827419494,
+          "wall_max_m_s": 0.0006190958243393545,
+          "stress_load_ratio": 0.9646145477321113,
+          "reference_speed_m_s": 0.01
+        },
+        {
+          "mode": "fixed",
+          "mesh_n": 64,
+          "phase_h": 0.25,
+          "markers": 159,
+          "wall_rms_m_s": 0.00036753145113445004,
+          "wall_max_m_s": 0.0006516940253126304,
+          "stress_load_ratio": 0.965918555127743,
+          "reference_speed_m_s": 0.01
+        },
+        {
+          "mode": "rotate",
+          "mesh_n": 36,
+          "phase_h": 0.0,
+          "markers": 51,
+          "wall_rms_m_s": 0.00013374703564517695,
+          "wall_max_m_s": 0.00021126872970313976,
+          "stress_load_ratio": 0.8594879245156414,
+          "reference_speed_m_s": 0.001
+        },
+        {
+          "mode": "rotate",
+          "mesh_n": 36,
+          "phase_h": 0.25,
+          "markers": 51,
+          "wall_rms_m_s": 0.00014129721453997473,
+          "wall_max_m_s": 0.00022102072407409915,
+          "stress_load_ratio": 0.8660381370973074,
+          "reference_speed_m_s": 0.001
+        },
+        {
+          "mode": "rotate",
+          "mesh_n": 48,
+          "phase_h": 0.0,
+          "markers": 90,
+          "wall_rms_m_s": 0.00010743775334276806,
+          "wall_max_m_s": 0.00016619906411293188,
+          "stress_load_ratio": 0.9165439480951983,
+          "reference_speed_m_s": 0.001
+        },
+        {
+          "mode": "rotate",
+          "mesh_n": 48,
+          "phase_h": 0.25,
+          "markers": 90,
+          "wall_rms_m_s": 0.0001031739339268818,
+          "wall_max_m_s": 0.00017533438351715128,
+          "stress_load_ratio": 0.9089978892388725,
+          "reference_speed_m_s": 0.001
+        },
+        {
+          "mode": "rotate",
+          "mesh_n": 64,
+          "phase_h": 0.0,
+          "markers": 159,
+          "wall_rms_m_s": 8.129666849544805e-05,
+          "wall_max_m_s": 0.00012895055344845077,
+          "stress_load_ratio": 0.9443916387315248,
+          "reference_speed_m_s": 0.001
+        },
+        {
+          "mode": "rotate",
+          "mesh_n": 64,
+          "phase_h": 0.25,
+          "markers": 159,
+          "wall_rms_m_s": 7.706094076987163e-05,
+          "wall_max_m_s": 0.00013585352993901277,
+          "stress_load_ratio": 0.9459588108530562,
+          "reference_speed_m_s": 0.001
+        }
+      ],
+      "changes": [
+        "Native opt-in analytic-field J/stress reference, start/endTime0",
+        "Independent full Cartesian/Fibonacci Python oracle and matched native rank/count/finite diagnostics",
+        "Separate12 geometry reference package, no CFD/DEM time advance or physical pass"
       ],
       "physical_gate_relaxation": false,
       "budget_increase": false

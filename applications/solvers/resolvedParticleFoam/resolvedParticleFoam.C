@@ -326,6 +326,28 @@ int main(int argc,char* argv[])
         }
         U.correctBoundaryConditions();
         if(runTime.value()==0) phi=fvc::flux(U);
+        if(config.getOrDefault<bool>("spatialAuditOnly",false))
+        {
+            if(!joint||runTime.value()!=0||runTime.endTime().value()!=0)
+                throw std::runtime_error("Spatial reference requires joint mode and start/end zero");
+            // Initial fields are the analytic Stokes solution; do not solve or
+            // advance CFD/DEM. Exercise the actual J and stress code as-is.
+            const vector centre=asFoamVector(particles[0].x),v=asFoamVector(particles[0].v);
+            const vector omega=asFoamVector(particles[0].omega);
+            const auto values=joint->interpolate(U,p);
+            const auto error=joint->rigidResidual(values,centre,v,omega);
+            surface->gather(U,p);
+            const auto stress=surface->diagnose(centre,particles[0].radius,v,omega,rho,viscosity);
+            const double pi=Foam::constant::mathematical::pi,R=particles[0].radius;
+            const double load=mode=="fixed" ? (stress.pressureForce+stress.viscousForce).x()
+                : -(stress.pressureTorque+stress.viscousTorque).z();
+            const double reference=mode=="fixed" ? 6*pi*rho*viscosity*R*.01
+                : 8*pi*rho*viscosity*pow3(R)*.1;
+            if(rank==0) Info.precision(17);
+            if(rank==0) Info<<"M2A_SPATIAL_REFERENCE markers="<<joint->count()
+                <<" wallRms="<<error[0]<<" wallMax="<<error[1]
+                <<" stressRatio="<<load/reference<<endl;
+        }
         mapGeometry();
         IOdictionary restore(IOobject("couplingState",runTime.timeName(),mesh,IOobject::READ_IF_PRESENT,IOobject::NO_WRITE,false));
         if(runTime.value()>0)

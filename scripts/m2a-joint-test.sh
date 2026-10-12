@@ -2,7 +2,11 @@
 # User-side integrated package; never rebuilds DEM or runs LPBF thermophysics.
 set -eo pipefail
 repo="$(cd "$(dirname "$0")/.." && pwd)"
-report="$repo/.runs/m2a-joint-$(date +%Y%m%d-%H%M%S)-$$"
+spatial_only="${JOINT_SPATIAL_ONLY:-0}"
+case "$spatial_only" in 0|1) ;; *) echo 'JOINT_SPATIAL_ONLY must be 0 or 1'; exit 1;; esac
+report_kind=m2a-joint
+if [ "$spatial_only" -eq 1 ]; then report_kind=m2a-spatial; fi
+report="$repo/.runs/$report_kind-$(date +%Y%m%d-%H%M%S)-$$"
 mkdir -p "$report"
 stage=environment
 finish() {
@@ -144,9 +148,11 @@ if ! [[ "$case_timeout" =~ ^[1-9][0-9]*$ ]]; then echo "Invalid JOINT_CASE_TIMEO
 command -v timeout >/dev/null
 run_selection() {
     local selection="$1" case_dir="$report/$1" rc ranks=1
+    local -a extra=()
+    if [ "$spatial_only" -eq 1 ]; then extra+=(--spatial-only); fi
     case "$selection" in *-finer|*-finer-offset) ranks="$fine_ranks";; fixed-mpi2) ranks=2;; esac
     # Include generation errors in the worker result, without dropping others.
-    if python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --selection "$selection" --ranks "$ranks" \
+    if python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --selection "$selection" --ranks "$ranks" "${extra[@]}" \
         && (run_case "$case_dir" "$selection" "$ranks"); then
         printf 'exit_status=0\n' > "$case_dir/result.txt"
         return 0
@@ -167,12 +173,20 @@ stage=case-matrix
 echo "Running up to $case_jobs cases concurrently; 64^3 cases use $fine_ranks ranks, other ordinary cases serial, MPI comparison 2 ranks."
 matrix_started=$SECONDS
 failures=0
+selections=(fixed-coarse fixed-coarse-offset fixed-fine fixed-fine-offset fixed-finer fixed-finer-offset
+    rotate-coarse rotate-coarse-offset rotate-fine rotate-fine-offset rotate-finer rotate-finer-offset)
+if [ "$spatial_only" -eq 0 ]; then selections+=(fixed-restart fixed-mpi2); fi
 if lpbf_run_case_queue "$case_jobs" launch_selection \
-    fixed-coarse fixed-coarse-offset fixed-fine fixed-fine-offset fixed-finer fixed-finer-offset \
-    rotate-coarse rotate-coarse-offset rotate-fine rotate-fine-offset rotate-finer rotate-finer-offset \
-    fixed-restart fixed-mpi2; then :; else failures=1; fi
+    "${selections[@]}"; then :; else failures=1; fi
 printf 'matrix_wall_seconds=%s\n' "$((SECONDS-matrix_started))" >> "$report/resources.txt"
 stage=summary
+if [ "$spatial_only" -eq 1 ]; then
+    python3 "$repo/scripts/summarize-m2a-spatial.py" "$report" --output "$report/spatial-summary.json"
+    test "$failures" -eq 0
+    stage=complete
+    echo 'Native analytic-field reference matched; no CFD/DEM time advancement or M2A physical pass.'
+    exit 0
+fi
 python3 "$repo/scripts/joint-cost-report.py" "$report" --output "$report/progress-cost.json"
 python3 "$repo/scripts/summarize-m2a-joint.py" "$report" --output "$report/summary.json"
 test "$failures" -eq 0
