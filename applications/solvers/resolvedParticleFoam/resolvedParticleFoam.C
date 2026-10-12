@@ -343,7 +343,7 @@ int main(int argc,char* argv[])
                 : -(stress.pressureTorque+stress.viscousTorque).z();
             const double reference=mode=="fixed" ? 6*pi*rho*viscosity*R*.01
                 : 8*pi*rho*viscosity*pow3(R)*.1;
-            if(rank==0) Info.precision(17);
+            if(rank==0) Info.stream().precision(17);
             if(rank==0) Info<<"M2A_SPATIAL_REFERENCE markers="<<joint->count()
                 <<" wallRms="<<error[0]<<" wallMax="<<error[1]
                 <<" stressRatio="<<load/reference<<endl;

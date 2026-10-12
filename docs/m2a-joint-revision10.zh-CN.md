@@ -1,5 +1,12 @@
 # M2A-02C revision10：空间几何与受力一致性审查
 
+## 2026-10-12：空间包编译反馈与接口修正
+
+报告m2a-spatial-20261012-115215-1290406.tar.gz测试e738951c，SHA256 a3a6e92369519903a296580bc9eaffe893db9b138a192b05918839c5389973d7。共享GMRES/响应/混合内核通过，但原生求解器编译退出2：Foam::messageStream没有precision成员，错误位于新增诊断输出。12组空间算例没有执行，不存在原生参照匹配结论；此前55项Python离线检查没有覆盖真实OpenFOAM C++接口。
+
+只读核对实际v2512头文件：messageStream.H声明OSstream& stream(OSstream* alternative=nullptr, int communicator=-1)；Ostream.H声明precision(int)设置器。已把Info.precision(17)改为Info.stream().precision(17)，保留17位输出及全部参照/物理门槛。没有启动开发端WSL或编译/运行仿真。修正后的原生构建和空间参考仍待用户运行，继续使用本页JOINT_SPATIAL_ONLY=1命令；此轮不开始新的近壁算法候选或重跑完整40窗矩阵。
+
+
 ## 用户反馈：完整轨迹已经得到，失败转为物理精度
 
 2026-10-12分析报告m2a-joint-20261012-102328-1271869.tar.gz，测试01cfe2dc，SHA256 e8d7196d0ee94b877209806be5c00185be4a15c1abeda991b431ded992993bf6。独立摘要精确一致。原生构建与共享内核通过，14组全部执行成功且完成40窗，四个64³算例真实使用8进程。15次稀疏等价审查通过，16,099次压力求解满足原1e−14容差，最大9.999716817486167e−15。10组个案通过；所有重启、MPI2、网格细化趋势和相位比较通过。整体仍失败，因为最细物理门槛未通过。

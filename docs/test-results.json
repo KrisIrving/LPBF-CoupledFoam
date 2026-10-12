@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-12",
-  "latest_user_tested_commit": "01cfe2dc19d3bf6a58dc2aedd52d6ffc14e3dd6e",
+  "latest_user_tested_commit": "e738951ccde88ebd77b029ddf328f854b12d3632",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -7914,6 +7914,21 @@
         }
       },
       "interpretation": "All14 execution/40windows complete; finest8MPI works, all comparisons pass. Finest fixed drag passes but stress/ledger fails; rotation reference and stress/ledger fail. Shift from iteration/runtime to spatial geometry/force audit; no physical gate relaxation."
+    },
+    {
+      "date": "2026-10-12",
+      "report": "m2a-spatial-20261012-115215-1290406.tar.gz",
+      "archive_sha256": "a3a6e92369519903a296580bc9eaffe893db9b138a192b05918839c5389973d7",
+      "tested_commit": "e738951ccde88ebd77b029ddf328f854b12d3632",
+      "last_stage": "build",
+      "exit_status": 2,
+      "native_shared_kernels": "passed",
+      "native_solver_build": "failed",
+      "build_error": "Foam::messageStream has no member named precision at spatial reference output",
+      "spatial_cases_executed": 0,
+      "native_spatial_reference": "not_evaluated",
+      "physical_validation": "not_evaluated",
+      "next": "Use verified v2512 Info.stream().precision(17); rerun spatial-only package, no solver physics/gate change"
     }
   ],
   "development_packages": [
@@ -14593,6 +14608,17 @@
       ],
       "physical_gate_relaxation": false,
       "budget_increase": false
+    },
+    {
+      "date": "2026-10-12",
+      "scope": "revision10 v2512 message output build repair",
+      "document": "docs/m2a-joint-revision10.zh-CN.md",
+      "source_api_review": "Installed v2512 messageStream.H stream() returns OSstream&, Ostream.H precision(int) setter verified read-only",
+      "change": "Info.precision(17) -> Info.stream().precision(17)",
+      "native_solver_build": "not_evaluated_after_fix",
+      "native_spatial_reference": "not_evaluated",
+      "physical_gate_relaxation": false,
+      "solver_physics_change": false
     }
   ]
 }
