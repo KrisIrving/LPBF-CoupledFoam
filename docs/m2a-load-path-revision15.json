@@ -1,0 +1,299 @@
+{
+  "scope": "Offline separation of wall constraints, independent sampling and load ledger.\n\nReads retained trajectories only. Does not run CFD or replace physical gates.\n",
+  "cases": {
+    "fixed-coarse": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.3661888496363388,
+        "inventory_correction": 1.3938239357791579e-06,
+        "ledger": 1.3661902434602748,
+        "pressure_traction": 0.35203300255253944,
+        "viscous_traction": 0.26247449573001275,
+        "traction": 0.6145074982825522
+      },
+      "max_load_identity_defect": 1.4198439915802754e-16,
+      "max_collocation_residual_m_s": 9.427655508361464e-08,
+      "max_independent_surface_slip_relative": 8.335710875524843e-06,
+      "max_bulk_slip_relative": 0.0517867695480588,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "fixed-coarse-offset": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.411954456950303,
+        "inventory_correction": -3.193729360621629e-06,
+        "ledger": 1.4119512632209423,
+        "pressure_traction": 0.36949235650268775,
+        "viscous_traction": 0.22165666467894007,
+        "traction": 0.5911490211816278
+      },
+      "max_load_identity_defect": 2.1120151947697574e-16,
+      "max_collocation_residual_m_s": 9.995767146919741e-08,
+      "max_independent_surface_slip_relative": 7.219683009766409e-06,
+      "max_bulk_slip_relative": 0.03746976856970276,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "fixed-fine": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.1369505878938113,
+        "inventory_correction": -7.753617469231008e-07,
+        "ledger": 1.1369498125320643,
+        "pressure_traction": 0.32330227904727693,
+        "viscous_traction": 0.4536941898730644,
+        "traction": 0.7769964689203414
+      },
+      "max_load_identity_defect": 7.153196410061591e-17,
+      "max_collocation_residual_m_s": 9.631245114481218e-08,
+      "max_independent_surface_slip_relative": 7.308085090362637e-06,
+      "max_bulk_slip_relative": 0.03921157591280345,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "fixed-fine-offset": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.1771581946687468,
+        "inventory_correction": -2.3890449142047626e-06,
+        "ledger": 1.1771558056238325,
+        "pressure_traction": 0.34361531458859806,
+        "viscous_traction": 0.3928751452793036,
+        "traction": 0.7364904598679016
+      },
+      "max_load_identity_defect": 7.166361398393351e-17,
+      "max_collocation_residual_m_s": 9.792131134801913e-08,
+      "max_independent_surface_slip_relative": 7.0795951755346725e-06,
+      "max_bulk_slip_relative": 0.040386091686329256,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "fixed-finer": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.085332230836546,
+        "inventory_correction": -1.1113923649982176e-06,
+        "ledger": 1.085331119444181,
+        "pressure_traction": 0.33780580100099045,
+        "viscous_traction": 0.4792526404241978,
+        "traction": 0.8170584414251882
+      },
+      "max_load_identity_defect": 7.185724902064648e-17,
+      "max_collocation_residual_m_s": 9.942507968514078e-08,
+      "max_independent_surface_slip_relative": 8.29588260745467e-06,
+      "max_bulk_slip_relative": 0.03597671332510305,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "fixed-finer-offset": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.0765492884322443,
+        "inventory_correction": -2.1017207139358562e-07,
+        "ledger": 1.0765490782601732,
+        "pressure_traction": 0.33534777702112684,
+        "viscous_traction": 0.50410344432344,
+        "traction": 0.8394512213445668
+      },
+      "max_load_identity_defect": 7.13301009461956e-17,
+      "max_collocation_residual_m_s": 9.923550886375244e-08,
+      "max_independent_surface_slip_relative": 6.945581707137139e-06,
+      "max_bulk_slip_relative": 0.03325838719597601,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "fixed-mpi2": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.3661888492832517,
+        "inventory_correction": 1.3938232603937947e-06,
+        "ledger": 1.366190243106512,
+        "pressure_traction": 0.3520330024704429,
+        "viscous_traction": 0.26247449564708486,
+        "traction": 0.6145074981175278
+      },
+      "max_load_identity_defect": 1.4098824837425773e-16,
+      "max_collocation_residual_m_s": 9.427655359253266e-08,
+      "max_independent_surface_slip_relative": 8.335710956459397e-06,
+      "max_bulk_slip_relative": 0.051786598599166324,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "fixed-restart": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.003099999999999998,
+      "tail_end_s": 0.003999999999999997,
+      "normalised_load_components": {
+        "constraint_reaction": 1.3661888496363388,
+        "inventory_correction": 1.3938239357517307e-06,
+        "ledger": 1.3661902434602744,
+        "pressure_traction": 0.35203300255253933,
+        "viscous_traction": 0.26247449573001264,
+        "traction": 0.614507498282552
+      },
+      "max_load_identity_defect": 1.4198439915802754e-16,
+      "max_collocation_residual_m_s": 9.427655508389027e-08,
+      "max_independent_surface_slip_relative": 8.33571087553458e-06,
+      "max_bulk_slip_relative": 0.0517867695480588,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "rotate-coarse": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.6543816237460436,
+        "inventory_correction": 2.5392638827027613e-05,
+        "ledger": 1.6544070163848708,
+        "pressure_traction": -1.2115198724270547e-19,
+        "viscous_traction": 0.508908782703949,
+        "traction": 0.508908782703949
+      },
+      "max_load_identity_defect": 1.0017733308698337e-16,
+      "max_collocation_residual_m_s": 9.972830985410911e-08,
+      "max_independent_surface_slip_relative": 8.224670458369905e-05,
+      "max_bulk_slip_relative": 0.157216094479852,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "rotate-coarse-offset": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.9625574060240598,
+        "inventory_correction": 4.689631718042876e-06,
+        "ledger": 1.9625620956557779,
+        "pressure_traction": -2.6072969223674717e-19,
+        "viscous_traction": 0.34857228301476784,
+        "traction": 0.34857228301476784
+      },
+      "max_load_identity_defect": 2.075542691678978e-16,
+      "max_collocation_residual_m_s": 9.663431611549751e-08,
+      "max_independent_surface_slip_relative": 5.971417186081241e-05,
+      "max_bulk_slip_relative": 0.09096907252511713,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "rotate-fine": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.2091179513585253,
+        "inventory_correction": 3.6942151313331174e-06,
+        "ledger": 1.2091216455736566,
+        "pressure_traction": -1.5040284665985375e-19,
+        "viscous_traction": 0.7400888204297331,
+        "traction": 0.7400888204297331
+      },
+      "max_load_identity_defect": 1.0017733308698337e-16,
+      "max_collocation_residual_m_s": 9.923761576988627e-08,
+      "max_independent_surface_slip_relative": 8.171277260758746e-05,
+      "max_bulk_slip_relative": 0.09761455069501193,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "rotate-fine-offset": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.2670164638566956,
+        "inventory_correction": 1.0283929724891385e-05,
+        "ledger": 1.2670267477864205,
+        "pressure_traction": 8.903911877802812e-20,
+        "viscous_traction": 0.6822946293041535,
+        "traction": 0.6822946293041535
+      },
+      "max_load_identity_defect": 1.0531990665407697e-16,
+      "max_collocation_residual_m_s": 9.65150539006151e-08,
+      "max_independent_surface_slip_relative": 7.508291666405931e-05,
+      "max_bulk_slip_relative": 0.10658161585354636,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "rotate-finer": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.1542110989245982,
+        "inventory_correction": 7.389447004704546e-06,
+        "ledger": 1.1542184883716031,
+        "pressure_traction": 1.0030751389632045e-19,
+        "viscous_traction": 0.7451924472016933,
+        "traction": 0.7451924472016933
+      },
+      "max_load_identity_defect": 1.0511420371139324e-16,
+      "max_collocation_residual_m_s": 9.692530382043258e-08,
+      "max_independent_surface_slip_relative": 7.87673086721223e-05,
+      "max_bulk_slip_relative": 0.09056414662564656,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    },
+    "rotate-finer-offset": {
+      "completed_windows": 40,
+      "complete": true,
+      "sample_scope": "last10 complete windows",
+      "tail_windows": 10,
+      "tail_start_s": 0.0030999999999999986,
+      "tail_end_s": 0.0039999999999999975,
+      "normalised_load_components": {
+        "constraint_reaction": 1.1365318662506128,
+        "inventory_correction": 5.812211457555275e-06,
+        "ledger": 1.1365376784620704,
+        "pressure_traction": 1.5163805695142342e-19,
+        "viscous_traction": 0.7692556718796911,
+        "traction": 0.7692556718796911
+      },
+      "max_load_identity_defect": 1.030571742845558e-16,
+      "max_collocation_residual_m_s": 9.571563407065692e-08,
+      "max_independent_surface_slip_relative": 6.286488377259098e-05,
+      "max_bulk_slip_relative": 0.07966469302860145,
+      "physical_pass": "not_assessed_by_this_diagnostic"
+    }
+  }
+}

@@ -1,5 +1,11 @@
 # Development and verification record
 
+## 2026-10-12 — revision16 native feedback and conservative-load contract
+
+2026-10-12最新原生e77c7289：14组均完成40窗，完整壁速/独立滑移及17287次压力求解通过；MPI/共同重启通过，无本次段错误，但不证明旧故障已修复。4组单例、12/16比较通过；最细固定应力/账本差23.71–26.83%解析载荷，旋转解析误差13.65–15.42%、应力/账本差36.73–40.90%，M2A仍开放。末段库存修正不足解释载荷差；新增几何审查发现2h牵引采样与源支撑部分重叠，非因果证明。下一包集中实现保守控制体/角动量账与保留牵引诊断，不改节点/门槛、不重复原包；69离线检查及最新原生摘要精确复算通过。详见[revision16](m2a-joint-revision16.zh-CN.md)。
+
+No new solver/C++ change or developer native execution. Traction-support census is geometric only. First offline test attempt failed Windows default TEMP permissions; rerun with workspace TEMP/TMP passed all69 tests. No unchanged native rerun requested.
+
 2026-10-12: Revision15 implements full288-point Q row-space orthonormal basis, six independent SVD/pivoted-MGS geometry admissions, ranks232/244/264/262/272/270. Native CompleteWallBasis shared kernel and opt-in JointSphere J/S/desired/load moments/full-Q residual are implemented. Startup oracle, native basis coverage/rank evidence and exact basis-signature restart guard added; existing pressure/force gates and budgets retained.67 offline M2A,3 Git Bash queue and9 joint+1 spatial exact regression pass. Native kernel/build/actual projected response/physical/MPI remain pending. One original14-case package with completeWallBasis and communication diagnostics is next; no WSL or native simulation used. See docs/m2a-joint-revision15.zh-CN.md.
 
 2026-10-12: Revision14 implements complete-Q row-space geometry preflight;5 fixtures cover Q to1e-10,36 offset retains3.93e-5 with pivot gate1e-8, so whole candidate not admitted. Implemented opt-in actual-response MPI stage/input/cache agreement on duplicated diagnostic context, per-rank breadcrumb, default off and no numerical operator change; native build/runtime pending.64 offline M2A,3 Git Bash queue and9 joint+1 spatial exact historical regression checks pass. Initial queue auto-selected System32 WSL launcher and failed parsing; fixed Windows auto-discovery to Git Bash only. Spatial filename retry corrected to spatial-summary.json. No CFD/DEM simulation executed. Next unified constraint basis with load transforms and actual projected response audit; no unchanged long run. See docs/m2a-joint-revision14.zh-CN.md.

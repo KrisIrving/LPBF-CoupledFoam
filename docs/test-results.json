@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-12",
-  "latest_user_tested_commit": "03b1a133bc2a5110ee4f33e8bffef88000998762",
+  "latest_user_tested_commit": "e77c7289e84bcc8de094a2cf0da54b85487cb4fb",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -9932,6 +9932,82 @@
       "interpretation": "Cubic native local consistency passes; full physical matrix regresses. Freeze candidate, no unchanged rerun. MPI2 segfault root cause unresolved.",
       "document": "docs/m2a-joint-revision13.zh-CN.md",
       "physical_validation": "M2A not closed; moving/contact/thermal/LPBF not evaluated"
+    },
+    {
+      "report": "m2a-joint-20261012-202311-1396545.tar.gz",
+      "archive_sha256": "9dfdb122cee1c9c98e35877385eda7f4c9bc2486f5e9833ddfb2a6d728c69867",
+      "tested_commit": "e77c7289e84bcc8de094a2cf0da54b85487cb4fb",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "native_build": true,
+      "native_shared_kernels": true,
+      "reconstruction": "completeWallBasis",
+      "communication_audit": true,
+      "cases_complete": 14,
+      "windows_per_case": 40,
+      "individual_passes": 4,
+      "comparisons_pass": 12,
+      "comparisons_total": 16,
+      "pressure_solves": 17287,
+      "maximum_pressure_final_residual": 9.999346057870042e-15,
+      "independent_slip_all_pass": true,
+      "complete_wall_constraint_all_pass": true,
+      "mpi_comparison": true,
+      "common_restart_comparison": true,
+      "communication_breadcrumbs_agreed": 43,
+      "previous_mpi_fault_root_cause": "not_proven_fixed",
+      "matrix_wall_seconds": 2214,
+      "physical_validation": false,
+      "scope": "Static noncontact isothermal sphere; no moving GCL/heat/LPBF qualification",
+      "fine64": {
+        "fixed-finer": {
+          "slip": 8.29588260745467e-06,
+          "stokes_relative_error": 0.08533111944418104,
+          "window_wall_seconds_total": 550.039050522,
+          "stress_ledger_relative": 0.2682726780189928,
+          "stress_stokes_relative": 0.18294155857481187
+        },
+        "fixed-finer-offset": {
+          "slip": 6.945581707137139e-06,
+          "stokes_relative_error": 0.07654907826017321,
+          "window_wall_seconds_total": 606.373019665,
+          "stress_ledger_relative": 0.2371112985724562,
+          "stress_stokes_relative": 0.16054877865543316
+        },
+        "rotate-finer": {
+          "slip": 7.87673086721223e-05,
+          "stokes_relative_error": 0.15421848837160312,
+          "window_wall_seconds_total": 185.428860687,
+          "stress_ledger_relative": 0.40902604116990987,
+          "stress_stokes_relative": 0.2548075527983067
+        },
+        "rotate-finer-offset": {
+          "slip": 6.286488377259098e-05,
+          "stokes_relative_error": 0.13653767846207043,
+          "window_wall_seconds_total": 203.20691998,
+          "stress_ledger_relative": 0.36728503710663807,
+          "stress_stokes_relative": 0.23074432812030887
+        }
+      },
+      "comparison_failures": {
+        "fixed-coarse-phase": {
+          "passed": false,
+          "load_difference_relative": 0.04576101976066749
+        },
+        "fixed-fine-phase": {
+          "passed": false,
+          "load_difference_relative": 0.0402059930917682
+        },
+        "rotate-coarse-phase": {
+          "passed": false,
+          "load_difference_relative": 0.30815507927090713
+        },
+        "rotate-fine-phase": {
+          "passed": false,
+          "load_difference_relative": 0.057905102212763904
+        }
+      },
+      "next": "Conservative nested mesh-face control-volume momentum/angular ledger plus retained independent traction; no unchanged rerun or tolerance tuning"
     }
   ],
   "development_packages": [
@@ -18752,6 +18828,19 @@
       "physical_gate_relaxation": false,
       "budget_increase": false,
       "next": "One original full14-case user native admission/physical/MPI/restart package with completeWallBasis and opt-in MPI stage diagnostics"
+    },
+    {
+      "date": "2026-10-12",
+      "revision": 16,
+      "offline_tests": 69,
+      "latest_native_summary_exact": true,
+      "load_path_artifact": "docs/m2a-load-path-revision15.json",
+      "traction_support_artifact": "docs/m2a-traction-support-audit.json",
+      "geometry_only": true,
+      "new_native_solver_change": false,
+      "new_native_control_volume": "not_implemented",
+      "physical_gate_relaxation": false,
+      "budget_increase": false
     }
   ]
 }

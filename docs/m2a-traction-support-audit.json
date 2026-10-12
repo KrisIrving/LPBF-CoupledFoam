@@ -1,0 +1,151 @@
+{
+  "scope": "Geometry-only audit of complete-Q source support and traction probe stencils.\n\nAn overlap is potential source support, not evidence of actual nonzero forcing.\nNo flow, pressure projection or physical acceptance is computed.\n",
+  "cases": [
+    {
+      "mesh_n": 36,
+      "phase_h": 0.0,
+      "support_cells": 272,
+      "exterior_support_cells": 168,
+      "maximum_support_distance_outside_wall_h": 1.0926763859362276,
+      "traction_probes_distance_h": {
+        "2": {
+          "nodes_with_support_overlap": 32,
+          "max_interpolation_weight_in_support": 0.09738029946058731,
+          "area_mean_interpolation_weight_in_support": 0.007982062097242785
+        },
+        "3": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        },
+        "4": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        }
+      }
+    },
+    {
+      "mesh_n": 36,
+      "phase_h": 0.25,
+      "support_cells": 316,
+      "exterior_support_cells": 218,
+      "maximum_support_distance_outside_wall_h": 1.4930501889028591,
+      "traction_probes_distance_h": {
+        "2": {
+          "nodes_with_support_overlap": 114,
+          "max_interpolation_weight_in_support": 0.345115167963137,
+          "area_mean_interpolation_weight_in_support": 0.047205106854404974
+        },
+        "3": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        },
+        "4": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        }
+      }
+    },
+    {
+      "mesh_n": 48,
+      "phase_h": 0.0,
+      "support_cells": 536,
+      "exterior_support_cells": 328,
+      "maximum_support_distance_outside_wall_h": 1.3619026473818088,
+      "traction_probes_distance_h": {
+        "2": {
+          "nodes_with_support_overlap": 112,
+          "max_interpolation_weight_in_support": 0.10119086133371485,
+          "area_mean_interpolation_weight_in_support": 0.022211066082431997
+        },
+        "3": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        },
+        "4": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        }
+      }
+    },
+    {
+      "mesh_n": 48,
+      "phase_h": 0.25,
+      "support_cells": 487,
+      "exterior_support_cells": 303,
+      "maximum_support_distance_outside_wall_h": 1.448623679425843,
+      "traction_probes_distance_h": {
+        "2": {
+          "nodes_with_support_overlap": 82,
+          "max_interpolation_weight_in_support": 0.2761941243688406,
+          "area_mean_interpolation_weight_in_support": 0.020761074864681442
+        },
+        "3": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        },
+        "4": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        }
+      }
+    },
+    {
+      "mesh_n": 64,
+      "phase_h": 0.0,
+      "support_cells": 776,
+      "exterior_support_cells": 456,
+      "maximum_support_distance_outside_wall_h": 1.2050150819776766,
+      "traction_probes_distance_h": {
+        "2": {
+          "nodes_with_support_overlap": 48,
+          "max_interpolation_weight_in_support": 0.14282884423460018,
+          "area_mean_interpolation_weight_in_support": 0.013291891007695981
+        },
+        "3": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        },
+        "4": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        }
+      }
+    },
+    {
+      "mesh_n": 64,
+      "phase_h": 0.25,
+      "support_cells": 802,
+      "exterior_support_cells": 468,
+      "maximum_support_distance_outside_wall_h": 1.4259195839645522,
+      "traction_probes_distance_h": {
+        "2": {
+          "nodes_with_support_overlap": 80,
+          "max_interpolation_weight_in_support": 0.20354080775915204,
+          "area_mean_interpolation_weight_in_support": 0.01847551928733944
+        },
+        "3": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        },
+        "4": {
+          "nodes_with_support_overlap": 0,
+          "max_interpolation_weight_in_support": 0,
+          "area_mean_interpolation_weight_in_support": 0.0
+        }
+      }
+    }
+  ],
+  "physical_pass": "not_assessed",
+  "limitation": "Stencil union bounds possible forcing only; extrapolation consistency on the numerical field remains unverified."
+}
