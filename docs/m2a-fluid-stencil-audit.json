@@ -1,0 +1,240 @@
+{
+  "scope": "Fluid-side polynomial J/transpose-S preflight; not projected CFD evidence.",
+  "pressure_projected_schur_rank": "not_evaluated",
+  "support_radius_h": 2.5,
+  "weight": "exp(-distance_h^2/2)",
+  "admission": "All six geometries improve both analytic wall RMS; moment/exchange/coefficient gates. Not physical validation.",
+  "candidates": [
+    {
+      "degree": 2,
+      "cases": [
+        {
+          "mesh_n": 36,
+          "phase_h": 0.0,
+          "markers": 51,
+          "support_min": 34,
+          "support_max": 46,
+          "coefficient_l1_max": 2.734441302784156,
+          "polynomial_moment_defect": 8.224757680475037e-16,
+          "min_normalised_cholesky_pivot": 0.5366920984163512,
+          "fixed_wall_rms_m_s": 0.0007586301110412283,
+          "rotate_wall_rms_m_s": 0.00014034483601597266,
+          "force_exchange_error_N": 4.0657581468206416e-20,
+          "first_moment_exchange_error_N_m": 9.26442286059391e-22,
+          "work_exchange_error_W": 4.0657581468206416e-20,
+          "fixed_baseline_wall_rms_m_s": 0.0006132342031162985,
+          "rotate_baseline_wall_rms_m_s": 0.00013374703564517695,
+          "checks": {
+            "moments": true,
+            "bounded_coefficients": true,
+            "force_exchange": true,
+            "first_moment_exchange": true,
+            "work_exchange": true,
+            "fixed_wall_improvement": false,
+            "rotate_wall_improvement": false
+          },
+          "admitted": false
+        },
+        {
+          "mesh_n": 36,
+          "phase_h": 0.25,
+          "markers": 51,
+          "support_min": 36,
+          "support_max": 48,
+          "coefficient_l1_max": 2.2893723952756435,
+          "polynomial_moment_defect": 4.941793502188929e-16,
+          "min_normalised_cholesky_pivot": 0.5307584086560031,
+          "fixed_wall_rms_m_s": 0.0005948975611710612,
+          "rotate_wall_rms_m_s": 0.00011036044953208177,
+          "force_exchange_error_N": 8.809142651444724e-20,
+          "first_moment_exchange_error_N_m": 9.132073962585426e-22,
+          "work_exchange_error_W": 5.421010862427522e-20,
+          "fixed_baseline_wall_rms_m_s": 0.0006502411769074775,
+          "rotate_baseline_wall_rms_m_s": 0.00014129721453997473,
+          "checks": {
+            "moments": true,
+            "bounded_coefficients": true,
+            "force_exchange": true,
+            "first_moment_exchange": true,
+            "work_exchange": true,
+            "fixed_wall_improvement": true,
+            "rotate_wall_improvement": true
+          },
+          "admitted": true
+        },
+        {
+          "mesh_n": 48,
+          "phase_h": 0.0,
+          "markers": 90,
+          "support_min": 33,
+          "support_max": 44,
+          "coefficient_l1_max": 2.562806551258711,
+          "polynomial_moment_defect": 8.688965616888283e-16,
+          "min_normalised_cholesky_pivot": 0.5034521819996183,
+          "fixed_wall_rms_m_s": 0.00036827008180571587,
+          "rotate_wall_rms_m_s": 6.402065422086597e-05,
+          "force_exchange_error_N": 1.0842021724855044e-19,
+          "first_moment_exchange_error_N_m": 1.1779051922755114e-21,
+          "work_exchange_error_W": 5.421010862427522e-20,
+          "fixed_baseline_wall_rms_m_s": 0.0005078196308191532,
+          "rotate_baseline_wall_rms_m_s": 0.00010743775334276806,
+          "checks": {
+            "moments": true,
+            "bounded_coefficients": true,
+            "force_exchange": true,
+            "first_moment_exchange": true,
+            "work_exchange": true,
+            "fixed_wall_improvement": true,
+            "rotate_wall_improvement": true
+          },
+          "admitted": true
+        },
+        {
+          "mesh_n": 48,
+          "phase_h": 0.25,
+          "markers": 90,
+          "support_min": 33,
+          "support_max": 46,
+          "coefficient_l1_max": 2.3212052616820236,
+          "polynomial_moment_defect": 5.545558586991794e-16,
+          "min_normalised_cholesky_pivot": 0.517670286543084,
+          "fixed_wall_rms_m_s": 0.00034401195649820705,
+          "rotate_wall_rms_m_s": 5.9760195718913594e-05,
+          "force_exchange_error_N": 5.421010862427522e-20,
+          "first_moment_exchange_error_N_m": 7.940933880509066e-22,
+          "work_exchange_error_W": 1.6940658945086007e-20,
+          "fixed_baseline_wall_rms_m_s": 0.0004921824411587154,
+          "rotate_baseline_wall_rms_m_s": 0.0001031739339268818,
+          "checks": {
+            "moments": true,
+            "bounded_coefficients": true,
+            "force_exchange": true,
+            "first_moment_exchange": true,
+            "work_exchange": true,
+            "fixed_wall_improvement": true,
+            "rotate_wall_improvement": true
+          },
+          "admitted": true
+        },
+        {
+          "mesh_n": 64,
+          "phase_h": 0.0,
+          "markers": 159,
+          "support_min": 33,
+          "support_max": 47,
+          "coefficient_l1_max": 2.467501289440337,
+          "polynomial_moment_defect": 6.473229070824704e-16,
+          "min_normalised_cholesky_pivot": 0.44714812200567167,
+          "fixed_wall_rms_m_s": 0.00017970054040188958,
+          "rotate_wall_rms_m_s": 2.9336911541808582e-05,
+          "force_exchange_error_N": 0.0,
+          "first_moment_exchange_error_N_m": 1.9058241313221758e-21,
+          "work_exchange_error_W": 5.421010862427522e-20,
+          "fixed_baseline_wall_rms_m_s": 0.00038975773827419494,
+          "rotate_baseline_wall_rms_m_s": 8.129666849544805e-05,
+          "checks": {
+            "moments": true,
+            "bounded_coefficients": true,
+            "force_exchange": true,
+            "first_moment_exchange": true,
+            "work_exchange": true,
+            "fixed_wall_improvement": true,
+            "rotate_wall_improvement": true
+          },
+          "admitted": true
+        },
+        {
+          "mesh_n": 64,
+          "phase_h": 0.25,
+          "markers": 159,
+          "support_min": 32,
+          "support_max": 45,
+          "coefficient_l1_max": 2.7965846714662597,
+          "polynomial_moment_defect": 5.788919623067428e-16,
+          "min_normalised_cholesky_pivot": 0.43327890338142216,
+          "fixed_wall_rms_m_s": 0.000187359032351246,
+          "rotate_wall_rms_m_s": 3.0662635287261415e-05,
+          "force_exchange_error_N": 1.6263032587282567e-19,
+          "first_moment_exchange_error_N_m": 1.376428539288238e-21,
+          "work_exchange_error_W": 1.1519648082658485e-19,
+          "fixed_baseline_wall_rms_m_s": 0.00036753145113445004,
+          "rotate_baseline_wall_rms_m_s": 7.706094076987163e-05,
+          "checks": {
+            "moments": true,
+            "bounded_coefficients": true,
+            "force_exchange": true,
+            "first_moment_exchange": true,
+            "work_exchange": true,
+            "fixed_wall_improvement": true,
+            "rotate_wall_improvement": true
+          },
+          "admitted": true
+        }
+      ],
+      "admitted_to_native": false
+    },
+    {
+      "degree": 3,
+      "cases": [
+        {
+          "mesh_n": 36,
+          "phase_h": 0.0,
+          "admitted": false,
+          "error": "marker=0, support=36, axis_levels=[5, 4, 3]: Deficient fluid polynomial stencil at basis column 19; pivot=3.553589979635797e-16"
+        },
+        {
+          "mesh_n": 36,
+          "phase_h": 0.25,
+          "markers": 51,
+          "support_min": 36,
+          "support_max": 48,
+          "coefficient_l1_max": 4.096372521636123,
+          "polynomial_moment_defect": 9.69197121104999e-16,
+          "min_normalised_cholesky_pivot": 0.3637182414169381,
+          "fixed_wall_rms_m_s": 0.0003606679960676763,
+          "rotate_wall_rms_m_s": 6.340451032260346e-05,
+          "force_exchange_error_N": 4.0657581468206416e-20,
+          "first_moment_exchange_error_N_m": 1.0587911840678754e-21,
+          "work_exchange_error_W": 5.421010862427522e-20,
+          "fixed_baseline_wall_rms_m_s": 0.0006502411769074775,
+          "rotate_baseline_wall_rms_m_s": 0.00014129721453997473,
+          "checks": {
+            "moments": true,
+            "bounded_coefficients": true,
+            "force_exchange": true,
+            "first_moment_exchange": true,
+            "work_exchange": true,
+            "fixed_wall_improvement": true,
+            "rotate_wall_improvement": true
+          },
+          "admitted": true
+        },
+        {
+          "mesh_n": 48,
+          "phase_h": 0.0,
+          "admitted": false,
+          "error": "marker=0, support=36, axis_levels=[5, 4, 3]: Deficient fluid polynomial stencil at basis column 19; pivot=4.62600506329872e-16"
+        },
+        {
+          "mesh_n": 48,
+          "phase_h": 0.25,
+          "admitted": false,
+          "error": "marker=2, support=40, axis_levels=[5, 5, 3]: Deficient fluid polynomial stencil at basis column 19; pivot=3.13975181036372e-16"
+        },
+        {
+          "mesh_n": 64,
+          "phase_h": 0.0,
+          "admitted": false,
+          "error": "marker=0, support=38, axis_levels=[5, 4, 3]: Deficient fluid polynomial stencil at basis column 19; pivot=2.750546149874316e-16"
+        },
+        {
+          "mesh_n": 64,
+          "phase_h": 0.25,
+          "admitted": false,
+          "error": "marker=0, support=41, axis_levels=[5, 5, 3]: Deficient fluid polynomial stencil at basis column 19; pivot=9.451425006470558e-16"
+        }
+      ],
+      "admitted_to_native": false
+    }
+  ]
+}

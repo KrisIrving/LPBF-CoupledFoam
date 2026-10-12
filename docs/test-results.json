@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-12",
-  "latest_user_tested_commit": "e738951ccde88ebd77b029ddf328f854b12d3632",
+  "latest_user_tested_commit": "eca9860f56cc816c6e695980bcf3eca94a2f7bd5",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -7929,6 +7929,277 @@
       "native_spatial_reference": "not_evaluated",
       "physical_validation": "not_evaluated",
       "next": "Use verified v2512 Info.stream().precision(17); rerun spatial-only package, no solver physics/gate change"
+    },
+    {
+      "date": "2026-10-12",
+      "report": "m2a-spatial-20261012-142054-1321235.tar.gz",
+      "archive_sha256": "bff0956a96f798e6e4fe8f16ddd240d20d56f2604751ce1e50ee0514b0616a63",
+      "tested_commit": "eca9860f56cc816c6e695980bcf3eca94a2f7bd5",
+      "last_stage": "complete",
+      "exit_status": 0,
+      "native_build": "passed",
+      "native_shared_kernels": "passed",
+      "spatial_reference_cases_passed": 12,
+      "spatial_reference_cases_total": 12,
+      "independent_summary": "exact_match",
+      "maximum_normalized_native_oracle_difference": 4.2500725161431774e-14,
+      "matrix_wall_seconds": 14,
+      "cases": {
+        "fixed-coarse": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.0006132342031163269,
+            "wall_max_m_s": 0.000987845819727493,
+            "stress_load_ratio": 0.891903420485083
+          },
+          "expected": {
+            "markers": 51,
+            "wall_rms_m_s": 0.0006132342031162983,
+            "wall_max_m_s": 0.0009878458197272618,
+            "stress_load_ratio": 0.8919034204850756,
+            "reference_speed_m_s": 0.01
+          }
+        },
+        "fixed-coarse-offset": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.0006502411769075104,
+            "wall_max_m_s": 0.0010663977554449557,
+            "stress_load_ratio": 0.8939446428911271
+          },
+          "expected": {
+            "markers": 51,
+            "wall_rms_m_s": 0.0006502411769074775,
+            "wall_max_m_s": 0.001066397755444753,
+            "stress_load_ratio": 0.8939446428911184,
+            "reference_speed_m_s": 0.01
+          }
+        },
+        "fixed-fine": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.0005078196308191931,
+            "wall_max_m_s": 0.0007961682351199299,
+            "stress_load_ratio": 0.9382642057275553
+          },
+          "expected": {
+            "markers": 90,
+            "wall_rms_m_s": 0.0005078196308191532,
+            "wall_max_m_s": 0.0007961682351195075,
+            "stress_load_ratio": 0.9382642057275352,
+            "reference_speed_m_s": 0.01
+          }
+        },
+        "fixed-fine-offset": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.0004921824411587636,
+            "wall_max_m_s": 0.0008010051416130709,
+            "stress_load_ratio": 0.9356734538188474
+          },
+          "expected": {
+            "markers": 90,
+            "wall_rms_m_s": 0.0004921824411587154,
+            "wall_max_m_s": 0.0008010051416128254,
+            "stress_load_ratio": 0.9356734538188298,
+            "reference_speed_m_s": 0.01
+          }
+        },
+        "fixed-finer": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.00038975773827422774,
+            "wall_max_m_s": 0.0006190958243397796,
+            "stress_load_ratio": 0.9646145477321336
+          },
+          "expected": {
+            "markers": 159,
+            "wall_rms_m_s": 0.00038975773827419494,
+            "wall_max_m_s": 0.0006190958243393545,
+            "stress_load_ratio": 0.9646145477321113,
+            "reference_speed_m_s": 0.01
+          }
+        },
+        "fixed-finer-offset": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.0003675314511344718,
+            "wall_max_m_s": 0.0006516940253123998,
+            "stress_load_ratio": 0.9659185551277718
+          },
+          "expected": {
+            "markers": 159,
+            "wall_rms_m_s": 0.00036753145113445004,
+            "wall_max_m_s": 0.0006516940253126304,
+            "stress_load_ratio": 0.965918555127743,
+            "reference_speed_m_s": 0.01
+          }
+        },
+        "rotate-coarse": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.00013374703564517933,
+            "wall_max_m_s": 0.0002112687297031274,
+            "stress_load_ratio": 0.8594879245156462
+          },
+          "expected": {
+            "markers": 51,
+            "wall_rms_m_s": 0.00013374703564517695,
+            "wall_max_m_s": 0.00021126872970313976,
+            "stress_load_ratio": 0.8594879245156414,
+            "reference_speed_m_s": 0.001
+          }
+        },
+        "rotate-coarse-offset": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.0001412972145399748,
+            "wall_max_m_s": 0.00022102072407410912,
+            "stress_load_ratio": 0.8660381370973153
+          },
+          "expected": {
+            "markers": 51,
+            "wall_rms_m_s": 0.00014129721453997473,
+            "wall_max_m_s": 0.00022102072407409915,
+            "stress_load_ratio": 0.8660381370973074,
+            "reference_speed_m_s": 0.001
+          }
+        },
+        "rotate-fine": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.0001074377533427688,
+            "wall_max_m_s": 0.00016619906411291665,
+            "stress_load_ratio": 0.9165439480952122
+          },
+          "expected": {
+            "markers": 90,
+            "wall_rms_m_s": 0.00010743775334276806,
+            "wall_max_m_s": 0.00016619906411293188,
+            "stress_load_ratio": 0.9165439480951983,
+            "reference_speed_m_s": 0.001
+          }
+        },
+        "rotate-fine-offset": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 0.00010317393392688565,
+            "wall_max_m_s": 0.00017533438351715933,
+            "stress_load_ratio": 0.9089978892388831
+          },
+          "expected": {
+            "markers": 90,
+            "wall_rms_m_s": 0.0001031739339268818,
+            "wall_max_m_s": 0.00017533438351715128,
+            "stress_load_ratio": 0.9089978892388725,
+            "reference_speed_m_s": 0.001
+          }
+        },
+        "rotate-finer": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 8.129666849544867e-05,
+            "wall_max_m_s": 0.00012895055344843017,
+            "stress_load_ratio": 0.9443916387315425
+          },
+          "expected": {
+            "markers": 159,
+            "wall_rms_m_s": 8.129666849544805e-05,
+            "wall_max_m_s": 0.00012895055344845077,
+            "stress_load_ratio": 0.9443916387315248,
+            "reference_speed_m_s": 0.001
+          }
+        },
+        "rotate-finer-offset": {
+          "passed": true,
+          "checks": {
+            "markers": true,
+            "wall_rms_m_s": true,
+            "wall_max_m_s": true,
+            "stress_load_ratio": true
+          },
+          "actual": {
+            "wall_rms_m_s": 7.706094076987225e-05,
+            "wall_max_m_s": 0.00013585352993900624,
+            "stress_load_ratio": 0.9459588108530746
+          },
+          "expected": {
+            "markers": 159,
+            "wall_rms_m_s": 7.706094076987163e-05,
+            "wall_max_m_s": 0.00013585352993901277,
+            "stress_load_ratio": 0.9459588108530562,
+            "reference_speed_m_s": 0.001
+          }
+        }
+      },
+      "physical_validation": "not_evaluated_by_this_reference_package",
+      "interpretation": "Actual J/stress matches independent analytic-field oracle; confirms sampling defects, not M2A force precision closure."
     }
   ],
   "development_packages": [
@@ -14619,6 +14890,30 @@
       "native_spatial_reference": "not_evaluated",
       "physical_gate_relaxation": false,
       "solver_physics_change": false
+    },
+    {
+      "date": "2026-10-12",
+      "scope": "revision11 fluid-side polynomial geometry preflight",
+      "document": "docs/m2a-joint-revision11.zh-CN.md",
+      "artifact": "docs/m2a-fluid-stencil-audit.json",
+      "offline_m2a_tests": 58,
+      "native_solver_change": false,
+      "candidate_admission": [
+        {
+          "degree": 2,
+          "admitted_to_native": false
+        },
+        {
+          "degree": 3,
+          "admitted_to_native": false
+        }
+      ],
+      "limits": [
+        "No actual projected FV pressure/GMRES/traction validation of candidate",
+        "Quadratic candidate worsens coarse original phase analytic wall RMS",
+        "Cubic support has only3 axial layers near poles; five geometry cases rank deficient"
+      ],
+      "next": "Geometry/rank aware support design and curvature error audit before new paired J/S native candidate; retain existing pressure and force gates"
     }
   ]
 }
