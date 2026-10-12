@@ -1,0 +1,125 @@
+{
+  "scope": "Geometric null-direction counterexample for fluid-only J and wall sampling Q.\n\nNo FV pressure projection or momentum solve: this is a compatibility bound,\nnot proof that the exhibited velocity occurs in the solved CFD trajectory.\n",
+  "cases": [
+    {
+      "mesh_n": 36,
+      "phase_h": 0.0,
+      "quadrature_nodes": 288,
+      "nodes_touching_interior": 288,
+      "interior_fraction_of_area_weighted_Q_frobenius_energy": 0.6989841986971591,
+      "lower_bound_Q_nullJ_frobenius_over_Q": 0.8360527487528279,
+      "null_direction_example": {
+        "interior_cell": [
+          20,
+          18,
+          16
+        ],
+        "cell_radius_m": 0.009860132971832693,
+        "unit_cell_velocity_m_s": 1.0,
+        "fluid_only_J_response_m_s": 0.0,
+        "independent_wall_response": 0.5470357969751736
+      },
+      "interpretation": "Interior columns of fluid-only J are zero, but Q has nonzero interior columns. J U=Ub alone cannot guarantee independent Q wall values. Bound uses unweighted cell velocity norm."
+    },
+    {
+      "mesh_n": 36,
+      "phase_h": 0.25,
+      "quadrature_nodes": 288,
+      "nodes_touching_interior": 288,
+      "interior_fraction_of_area_weighted_Q_frobenius_energy": 0.470562548294602,
+      "lower_bound_Q_nullJ_frobenius_over_Q": 0.6859756178572253,
+      "null_direction_example": {
+        "interior_cell": [
+          16,
+          17,
+          20
+        ],
+        "cell_radius_m": 0.009824855102126332,
+        "unit_cell_velocity_m_s": 1.0,
+        "fluid_only_J_response_m_s": 0.0,
+        "independent_wall_response": 0.9066429375128617
+      },
+      "interpretation": "Interior columns of fluid-only J are zero, but Q has nonzero interior columns. J U=Ub alone cannot guarantee independent Q wall values. Bound uses unweighted cell velocity norm."
+    },
+    {
+      "mesh_n": 48,
+      "phase_h": 0.0,
+      "quadrature_nodes": 288,
+      "nodes_touching_interior": 288,
+      "interior_fraction_of_area_weighted_Q_frobenius_energy": 0.5479012432839255,
+      "lower_bound_Q_nullJ_frobenius_over_Q": 0.7402035147740961,
+      "null_direction_example": {
+        "interior_cell": [
+          27,
+          25,
+          24
+        ],
+        "cell_radius_m": 0.009601432184835768,
+        "unit_cell_velocity_m_s": 1.0,
+        "fluid_only_J_response_m_s": 0.0,
+        "independent_wall_response": 0.8172383656199594
+      },
+      "interpretation": "Interior columns of fluid-only J are zero, but Q has nonzero interior columns. J U=Ub alone cannot guarantee independent Q wall values. Bound uses unweighted cell velocity norm."
+    },
+    {
+      "mesh_n": 48,
+      "phase_h": 0.25,
+      "quadrature_nodes": 288,
+      "nodes_touching_interior": 288,
+      "interior_fraction_of_area_weighted_Q_frobenius_energy": 0.48091715782861866,
+      "lower_bound_Q_nullJ_frobenius_over_Q": 0.6934819087969193,
+      "null_direction_example": {
+        "interior_cell": [
+          23,
+          24,
+          20
+        ],
+        "cell_radius_m": 0.009581068572972426,
+        "unit_cell_velocity_m_s": 1.0,
+        "fluid_only_J_response_m_s": 0.0,
+        "independent_wall_response": 0.7542802130380097
+      },
+      "interpretation": "Interior columns of fluid-only J are zero, but Q has nonzero interior columns. J U=Ub alone cannot guarantee independent Q wall values. Bound uses unweighted cell velocity norm."
+    },
+    {
+      "mesh_n": 64,
+      "phase_h": 0.0,
+      "quadrature_nodes": 288,
+      "nodes_touching_interior": 288,
+      "interior_fraction_of_area_weighted_Q_frobenius_energy": 0.38156303911840256,
+      "lower_bound_Q_nullJ_frobenius_over_Q": 0.617707891416649,
+      "null_direction_example": {
+        "interior_cell": [
+          30,
+          33,
+          36
+        ],
+        "cell_radius_m": 0.00932800722287457,
+        "unit_cell_velocity_m_s": 1.0,
+        "fluid_only_J_response_m_s": 0.0,
+        "independent_wall_response": 0.4163540463489708
+      },
+      "interpretation": "Interior columns of fluid-only J are zero, but Q has nonzero interior columns. J U=Ub alone cannot guarantee independent Q wall values. Bound uses unweighted cell velocity norm."
+    },
+    {
+      "mesh_n": 64,
+      "phase_h": 0.25,
+      "quadrature_nodes": 288,
+      "nodes_touching_interior": 288,
+      "interior_fraction_of_area_weighted_Q_frobenius_energy": 0.4473332650749115,
+      "lower_bound_Q_nullJ_frobenius_over_Q": 0.6688297728681877,
+      "null_direction_example": {
+        "interior_cell": [
+          34,
+          32,
+          27
+        ],
+        "cell_radius_m": 0.009866046178054309,
+        "unit_cell_velocity_m_s": 1.0,
+        "fluid_only_J_response_m_s": 0.0,
+        "independent_wall_response": 0.8757366889881335
+      },
+      "interpretation": "Interior columns of fluid-only J are zero, but Q has nonzero interior columns. J U=Ub alone cannot guarantee independent Q wall values. Bound uses unweighted cell velocity norm."
+    }
+  ]
+}
