@@ -6,7 +6,15 @@ import subprocess
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-BASH = os.environ.get('LPBF_TEST_BASH') or shutil.which('bash')
+BASH = os.environ.get('LPBF_TEST_BASH')
+if not BASH:
+    if os.name == 'nt':
+        # System32/bash.exe is a WSL launcher, not an offline Windows shell.
+        git = shutil.which('git')
+        candidate = Path(git).parent.parent/'bin/bash.exe' if git else None
+        BASH = str(candidate) if candidate and candidate.is_file() else None
+    else:
+        BASH = shutil.which('bash')
 
 
 @unittest.skipUnless(BASH, 'Bash unavailable')

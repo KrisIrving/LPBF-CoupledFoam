@@ -19,6 +19,14 @@ synthetic=load('joint_legacy_fixture',root/'tests/test_m2a_surface.py')
 
 
 class JointPackageTests(unittest.TestCase):
+    def test_opt_in_communication_instrumentation_config_is_explicit(self):
+        with tempfile.TemporaryDirectory() as folder:
+            case=Path(folder)
+            meta=prepare.prepare(case,'fixed-restart',communication_audit=True)
+            self.assertTrue(meta['communication_audit']['enabled'])
+            self.assertFalse(meta['communication_audit']['changes_numerical_operator'])
+            self.assertIn('jointCommunicationAudit true;', (case/'constant/mechanicalProperties').read_text())
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)
         self.writer=synthetic.SurfaceGateTests();self.writer.root=self.root

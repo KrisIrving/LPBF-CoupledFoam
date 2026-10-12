@@ -8,6 +8,7 @@
 #include "JointSphere.H"
 #include "JointResponseAudit.H"
 #include "JointOuterMix.H"
+#include "JointCommunicationAudit.H"
 #include <fstream>
 #include <filesystem>
 #include <iomanip>
@@ -116,6 +117,13 @@ int main(int argc,char* argv[])
         const bool jointOuterMix=config.getOrDefault<bool>("jointOuterMix",false);
         const label jointOuterHistory=config.getOrDefault<label>("jointOuterHistory",1);
         const bool jointSparseTransfer=config.getOrDefault<bool>("jointSparseTransfer",false);
+        std::unique_ptr<lpbfM2::JointCommunicationAudit> communicationAudit;
+        if(config.getOrDefault<bool>("jointCommunicationAudit",false))
+        {
+            if(!jointConstraint) throw std::runtime_error("Communication audit requires joint mode");
+            communicationAudit.reset(new lpbfM2::JointCommunicationAudit());
+            if(rank==0) Info<<"M2A_COMMUNICATION_AUDIT enabled=1"<<endl;
+        }
         const word jointReconstruction=config.getOrDefault<word>("jointReconstruction","trilinear");
         if(jointReconstruction!="trilinear"&&jointReconstruction!="fluidCubicAdaptive")
             throw std::runtime_error("Unknown joint reconstruction");
@@ -523,12 +531,16 @@ int main(int argc,char* argv[])
                             vectorField lastAcceleration(mesh.nCells(),vector::zero);
                             auto response=[&](const std::vector<double>& scaled,bool commit)
                             {
+                                auto trace=[&](unsigned long long stage)
+                                {if(communicationAudit) communicationAudit->stage(stage,runTime.value(),c+1,scaled,lastInput!=scaled);};
+                                trace(commit ? 2:1);
                                 if(lastInput!=scaled)
                                 {
                                     const auto responseStart=std::chrono::steady_clock::now();
                                     std::vector<double> forces(scaled.size());
                                     for(std::size_t i=0;i<forces.size();++i) forces[i]=scaled[i]/scaling[i/3];
                                     const vectorField acceleration=joint->acceleration(forces,rho);
+                                    trace(3); // spread completed
                                     deltaU=dimensionedVector("zero",dimVelocity,vector::zero);
                                     deltaU.primitiveFieldRef()=rAU.primitiveField()*acceleration;
                                     deltaU.correctBoundaryConditions();
@@ -539,12 +551,15 @@ int main(int argc,char* argv[])
                                     constrainPressure(deltaP,deltaU,deltaPhi,rAU);
                                     fvScalarMatrix responsePressure(fvm::laplacian(rAU,deltaP)==fvc::div(deltaPhi));
                                     if(deltaP.needReference()) responsePressure.setReference(rank==0 ? 0:-1,0);
+                                    trace(4); // pressure matrix assembled
                                     solveJointPressure(responsePressure);++jointPressureSolves;
+                                    trace(5); // pressure solve returned
                                     deltaPhi-=responsePressure.flux();
                                     deltaU-=rAU*fvc::grad(deltaP);deltaU.correctBoundaryConditions();
                                     projectionSeconds+=seconds(projectionStart);
                                     const auto interpolationStart=std::chrono::steady_clock::now();
                                     lastResult=joint->interpolate(deltaU,deltaP);
+                                    trace(6); // wall collective returned
                                     interpolationSeconds+=seconds(interpolationStart);
                                     lastInput=scaled;lastForces=forces;lastAcceleration=acceleration;
                                     responseSeconds+=seconds(responseStart);

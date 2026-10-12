@@ -4,6 +4,8 @@ set -eo pipefail
 repo="$(cd "$(dirname "$0")/.." && pwd)"
 spatial_only="${JOINT_SPATIAL_ONLY:-0}"
 reconstruction="${JOINT_RECONSTRUCTION:-trilinear}"
+communication_audit="${JOINT_COMMUNICATION_AUDIT:-0}"
+case "$communication_audit" in 0|1) ;; *) echo 'JOINT_COMMUNICATION_AUDIT must be 0 or 1'; exit 1;; esac
 case "$reconstruction" in trilinear|fluidCubicAdaptive) ;; *) echo 'Invalid JOINT_RECONSTRUCTION'; exit 1;; esac
 case "$spatial_only" in 0|1) ;; *) echo 'JOINT_SPATIAL_ONLY must be 0 or 1'; exit 1;; esac
 report_kind=m2a-joint
@@ -152,6 +154,7 @@ run_selection() {
     local selection="$1" case_dir="$report/$1" rc ranks=1
     local -a extra=()
     if [ "$spatial_only" -eq 1 ]; then extra+=(--spatial-only); fi
+    if [ "$communication_audit" -eq 1 ]; then extra+=(--communication-audit); fi
     case "$selection" in *-finer|*-finer-offset) ranks="$fine_ranks";; fixed-mpi2) ranks=2;; esac
     # Include generation errors in the worker result, without dropping others.
     if python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --selection "$selection" --ranks "$ranks" --reconstruction "$reconstruction" "${extra[@]}" \
