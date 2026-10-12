@@ -18841,6 +18841,26 @@
       "new_native_control_volume": "not_implemented",
       "physical_gate_relaxation": false,
       "budget_increase": false
+    },
+    {
+      "date": "2026-10-12",
+      "revision": 17,
+      "kind": "static_mesh_face_control_volume_ledger",
+      "offline_m2a_tests": 73,
+      "git_bash_mock_queue_tests": 3,
+      "historical_native_summary_exact": 3,
+      "native_solver_change": true,
+      "native_build": "not_evaluated",
+      "native_face_operator_identity": "not_evaluated",
+      "native_mpi_and_restart": "not_evaluated",
+      "native_physical_validation": "not_evaluated",
+      "physical_operator_change": false,
+      "physical_gate_relaxation": false,
+      "budget_increase": false,
+      "new_checks": "Euler/Gauss matrix/explicit and mesh-face identities; complete source coverage; explicit torque arm correction; two records/window",
+      "next": "One original14-case completeWallBasis user matrix with JOINT_CONTROL_VOLUME_AUDIT=1; inspect ledgers before any traction/interface change",
+      "standalone_joint_tests": 22,
+      "standalone_summary_module_import": "fixed_relative_path_loader; standalone and full rerun passed"
     }
   ]
 }

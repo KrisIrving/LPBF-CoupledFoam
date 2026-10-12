@@ -7,6 +7,7 @@ from pathlib import Path
 
 spec=importlib.util.spec_from_file_location('joint_common_gates',Path(__file__).with_name('summarize-m2a-surface.py'))
 audit=importlib.util.module_from_spec(spec);spec.loader.exec_module(audit)
+control_volume_gates=audit.load("control_volume_gates","control_volume_gates.py")
 
 
 def summarize(root):
@@ -17,6 +18,11 @@ def summarize(root):
             meta=json.loads((root/name/'M2A_META.json').read_text())
             if meta['package']!='M2A-02C' or meta['surface_controls']['scheme']!='jointSurface' or 'joint_controls' not in meta:
                 raise ValueError('Wrong package/scheme for joint verification')
+            if 'control_volume_audit' in meta:
+                try:entry['control_volume_audit']=control_volume_gates.evaluate(root/name,meta)
+                except (OSError,ValueError,KeyError) as error:
+                    entry['control_volume_audit']={'passed':False,'error':str(error)}
+                entry['passed']=entry['passed'] and entry['control_volume_audit']['passed']
             if 'operator_audit' in meta and not entry['passed']:
                 logs={}
                 for filename in ('log.solver','log.first','log.restart'):

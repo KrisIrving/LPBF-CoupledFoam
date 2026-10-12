@@ -9,6 +9,7 @@
 #include "JointResponseAudit.H"
 #include "JointOuterMix.H"
 #include "JointCommunicationAudit.H"
+#include "ControlVolumeAudit.H"
 #include <fstream>
 #include <filesystem>
 #include <iomanip>
@@ -89,6 +90,9 @@ int main(int argc,char* argv[])
         if(ranks!=Pstream::nProcs()) throw std::runtime_error("MPI/OpenFOAM rank mismatch");
         IOdictionary config(IOobject("mechanicalProperties",runTime.constant(),mesh,IOobject::MUST_READ,IOobject::NO_WRITE));
         const word mode(config.lookup("mode"));
+        const bool controlVolumeAudit=config.getOrDefault<bool>("controlVolumeAudit",false);
+        if(controlVolumeAudit&&mode!="fixed"&&mode!="rotate")
+            throw std::runtime_error("Control volume audit supports static fixed/rotate only");
         if(mode!="fixed" && mode!="rotate" && mode!="translate" && mode!="free")
             throw std::runtime_error("Unknown mechanical mode");
         const scalar rho=readScalar(config.lookup("rho")), viscosity=readScalar(config.lookup("nu"));
@@ -396,6 +400,8 @@ int main(int argc,char* argv[])
         {
             if(restore.getOrDefault<word>("boundaryTreatment","faceCentre")!=boundaryTreatment)
                 throw std::runtime_error("Restart boundary treatment differs from checkpoint");
+            if(restore.getOrDefault<bool>("controlVolumeAudit",false)!=controlVolumeAudit)
+                throw std::runtime_error("Restart control volume audit differs from checkpoint");
             if(restore.getOrDefault<word>("constraintScheme","volumePenalty")!=constraintScheme)
                 throw std::runtime_error("Restart constraint scheme differs from checkpoint");
             if(surfaceExtension&&restore.getOrDefault<word>("surfaceReconstruction","linear")!=reconstruction)
@@ -439,7 +445,20 @@ int main(int argc,char* argv[])
         }
         else interior(previousP[0],previousL[0]);
         if(std::abs(backend.time()-runTime.value())>1e-12) throw std::runtime_error("Restart clocks differ");
-        std::ofstream history;
+        std::ofstream history,controlHistory;
+        if(controlVolumeAudit&&rank==0)
+        {
+            controlHistory.open("control-volume-history.csv",runTime.value()>0 ? std::ios::app:std::ios::out);
+            if(!controlHistory) throw std::runtime_error("Cannot write control volume history");
+            controlHistory<<std::setprecision(17);
+            if(runTime.value()==0)
+            {
+                controlHistory<<"time,padding_h,cells,matrix_match_impulse,cell_impulse_L1,face_match_impulse,angular_face_match_impulse,source_force_error,source_torque_error";
+                for(const char* name:{"inventory","inventory_torque","source","source_torque","convection","pressure","diffusion","face_net","face_torque","arm_correction","residual","residual_torque"})
+                    for(const char* axis:{"x","y","z"}) controlHistory<<','<<name<<'_'<<axis;
+                controlHistory<<'\n';
+            }
+        }
         if(rank==0)
         {
             history.open("mechanical-history.csv",runTime.value()>0 ? std::ios::app : std::ios::out);
@@ -458,6 +477,7 @@ int main(int argc,char* argv[])
             ++runTime;
             mapGeometry();
             surfaceScalarField advecting(IOobject("advecting",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE),phi);
+            vectorField finalMatrixDefect(mesh.nCells(),vector::zero);
             label usedCorrectors=0,surfaceCorrectors=0,totalCorrectors=0;
             scalar equationImpulse=GREAT,targetDefect=0,continuityDefect=GREAT;
             label jointIterations=0,jointPressureSolves=0;
@@ -839,6 +859,11 @@ int main(int argc,char* argv[])
                     throw std::runtime_error("CFD momentum equation did not converge before DEM feedback");
                 if(continuityTolerance>=0&&continuityDefect>continuityTolerance)
                     throw std::runtime_error("CFD continuity did not converge before DEM feedback");
+                if(controlVolumeAudit)
+                {
+                    finalMatrixDefect=matrixResidual(equation);
+                    finalMatrixDefect-=mesh.V().field()*fvc::grad(p)().primitiveField();
+                }
                 surfaceCorrectors=outer+1;
                 if(!surfaceExtension) break;
                 surface->gather(U,p);
@@ -870,11 +895,13 @@ int main(int argc,char* argv[])
             if(surface) surface->gather(U,p);
             if(surface) stress=surface->diagnose(asFoamVector(before[0].x),before[0].radius,
                 asFoamVector(before[0].v),asFoamVector(before[0].omega),rho,viscosity);
+            vectorField integratedCellSource(mesh.nCells(),vector::zero);
             vector constraint=vector::zero, constraintTorque=vector::zero;
             scalar volume=0,slip=0,supportVolume=0;label covered=0;
             forAll(mesh.C(),cell)
             {
                 const vector f=rho*(lambda[cell]*(rigid[cell]-U[cell])+wallAcceleration[cell])*mesh.V()[cell];
+                integratedCellSource[cell]=f;
                 constraint+=f;constraintTorque+=(mesh.C()[cell]-asFoamVector(before[0].x))^f;
                 volume+=solid[cell]*mesh.V()[cell];slip+=solid[cell]*mesh.V()[cell]*magSqr(U[cell]-rigid[cell]);
                 if(lambda[cell]>0) supportVolume+=mesh.V()[cell];
@@ -914,6 +941,9 @@ int main(int argc,char* argv[])
                         -sum(faceP.boundaryField()[patch]*mesh.Sf().boundaryField()[patch])
                         -sum(advecting.boundaryField()[patch]*faceU.boundaryField()[patch]));
             reduce(boundary,sumOp<vector>());
+            if(controlVolumeAudit) lpbfM2::controlVolumeAudit(mesh,U,p,advecting,faceU,faceP,diffusion,
+                integratedCellSource,finalMatrixDefect,asFoamVector(before[0].x),before[0].radius,h,
+                rho,viscosity,dt,constraint,constraintTorque,controlHistory,rank==0);
             const scalar radius=before[0].radius, inertiaSphere=0.4*before[0].mass*radius*radius;
             const scalar exactVolume=4.0/3.0*constant::mathematical::pi*pow3(radius);
             std::vector<std::array<double,6>> loads(1);
@@ -961,6 +991,7 @@ int main(int argc,char* argv[])
                 IOdictionary checkpoint(IOobject("couplingState",runTime.timeName(),mesh,IOobject::NO_READ,IOobject::NO_WRITE,false));
                 checkpoint.add("ids",ids);checkpoint.add("interiorMomentum",previousP);
                 checkpoint.add("constraintScheme",constraintScheme);
+                checkpoint.add("controlVolumeAudit",controlVolumeAudit);
                 checkpoint.add("surfaceReconstruction",reconstruction);
                 checkpoint.add("boundaryTreatment",boundaryTreatment);
                 if(joint)

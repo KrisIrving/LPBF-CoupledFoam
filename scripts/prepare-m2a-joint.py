@@ -10,7 +10,7 @@ surface=importlib.util.module_from_spec(spec);spec.loader.exec_module(surface)
 CASES=surface.CASES
 
 
-def prepare(root,selection,ranks=None,spatial_only=False,reconstruction='trilinear',communication_audit=False):
+def prepare(root,selection,ranks=None,spatial_only=False,reconstruction='trilinear',communication_audit=False,control_volume_audit=False):
     if reconstruction not in ('trilinear','fluidCubicAdaptive','completeWallBasis'):raise ValueError('Unknown reconstruction')
     if spatial_only and selection in ('fixed-restart','fixed-mpi2'):
         raise ValueError('Spatial reference uses twelve geometry cases only')
@@ -89,6 +89,13 @@ jointSparseTransfer true;
     meta['scope']='Static single noncontact sphere; paired trilinear J and integrated-force transpose spread. '
     meta['scope']+='FV face-flux pressure-projected GMRES correction plus residual-controlled PISO. '
     meta['scope']+='No ghost penalty. q4 inventory retained; no moving GCL/contact/heat/scalable mapping validation.'
+    if control_volume_audit:
+        if spatial_only:raise ValueError('Control volume audit requires time advancement')
+        with p.open('a') as stream:stream.write('controlVolumeAudit true;\n')
+        meta['control_volume_audit']={'padding_h':[6,8],'matrix_match_impulse_N_s':1e-12,
+            'face_match_impulse_N_s':1e-12,'angular_match_impulse_N_m_s':meta['radius']*1e-12,
+            'source_force_N':1e-12,'source_torque_N_m':1e-14,
+            'scope':'Static Euler/Gauss-linear mesh-face ledger; torque arm correction explicit; diagnostic only'}
     if communication_audit:
         with p.open('a') as stream:stream.write('jointCommunicationAudit true;\n')
         meta['communication_audit']={'enabled':True,'scope':'replicated response stage/input/cache agreement; per-rank last-stage breadcrumb',
@@ -138,6 +145,7 @@ if __name__=='__main__':
     parser.add_argument('--spatial-only',action='store_true')
     parser.add_argument('--reconstruction',choices=('trilinear','fluidCubicAdaptive','completeWallBasis'),default='trilinear')
     parser.add_argument('--communication-audit',action='store_true')
+    parser.add_argument('--control-volume-audit',action='store_true')
     parser.add_argument('--half',action='store_true')
     parser.add_argument('--restart',action='store_true')
     args=parser.parse_args()
@@ -146,5 +154,5 @@ if __name__=='__main__':
         surface.baseline.control(args.case,start=.002)
         surface.baseline.write_dem(args.case,meta['mode'],restart=True)
     elif args.half:surface.baseline.control(args.case,end=.002)
-    elif args.selection:prepare(args.case,args.selection,args.ranks,args.spatial_only,args.reconstruction,args.communication_audit)
+    elif args.selection:prepare(args.case,args.selection,args.ranks,args.spatial_only,args.reconstruction,args.communication_audit,args.control_volume_audit)
     else:parser.error('Provide selection, half or restart')

@@ -8,6 +8,9 @@ communication_audit="${JOINT_COMMUNICATION_AUDIT:-0}"
 case "$communication_audit" in 0|1) ;; *) echo 'JOINT_COMMUNICATION_AUDIT must be 0 or 1'; exit 1;; esac
 case "$reconstruction" in trilinear|fluidCubicAdaptive|completeWallBasis) ;; *) echo 'Invalid JOINT_RECONSTRUCTION'; exit 1;; esac
 case "$spatial_only" in 0|1) ;; *) echo 'JOINT_SPATIAL_ONLY must be 0 or 1'; exit 1;; esac
+control_volume_audit="${JOINT_CONTROL_VOLUME_AUDIT:-0}"
+case "$control_volume_audit" in 0|1) ;; *) echo 'JOINT_CONTROL_VOLUME_AUDIT must be 0 or 1'; exit 1;; esac
+if [ "$control_volume_audit" -eq 1 ] && [ "$spatial_only" -eq 1 ]; then echo 'Control volume audit requires time advancement'; exit 1; fi
 report_kind=m2a-joint
 if [ "$spatial_only" -eq 1 ]; then report_kind=m2a-spatial; fi
 report="$repo/.runs/$report_kind-$(date +%Y%m%d-%H%M%S)-$$"
@@ -155,6 +158,7 @@ run_selection() {
     local -a extra=()
     if [ "$spatial_only" -eq 1 ]; then extra+=(--spatial-only); fi
     if [ "$communication_audit" -eq 1 ]; then extra+=(--communication-audit); fi
+    if [ "$control_volume_audit" -eq 1 ]; then extra+=(--control-volume-audit); fi
     case "$selection" in *-finer|*-finer-offset) ranks="$fine_ranks";; fixed-mpi2) ranks=2;; esac
     # Include generation errors in the worker result, without dropping others.
     if python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --selection "$selection" --ranks "$ranks" --reconstruction "$reconstruction" "${extra[@]}" \
