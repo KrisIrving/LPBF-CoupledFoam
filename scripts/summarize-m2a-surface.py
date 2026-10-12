@@ -23,6 +23,11 @@ def evaluate(case):
     logs=('log.first','log.restart') if meta['restart'] else ('log.solver',)
     for filename in logs:
         text=(case/filename).read_text(errors='replace')
+        if 'complete_wall_basis' in meta:
+            controls=meta['complete_wall_basis']
+            entry.setdefault('complete_wall_basis',{})[filename]=spatial.basis_values(text,controls)
+            if filename!='log.restart' and not spatial.reference_values(text,controls['reference'])['passed']:
+                raise ValueError('Complete wall native spatial reference failed')
         if 'joint_reconstruction' in meta:
             controls=meta['joint_reconstruction']
             evidence=spatial.reconstruction_values(text,controls)
@@ -199,6 +204,11 @@ def evaluate(case):
                 checks['joint_transfer_checkpoint']=bool(re.search(r'jointSparseTransfer\s+(?:1|true|on)\s*;',checkpoint))
             if 'joint_reconstruction' in meta:
                 checks['joint_reconstruction_checkpoint']=bool(re.search(r'jointReconstruction\s+'+meta['joint_reconstruction']['scheme']+r'\s*;',checkpoint))
+            if 'complete_wall_basis' in meta:
+                checks['joint_complete_wall_checkpoint']=bool(re.search(r'jointReconstruction\s+completeWallBasis\s*;',checkpoint))
+                signatures={v['signature'] for v in entry['complete_wall_basis'].values()}
+                checks['joint_complete_basis_signature']=len(signatures)==1 and bool(re.search(
+                    r'jointBasisSignature\s+'+next(iter(signatures))+r'\s*;',checkpoint))
             match=re.search(r'jointLoadSeed\s+(?:(\d+)\s*)?\(([^)]*)\)\s*;',checkpoint,re.S)
             uniform=re.search(r'jointLoadSeed\s+(\d+)\s*\{\s*([^}]+)\}\s*;',checkpoint,re.S)
             size=3*joint['markers']

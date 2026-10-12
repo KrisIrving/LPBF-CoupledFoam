@@ -6,7 +6,7 @@ spatial_only="${JOINT_SPATIAL_ONLY:-0}"
 reconstruction="${JOINT_RECONSTRUCTION:-trilinear}"
 communication_audit="${JOINT_COMMUNICATION_AUDIT:-0}"
 case "$communication_audit" in 0|1) ;; *) echo 'JOINT_COMMUNICATION_AUDIT must be 0 or 1'; exit 1;; esac
-case "$reconstruction" in trilinear|fluidCubicAdaptive) ;; *) echo 'Invalid JOINT_RECONSTRUCTION'; exit 1;; esac
+case "$reconstruction" in trilinear|fluidCubicAdaptive|completeWallBasis) ;; *) echo 'Invalid JOINT_RECONSTRUCTION'; exit 1;; esac
 case "$spatial_only" in 0|1) ;; *) echo 'JOINT_SPATIAL_ONLY must be 0 or 1'; exit 1;; esac
 report_kind=m2a-joint
 if [ "$spatial_only" -eq 1 ]; then report_kind=m2a-spatial; fi

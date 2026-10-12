@@ -125,9 +125,10 @@ int main(int argc,char* argv[])
             if(rank==0) Info<<"M2A_COMMUNICATION_AUDIT enabled=1"<<endl;
         }
         const word jointReconstruction=config.getOrDefault<word>("jointReconstruction","trilinear");
-        if(jointReconstruction!="trilinear"&&jointReconstruction!="fluidCubicAdaptive")
+        if(jointReconstruction!="trilinear"&&jointReconstruction!="fluidCubicAdaptive"&&jointReconstruction!="completeWallBasis")
             throw std::runtime_error("Unknown joint reconstruction");
         const bool fluidCubic=jointReconstruction=="fluidCubicAdaptive";
+        const bool completeWall=jointReconstruction=="completeWallBasis";
         if(jointOuterHistory<1||jointOuterHistory>4)
             throw std::runtime_error("Outer history outside1..4");
         if(jointOuterMix&&(!jointConstraint||momentumTolerance<=0))
@@ -184,7 +185,16 @@ int main(int argc,char* argv[])
         if(jointConstraint)
         {
             mesh.setFluxRequired("jointDeltaP");
-            joint.reset(new lpbfM2::JointSphere(mesh,*surface,asFoamVector(particles[0].x),particles[0].radius,h,jointSparseTransfer,fluidCubic));
+            joint.reset(new lpbfM2::JointSphere(mesh,*surface,asFoamVector(particles[0].x),particles[0].radius,h,jointSparseTransfer,fluidCubic,completeWall));
+            if(completeWall)
+            {
+                const auto stats=joint->basisStats();
+                if(joint->count()!=config.get<label>("expectedWallModes"))
+                    throw std::runtime_error("Complete wall mode count differs from independent SVD oracle");
+                if(rank==0){Info.stream().precision(17);
+                    Info<<"M2A_WALL_BASIS nodes="<<stats[0]<<" modes="<<stats[1]
+                        <<" coverage="<<stats[2]<<" orthogonality="<<stats[3]<<" signature="<<joint->basisSignature()<<endl;}
+            }
             if(fluidCubic&&rank==0)
             {
                 const auto stats=joint->reconstructionStats();Info.stream().precision(17);
@@ -346,7 +356,7 @@ int main(int argc,char* argv[])
         U.correctBoundaryConditions();
         if(runTime.value()==0) phi=fvc::flux(U);
         const bool spatialOnly=config.getOrDefault<bool>("spatialAuditOnly",false);
-        if(spatialOnly||(fluidCubic&&runTime.value()==0))
+        if(spatialOnly||((fluidCubic||completeWall)&&runTime.value()==0))
         {
             if(!joint||runTime.value()!=0||(spatialOnly&&runTime.endTime().value()!=0))
                 throw std::runtime_error("Spatial reference requires joint mode and start/end zero");
@@ -367,7 +377,7 @@ int main(int argc,char* argv[])
             if(rank==0) Info<<"M2A_SPATIAL_REFERENCE markers="<<joint->count()
                 <<" wallRms="<<error[0]<<" wallMax="<<error[1]
                 <<" stressRatio="<<load/reference<<endl;
-            if(fluidCubic)
+            if(fluidCubic||completeWall)
             {
                 const double scale=mode=="fixed" ? .01:.001;
                 const double rms=readScalar(config.lookup("referenceWallRms"));
@@ -405,6 +415,8 @@ int main(int argc,char* argv[])
                     throw std::runtime_error("Restart transfer mode differs from checkpoint");
                 if(restore.getOrDefault<word>("jointReconstruction","trilinear")!=jointReconstruction)
                     throw std::runtime_error("Restart reconstruction differs from checkpoint");
+                if(completeWall&&restore.getOrDefault<word>("jointBasisSignature","missing")!=joint->basisSignature())
+                    throw std::runtime_error("Restart modal basis differs from checkpoint; refusing a reinterpreted load seed");
                 if(jointWarmStart)
                 {
                     scalarList seed(restore.lookup("jointLoadSeed"));
@@ -516,6 +528,7 @@ int main(int argc,char* argv[])
                             for(int a=0;a<3;++a) {rhs[3*i+a]=desired[3*i+a]-values[3*i+a];norm+=sqr(rhs[3*i+a]);}
                             targetDefect=Foam::max(targetDefect,std::sqrt(norm));
                         }
+                        if(completeWall) targetDefect=joint->rigidResidual(values,asFoamVector(before[0].x),asFoamVector(before[0].v),asFoamVector(before[0].omega))[1];
                         if(targetDefect>targetTolerance)
                         {
                             const auto& scaling=jointScaling;
@@ -699,6 +712,7 @@ int main(int argc,char* argv[])
                                 scalar norm=0;for(int a=0;a<3;++a) norm+=sqr(values[3*i+a]-desired[3*i+a]);
                                 targetDefect=Foam::max(targetDefect,std::sqrt(norm));
                             }
+                            if(completeWall) targetDefect=joint->rigidResidual(values,asFoamVector(before[0].x),asFoamVector(before[0].v),asFoamVector(before[0].omega))[1];
                             if(!std::isfinite(targetDefect)||targetDefect>targetTolerance)
                                 throw std::runtime_error("Joint wall explicit residual did not converge");
                         }
@@ -780,6 +794,7 @@ int main(int argc,char* argv[])
                                     scalar norm=0;for(int a=0;a<3;++a) norm+=sqr(values[3*i+a]-desired[3*i+a]);
                                     candidateWall=Foam::max(candidateWall,std::sqrt(norm));
                                 }
+                                if(completeWall) candidateWall=joint->rigidResidual(values,asFoamVector(before[0].x),asFoamVector(before[0].v),asFoamVector(before[0].omega))[1];
                                 const bool accept=std::isfinite(candidate)&&std::isfinite(candidateDiv)
                                     &&std::isfinite(candidateWall)&&std::isfinite(linearity)&&linearity<=1e-8&&candidate<original
                                     &&candidateDiv<=continuityTolerance&&candidateWall<=targetTolerance;
@@ -957,6 +972,7 @@ int main(int argc,char* argv[])
                     checkpoint.add("jointOuterHistory",jointOuterHistory);
                     checkpoint.add("jointSparseTransfer",jointSparseTransfer);
                     checkpoint.add("jointReconstruction",jointReconstruction);
+                    if(completeWall) checkpoint.add("jointBasisSignature",joint->basisSignature());
                     if(jointWarmStart)
                     {
                         scalarList seed(jointPreviousLoads.size());

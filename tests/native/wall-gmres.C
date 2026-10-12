@@ -3,9 +3,22 @@
 #include "JointResponseAudit.H"
 #include "JointOuterMix.H"
 #include "PolynomialStencil.H"
+#include "CompleteWallBasis.H"
 #include <iostream>
 int main()
 {
+    // A weak independent row rejected by Gram-pivot sampling must still be
+    // represented by a unit orthogonal mode; duplicate rows add no mode.
+    const lpbfM2::CompleteWallBasis full({{1,0,0},{1,1e-7,0},{1,0,0}});
+    if(full.rows.size()!=2||full.coverage>1e-10||full.orthogonality>1e-10) return 82;
+    const std::vector<double> velocity{2,3,4},load{.13,-.27};
+    double cellWork=0,modalWork=0;
+    std::vector<double> source(3,0);
+    for(std::size_t i=0;i<full.rows.size();++i) for(int k=0;k<3;++k)
+    {source[k]+=full.rows[i][k]*load[i];modalWork+=load[i]*full.rows[i][k]*velocity[k];}
+    for(int k=0;k<3;++k) cellWork+=source[k]*velocity[k];
+    if(std::abs(cellWork-modalWork)>1e-14) return 83;
+    std::cout<<"COMPLETE_WALL_BASIS_NATIVE_KERNEL_PASS\n";
     std::vector<std::array<double,3>> cube,layers;
     for(double x:{-1.5,-.5,.5,1.5}) for(double y:{-1.5,-.5,.5,1.5})
     {

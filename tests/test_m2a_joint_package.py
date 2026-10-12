@@ -31,6 +31,38 @@ class JointPackageTests(unittest.TestCase):
         self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)
         self.writer=synthetic.SurfaceGateTests();self.writer.root=self.root
     def tearDown(self):self.temp.cleanup()
+    def test_complete_wall_mode_requires_native_basis_reference_and_checkpoint(self):
+        for name in ('fixed-coarse','fixed-restart'):
+            case,rows,old=self.fixture(name)
+            meta=prepare.prepare(case,name,reconstruction='completeWallBasis')
+            controls=meta['complete_wall_basis'];geometry=controls['geometry'];reference=controls['reference']
+            for row in rows:row['joint_markers']=geometry['modes']
+            self.writer.write(case,rows)
+            for filename in ('log.first','log.restart') if meta['restart'] else ('log.solver',):
+                path=case/filename; text=path.read_text()
+                text=re.sub(r'M2A_JOINT markers=\d+',f'M2A_JOINT markers={geometry["modes"]}',text)
+                text+=f'M2A_WALL_BASIS nodes=288 modes={geometry["modes"]} coverage=1e-15 orthogonality=1e-15 signature=b12345\n'
+                if filename!='log.restart':text+=f'M2A_SPATIAL_REFERENCE markers={geometry["modes"]} wallRms={reference["wall_rms_m_s"]} wallMax={reference["wall_max_m_s"]} stressRatio={reference["stress_load_ratio"]}\n'
+                path.write_text(text)
+            if meta['restart']:
+                checkpoint=case/'0.002/couplingState';text=checkpoint.read_text()
+                size=3*geometry['modes'];text=re.sub(r'jointLoadSeed [^;]+;',f'jointLoadSeed {size}\n('+ ' '.join('0' for _ in range(size))+');',text)
+                checkpoint.write_text(text+'\njointReconstruction completeWallBasis;\njointBasisSignature b12345;\n')
+            self.assertTrue(summary.audit.evaluate(case)[0]['passed'])
+            path=case/('log.restart' if meta['restart'] else 'log.solver');text=path.read_text()
+            path.write_text(text.replace('coverage=1e-15','coverage=1e-3'))
+            with self.assertRaisesRegex(ValueError,'coverage/rank'):summary.audit.evaluate(case)
+            path.write_text(text)
+            if meta['restart']:
+                saved=checkpoint.read_text()
+                checkpoint.write_text(saved.replace('jointBasisSignature b12345;','jointBasisSignature b99999;'))
+                self.assertFalse(summary.audit.evaluate(case)[0]['checks']['joint_complete_basis_signature'])
+                checkpoint.write_text(saved)
+                checkpoint.write_text(checkpoint.read_text().replace('jointReconstruction completeWallBasis;','jointReconstruction trilinear;'))
+                self.assertFalse(summary.audit.evaluate(case)[0]['checks']['joint_complete_wall_checkpoint'])
+            else:
+                path.write_text(text.replace('M2A_SPATIAL_REFERENCE','OMITTED_REFERENCE'))
+                with self.assertRaisesRegex(ValueError,'spatial reference'):summary.audit.evaluate(case)
     def fixture(self,name):
         case,rows,_=self.writer.fixture(name)
         meta=prepare.prepare(case,name)

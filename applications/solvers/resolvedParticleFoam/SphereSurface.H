@@ -104,6 +104,27 @@ public:
         return result;
     }
     int globalCells() const {return count_;}
+    Foam::vector cellCentre(int id) const
+    {const int k=id%size_[2],j=(id/size_[2])%size_[1],i=id/(size_[1]*size_[2]);
+     return Foam::vector(origin_[0]+i*h_,origin_[1]+j*h_,origin_[2]+k*h_);}
+    static std::vector<Foam::vector> wallPoints(const Foam::vector& centre,double radius)
+    {
+        std::vector<Foam::vector> points;const double pi=Foam::constant::mathematical::pi;
+        for(int iz=0;iz<12;++iz)
+        {
+            double z=std::cos(pi*(iz+.75)/12.5);bool converged=false;
+            for(int iteration=0;iteration<32;++iteration)
+            {double a=1,b=0;for(int degree=1;degree<=12;++degree)
+             {double c=b;b=a;a=((2*degree-1)*z*b-(degree-1)*c)/degree;}
+             const double change=a/(12*(z*a-b)/(z*z-1));z-=change;
+             if(std::abs(change)<1e-15){converged=true;break;}}
+            if(!converged) throw std::runtime_error("Wall basis quadrature root budget");
+            for(int ip=0;ip<24;++ip)
+            {const double phi=2*pi*(ip+.5)/24;
+             points.push_back(centre+radius*Foam::vector(std::sqrt(1-z*z)*std::cos(phi),std::sqrt(1-z*z)*std::sin(phi),z));}
+        }
+        return points;
+    }
     int globalIndex(int local) const {return indices_[local];}
     Foam::vector interpolateVelocity(const Foam::vector& point) const {return velocity(sample(point));}
     struct Diagnostics

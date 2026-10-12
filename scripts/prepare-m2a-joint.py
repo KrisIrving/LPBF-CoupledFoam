@@ -11,7 +11,7 @@ CASES=surface.CASES
 
 
 def prepare(root,selection,ranks=None,spatial_only=False,reconstruction='trilinear',communication_audit=False):
-    if reconstruction not in ('trilinear','fluidCubicAdaptive'):raise ValueError('Unknown reconstruction')
+    if reconstruction not in ('trilinear','fluidCubicAdaptive','completeWallBasis'):raise ValueError('Unknown reconstruction')
     if spatial_only and selection in ('fixed-restart','fixed-mpi2'):
         raise ValueError('Spatial reference uses twelve geometry cases only')
     if ranks is not None and ranks not in (1,2,4,8):
@@ -97,7 +97,20 @@ jointSparseTransfer true;
         reference_spec=importlib.util.spec_from_file_location('spatial_reference',Path(__file__).with_name('audit-m2a-spatial-consistency.py'))
         reference=importlib.util.module_from_spec(reference_spec);reference_spec.loader.exec_module(reference)
         expected=reference.fixture(meta['mode'],meta['mesh_n'],meta['centre_phase_h'])
-        if reconstruction!='trilinear':
+        if reconstruction=='completeWallBasis':
+            artifact=json.loads((Path(__file__).parents[1]/'docs/m2a-wall-basis-audit.json').read_text())
+            geometry=next(c for c in artifact['cases'] if c['mesh_n']==meta['mesh_n'] and c['phase_h']==meta['centre_phase_h'])
+            if not artifact['all_geometry_admitted']:raise ValueError('Incomplete wall basis geometry admission')
+            expected.update(markers=geometry['modes'],wall_rms_m_s=geometry['references'][meta['mode']]['wall_rms_m_s'],
+                            wall_max_m_s=geometry['references'][meta['mode']]['wall_max_m_s'])
+            meta['joint_controls']['markers']=geometry['modes']
+            meta['complete_wall_basis']={'geometry':geometry,'coverage_tolerance':1e-10,'orthogonality_tolerance':1e-10,'reference':expected}
+            with p.open('a') as stream:
+                stream.write(f'jointReconstruction completeWallBasis;\nexpectedWallModes {geometry["modes"]};\n')
+                stream.write(f'referenceWallRms {expected["wall_rms_m_s"]:.17g};\nreferenceWallMax {expected["wall_max_m_s"]:.17g};\nreferenceStressRatio {expected["stress_load_ratio"]:.17g};\n')
+            meta['scope']=meta['scope'].replace('paired trilinear J','orthonormal complete wall J')
+            meta['scope']+=' Modal loads use basis zeroth/first moments, not point-force interpretation.'
+        elif reconstruction!='trilinear':
             fluid_spec=importlib.util.spec_from_file_location('fluid_reference',Path(__file__).with_name('audit-m2a-fluid-stencil.py'))
             fluid=importlib.util.module_from_spec(fluid_spec);fluid_spec.loader.exec_module(fluid)
             geometry=fluid.fixture(meta['mesh_n'],meta['centre_phase_h'],3,True)
@@ -123,7 +136,7 @@ if __name__=='__main__':
     parser.add_argument('--selection',choices=CASES)
     parser.add_argument('--ranks',type=int,choices=(1,2,4,8))
     parser.add_argument('--spatial-only',action='store_true')
-    parser.add_argument('--reconstruction',choices=('trilinear','fluidCubicAdaptive'),default='trilinear')
+    parser.add_argument('--reconstruction',choices=('trilinear','fluidCubicAdaptive','completeWallBasis'),default='trilinear')
     parser.add_argument('--communication-audit',action='store_true')
     parser.add_argument('--half',action='store_true')
     parser.add_argument('--restart',action='store_true')

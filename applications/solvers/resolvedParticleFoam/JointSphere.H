@@ -4,6 +4,10 @@
 #define LPBF_JOINT_SPHERE_H
 #include "SphereSurface.H"
 #include "WallGMRES.H"
+#include "CompleteWallBasis.H"
+#include <set>
+#include <cstring>
+#include <string>
 
 namespace lpbfM2
 {
@@ -15,15 +19,40 @@ class JointSphere
     std::vector<SphereSurface::Stencil> stencils_;
     std::vector<std::vector<int>> localStencils_;
     bool sparse_;
+    bool complete_;
+    std::vector<std::vector<double>> wallCoordinates_;
+    std::vector<double> basisSums_;
+    std::vector<Foam::vector> basisFirst_;
+    double radius_,coverage_=0,orthogonality_=0;
     double minPivot_=1;
 public:
-    JointSphere(const Foam::fvMesh& mesh,SphereSurface& grid,const Foam::vector& centre,double radius,double h,bool sparse=false,bool fluidCubic=false)
-    :mesh_(mesh),grid_(grid),sparse_(sparse)
+    JointSphere(const Foam::fvMesh& mesh,SphereSurface& grid,const Foam::vector& centre,double radius,double h,bool sparse=false,bool fluidCubic=false,bool complete=false)
+    :mesh_(mesh),grid_(grid),sparse_(sparse),complete_(complete),radius_(radius)
     {
         const double pi=Foam::constant::mathematical::pi;
-        const int count=static_cast<int>(std::ceil(4*pi*radius*radius/(2.25*h*h)));
+        int count=static_cast<int>(std::ceil(4*pi*radius*radius/(2.25*h*h)));
         if(count<8||count>512) throw std::runtime_error("Joint static marker budget outside [8,512]");
-        for(int i=0;i<count;++i)
+        if(complete_)
+        {
+            points_=grid_.wallPoints(centre,radius);std::vector<SphereSurface::Stencil> full;std::set<int> support;
+            for(const auto& point:points_)
+            {full.push_back(grid_.stencil(point));for(int cell:full.back().cells) support.insert(cell);}
+            std::vector<int> cells(support.begin(),support.end());std::vector<std::vector<double>> original;
+            for(const auto& row:full)
+            {std::vector<double> values(cells.size(),0);for(std::size_t k=0;k<row.cells.size();++k)
+             values[std::lower_bound(cells.begin(),cells.end(),row.cells[k])-cells.begin()]=row.weights[k];
+             original.push_back(values);}
+            const CompleteWallBasis basis(original);wallCoordinates_=basis.coordinates;
+            coverage_=basis.coverage;orthogonality_=basis.orthogonality;
+            for(const auto& row:basis.rows)
+            {SphereSurface::Stencil stencil;stencil.cells=cells;stencil.weights=row;stencils_.push_back(stencil);
+             double sum=0;Foam::vector first=Foam::vector::zero;
+             for(std::size_t k=0;k<cells.size();++k){sum+=row[k];first+=row[k]*grid_.cellCentre(cells[k]);}
+             basisSums_.push_back(sum);basisFirst_.push_back(first);}
+            count=stencils_.size();
+            if(count<8||count>512) throw std::runtime_error("Complete wall modal budget outside [8,512]");
+        }
+        else for(int i=0;i<count;++i)
         {
             const double z=1-2*(i+.5)/count,phi=pi*(3-std::sqrt(5.0))*i;
             const Foam::vector n(std::sqrt(1-z*z)*std::cos(phi),std::sqrt(1-z*z)*std::sin(phi),z);
@@ -76,26 +105,41 @@ public:
          if(stencil.expanded) ++expanded;}
         return {moment,l1,minimum,maximum,expanded};
     }
-    int count() const {return points_.size();}
+    int count() const {return stencils_.size();}
+    bool completeWall() const {return complete_;}
+    Foam::word basisSignature() const
+    {
+        unsigned long long hash=14695981039346656037ULL;
+        auto add=[&](unsigned long long bits){for(int i=0;i<8;++i){hash^=(bits>>(8*i))&255ULL;hash*=1099511628211ULL;}};
+        for(const auto& row:stencils_) for(std::size_t i=0;i<row.cells.size();++i)
+        {add(row.cells[i]);unsigned long long bits=0;static_assert(sizeof(bits)==sizeof(double),"64-bit basis signature");
+         std::memcpy(&bits,&row.weights[i],sizeof(bits));add(bits);}
+        return Foam::word("b"+std::to_string(hash));
+    }
+    std::array<double,4> basisStats() const {return {double(points_.size()),double(count()),coverage_,orthogonality_};}
     std::array<double,2> rigidResidual(const std::vector<double>& values,
         const Foam::vector& centre,const Foam::vector& v,const Foam::vector& omega) const
     {
         double sum=0,maximum=0;
-        for(int i=0;i<count();++i)
+        const int samples=complete_ ? points_.size():count();
+        for(int i=0;i<samples;++i)
         {
             const Foam::vector target=v+(omega^(points_[i]-centre));
-            const Foam::vector value(values[3*i],values[3*i+1],values[3*i+2]);
+            Foam::vector value=Foam::vector::zero;
+            if(complete_) for(int j=0;j<count();++j) for(int a=0;a<3;++a) value[a]+=wallCoordinates_[i][j]*values[3*j+a];
+            else value=Foam::vector(values[3*i],values[3*i+1],values[3*i+2]);
             const double error=Foam::mag(value-target);
             sum+=error*error;maximum=std::max(maximum,error);
         }
-        return {std::sqrt(sum/count()),maximum};
+        return {std::sqrt(sum/samples),maximum};
     }
     std::vector<double> normalProbe(const Foam::vector& centre,double amplitude) const
     {
         std::vector<double> result(3*count());
         for(int i=0;i<count();++i)
         {
-            const Foam::vector n=(points_[i]-centre)/Foam::mag(points_[i]-centre);
+            const Foam::vector n=complete_ ? (basisFirst_[i]-basisSums_[i]*centre)/radius_:
+                (points_[i]-centre)/Foam::mag(points_[i]-centre);
             for(int a=0;a<3;++a) result[3*i+a]=amplitude*n[a];
         }
         return result;
@@ -108,7 +152,8 @@ public:
         for(int i=0;i<count();++i)
         {
             const Foam::vector f(forces[3*i],forces[3*i+1],forces[3*i+2]);
-            total+=f;torque+=(points_[i]-centre)^f;
+            if(complete_){total+=basisSums_[i]*f;torque+=(basisFirst_[i]-basisSums_[i]*centre)^f;}
+            else {total+=f;torque+=(points_[i]-centre)^f;}
         }
     }
     std::vector<double> interpolateDense(const Foam::volVectorField& U,const Foam::volScalarField& p)
@@ -139,14 +184,15 @@ public:
         std::vector<double> result(3*count());
         for(int i=0;i<count();++i)
         {
-            const Foam::vector ub=v+(omega^(points_[i]-centre));
+            const Foam::vector ub=complete_ ? basisSums_[i]*v+(omega^(basisFirst_[i]-basisSums_[i]*centre)):
+                v+(omega^(points_[i]-centre));
             for(int a=0;a<3;++a) result[3*i+a]=ub[a];
         }
         return result;
     }
     Foam::vectorField accelerationDense(const std::vector<double>& integratedForces,double rho) const
     {
-        if(integratedForces.size()!=3*points_.size()) throw std::runtime_error("Wall load dimensions differ");
+        if(integratedForces.size()!=3*std::size_t(count())) throw std::runtime_error("Wall load dimensions differ");
         std::vector<double> global(3*grid_.globalCells(),0);
         for(int i=0;i<count();++i) for(std::size_t k=0;k<stencils_[i].cells.size();++k) for(int a=0;a<3;++a)
             global[3*stencils_[i].cells[k]+a]+=stencils_[i].weights[k]*integratedForces[3*i+a];
@@ -157,7 +203,7 @@ public:
     }
     Foam::vectorField accelerationSparse(const std::vector<double>& integratedForces,double rho) const
     {
-        if(integratedForces.size()!=3*points_.size()) throw std::runtime_error("Wall load dimensions differ");
+        if(integratedForces.size()!=3*std::size_t(count())) throw std::runtime_error("Wall load dimensions differ");
         Foam::vectorField result(mesh_.nCells(),Foam::vector::zero);
         for(int i=0;i<count();++i) for(std::size_t k=0;k<stencils_[i].cells.size();++k)
         {

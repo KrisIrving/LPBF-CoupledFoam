@@ -30,6 +30,18 @@ def reconstruction_values(text,controls):
     return {'moment':moment,'l1':l1,'support_min':minimum,'support_max':maximum,'expanded':expanded}
 
 
+def basis_values(text,controls):
+    matches=re.findall(r'M2A_WALL_BASIS nodes=(\S+) modes=(\S+) coverage=(\S+) orthogonality=(\S+) signature=(b\w+)',text)
+    if len(matches)!=1:raise ValueError('Missing complete wall basis evidence')
+    nodes,modes,coverage,orthogonality=map(float,matches[0][:4]);geometry=controls['geometry']
+    if (not all(math.isfinite(x) for x in (nodes,modes,coverage,orthogonality))
+        or nodes!=geometry['full_wall_nodes'] or modes!=geometry['modes']
+        or not 0<=coverage<=controls['coverage_tolerance']
+        or not 0<=orthogonality<=controls['orthogonality_tolerance']):
+        raise ValueError('Complete wall basis coverage/rank/orthogonality failed')
+    return {'nodes':nodes,'modes':modes,'coverage':coverage,'orthogonality':orthogonality,'signature':matches[0][4]}
+
+
 def evaluate(case):
     meta=json.loads((case/'M2A_META.json').read_text());expected=meta['spatial_reference']
     text=(case/'log.solver').read_text(errors='replace')
@@ -39,6 +51,7 @@ def evaluate(case):
     if not rank or int(rank[1])!=meta['execution']['ranks']:raise ValueError('Native MPI ranks mismatch')
     result=reference_values(text,expected)
     if 'joint_reconstruction' in meta:result['reconstruction']=reconstruction_values(text,meta['joint_reconstruction'])
+    if 'complete_wall_basis' in meta:result['complete_wall_basis']=basis_values(text,meta['complete_wall_basis'])
     return result
 
 
