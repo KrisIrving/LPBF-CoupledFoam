@@ -6,13 +6,7 @@ import re
 from pathlib import Path
 
 
-def evaluate(case):
-    meta=json.loads((case/'M2A_META.json').read_text());expected=meta['spatial_reference']
-    text=(case/'log.solver').read_text(errors='replace')
-    if (case/'result.txt').read_text().strip()!='exit_status=0' or 'M2A_EXECUTION_COMPLETE' not in text:
-        raise ValueError('Native reference did not complete')
-    rank=re.search(r'^nProcs\s*:\s*(\d+)\s*$',text,re.M)
-    if not rank or int(rank[1])!=meta['execution']['ranks']:raise ValueError('Native MPI ranks mismatch')
+def reference_values(text,expected):
     matches=re.findall(r'M2A_SPATIAL_REFERENCE markers=(\d+) wallRms=(\S+) wallMax=(\S+) stressRatio=(\S+)',text)
     if len(matches)!=1:raise ValueError('Missing or duplicate native spatial reference')
     count,rms,maximum,stress=matches[0];actual={'wall_rms_m_s':float(rms),'wall_max_m_s':float(maximum),'stress_load_ratio':float(stress)}
@@ -23,6 +17,29 @@ def evaluate(case):
         scale=expected['reference_speed_m_s'] if key.startswith('wall_') else 1.
         checks[key]=math.isfinite(value) and abs(value-expected[key])/scale<=1e-8
     return {'passed':all(checks.values()),'checks':checks,'actual':actual,'expected':expected}
+
+
+def reconstruction_values(text,controls):
+    matches=re.findall(r'M2A_RECONSTRUCTION scheme=(\w+) moment=(\S+) l1=(\S+) supportMin=(\S+) supportMax=(\S+) expanded=(\S+)',text)
+    if len(matches)!=1 or matches[0][0]!=controls['scheme']:raise ValueError('Missing reconstruction evidence')
+    moment,l1,minimum,maximum,expanded=map(float,matches[0][1:]);geometry=controls['geometry']
+    if (not all(math.isfinite(x) for x in (moment,l1,minimum,maximum,expanded))
+        or not 0<=moment<=controls['moment_tolerance'] or not 0<l1<=controls['coefficient_l1_max']
+        or (minimum,maximum,expanded)!=(geometry['support_min'],geometry['support_max'],geometry['expanded_markers'])):
+        raise ValueError('Failed reconstruction geometry/moment/coefficient evidence')
+    return {'moment':moment,'l1':l1,'support_min':minimum,'support_max':maximum,'expanded':expanded}
+
+
+def evaluate(case):
+    meta=json.loads((case/'M2A_META.json').read_text());expected=meta['spatial_reference']
+    text=(case/'log.solver').read_text(errors='replace')
+    if (case/'result.txt').read_text().strip()!='exit_status=0' or 'M2A_EXECUTION_COMPLETE' not in text:
+        raise ValueError('Native reference did not complete')
+    rank=re.search(r'^nProcs\s*:\s*(\d+)\s*$',text,re.M)
+    if not rank or int(rank[1])!=meta['execution']['ranks']:raise ValueError('Native MPI ranks mismatch')
+    result=reference_values(text,expected)
+    if 'joint_reconstruction' in meta:result['reconstruction']=reconstruction_values(text,meta['joint_reconstruction'])
+    return result
 
 
 def summarize(root):

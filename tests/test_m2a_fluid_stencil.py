@@ -24,7 +24,9 @@ class FluidStencilTests(unittest.TestCase):
 
     def test_known_geometric_candidates_rejected_before_native(self):
         result=audit.run()
-        self.assertTrue(all(not candidate['admitted_to_native'] for candidate in result['candidates']))
+        self.assertTrue(all(not candidate['admitted_to_native'] for candidate in result['candidates'][:2]))
+        self.assertTrue(result['candidates'][2]['admitted_to_native'])
+        self.assertTrue(all(case['min_normalised_cholesky_pivot']>1e-8 for case in result['candidates'][2]['cases']))
         quadratic=result['candidates'][0]['cases'][0]
         self.assertTrue(quadratic['checks']['force_exchange'])
         self.assertFalse(quadratic['checks']['fixed_wall_improvement'])

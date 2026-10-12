@@ -13,11 +13,11 @@ class JointSphere
     SphereSurface& grid_;
     std::vector<Foam::vector> points_;
     std::vector<SphereSurface::Stencil> stencils_;
-    std::vector<std::array<int,8>> localStencils_;
+    std::vector<std::vector<int>> localStencils_;
     bool sparse_;
     double minPivot_=1;
 public:
-    JointSphere(const Foam::fvMesh& mesh,SphereSurface& grid,const Foam::vector& centre,double radius,double h,bool sparse=false)
+    JointSphere(const Foam::fvMesh& mesh,SphereSurface& grid,const Foam::vector& centre,double radius,double h,bool sparse=false,bool fluidCubic=false)
     :mesh_(mesh),grid_(grid),sparse_(sparse)
     {
         const double pi=Foam::constant::mathematical::pi;
@@ -27,7 +27,8 @@ public:
         {
             const double z=1-2*(i+.5)/count,phi=pi*(3-std::sqrt(5.0))*i;
             const Foam::vector n(std::sqrt(1-z*z)*std::cos(phi),std::sqrt(1-z*z)*std::sin(phi),z);
-            points_.push_back(centre+radius*n);stencils_.push_back(grid_.stencil(points_.back()));
+            points_.push_back(centre+radius*n);
+            stencils_.push_back(fluidCubic ? grid_.fluidStencil(points_.back(),centre,radius):grid_.stencil(points_.back()));
         }
         // Owner lookup is frozen with the static geometry/partition. The grid
         // constructor already checks exactly one global owner for every cell.
@@ -35,8 +36,8 @@ public:
         forAll(mesh_.C(),cell) owner[grid_.globalIndex(cell)]=cell;
         for(const auto& stencil:stencils_)
         {
-            std::array<int,8> local;
-            for(int k=0;k<8;++k) local[k]=owner[stencil.cells[k]];
+            std::vector<int> local(stencil.cells.size());
+            for(std::size_t k=0;k<stencil.cells.size();++k) local[k]=owner[stencil.cells[k]];
             localStencils_.push_back(local);
         }
         // Normalised J J^T Cholesky without diagonal regularisation. This checks
@@ -47,9 +48,13 @@ public:
         for(int i=0;i<count;++i) for(int j=0;j<=i;++j)
         {
             double value=0;
-            for(int a=0;a<8;++a) for(int b=0;b<8;++b)
-                if(stencils_[i].cells[a]==stencils_[j].cells[b])
-                    value+=stencils_[i].weights[a]*stencils_[j].weights[b];
+            std::size_t a=0,b=0;
+            while(a<stencils_[i].cells.size()&&b<stencils_[j].cells.size())
+            {
+                const int ca=stencils_[i].cells[a],cb=stencils_[j].cells[b];
+                if(ca==cb){value+=stencils_[i].weights[a]*stencils_[j].weights[b];++a;++b;}
+                else if(ca<cb) ++a;else ++b;
+            }
             value/=std::sqrt(diagonal[i]*diagonal[j]);
             for(int k=0;k<j;++k) value-=factor[i*count+k]*factor[j*count+k];
             if(i==j)
@@ -61,6 +66,15 @@ public:
             }
             else factor[i*count+j]=value/factor[j*count+j];
         }
+    }
+    std::array<double,5> reconstructionStats() const
+    {
+        double moment=0,l1=0,minimum=1e30,maximum=0,expanded=0;
+        for(const auto& stencil:stencils_)
+        {moment=std::max(moment,stencil.moment);l1=std::max(l1,stencil.l1);
+         minimum=std::min(minimum,double(stencil.cells.size()));maximum=std::max(maximum,double(stencil.cells.size()));
+         if(stencil.expanded) ++expanded;}
+        return {moment,l1,minimum,maximum,expanded};
     }
     int count() const {return points_.size();}
     std::array<double,2> rigidResidual(const std::vector<double>& values,
@@ -102,7 +116,7 @@ public:
         grid_.gather(U,p);std::vector<double> result(3*count());
         for(int i=0;i<count();++i)
         {
-            const Foam::vector u=grid_.interpolateVelocity(points_[i]);
+            const Foam::vector u=grid_.interpolateStencil(stencils_[i]);
             for(int a=0;a<3;++a) result[3*i+a]=u[a];
         }
         return result;
@@ -110,7 +124,7 @@ public:
     std::vector<double> interpolateSparse(const Foam::volVectorField& U) const
     {
         std::vector<double> result(3*count(),0);
-        for(int i=0;i<count();++i) for(int k=0;k<8;++k)
+        for(int i=0;i<count();++i) for(std::size_t k=0;k<stencils_[i].cells.size();++k)
         {
             const int cell=localStencils_[i][k];if(cell<0) continue;
             for(int a=0;a<3;++a) result[3*i+a]+=stencils_[i].weights[k]*U[cell][a];
@@ -134,7 +148,7 @@ public:
     {
         if(integratedForces.size()!=3*points_.size()) throw std::runtime_error("Wall load dimensions differ");
         std::vector<double> global(3*grid_.globalCells(),0);
-        for(int i=0;i<count();++i) for(int k=0;k<8;++k) for(int a=0;a<3;++a)
+        for(int i=0;i<count();++i) for(std::size_t k=0;k<stencils_[i].cells.size();++k) for(int a=0;a<3;++a)
             global[3*stencils_[i].cells[k]+a]+=stencils_[i].weights[k]*integratedForces[3*i+a];
         Foam::vectorField result(mesh_.nCells(),Foam::vector::zero);
         forAll(result,cell) for(int a=0;a<3;++a)
@@ -145,7 +159,7 @@ public:
     {
         if(integratedForces.size()!=3*points_.size()) throw std::runtime_error("Wall load dimensions differ");
         Foam::vectorField result(mesh_.nCells(),Foam::vector::zero);
-        for(int i=0;i<count();++i) for(int k=0;k<8;++k)
+        for(int i=0;i<count();++i) for(std::size_t k=0;k<stencils_[i].cells.size();++k)
         {
             const int cell=localStencils_[i][k];if(cell<0) continue;
             for(int a=0;a<3;++a) result[cell][a]+=stencils_[i].weights[k]*integratedForces[3*i+a];
@@ -161,7 +175,7 @@ public:
         std::vector<double> global(grid_.globalCells(),0),result(count(),0);
         forAll(mesh_.C(),cell) global[grid_.globalIndex(cell)]=rAU[cell]/(rho*mesh_.V()[cell]);
         MPI_Allreduce(MPI_IN_PLACE,global.data(),grid_.globalCells(),MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
-        for(int i=0;i<count();++i) for(int k=0;k<8;++k)
+        for(int i=0;i<count();++i) for(std::size_t k=0;k<stencils_[i].cells.size();++k)
             result[i]+=stencils_[i].weights[k]*stencils_[i].weights[k]*global[stencils_[i].cells[k]];
         for(double value:result) if(!std::isfinite(value)||value<=0)
             throw std::runtime_error("Invalid joint wall scaling");
@@ -170,7 +184,7 @@ public:
     std::vector<double> inverseDiagonalSparse(const Foam::volScalarField& rAU,double rho) const
     {
         std::vector<double> result(count(),0);
-        for(int i=0;i<count();++i) for(int k=0;k<8;++k)
+        for(int i=0;i<count();++i) for(std::size_t k=0;k<stencils_[i].cells.size();++k)
         {
             const int cell=localStencils_[i][k];if(cell<0) continue;
             const double w=stencils_[i].weights[k];

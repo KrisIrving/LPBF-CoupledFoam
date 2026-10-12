@@ -116,6 +116,10 @@ int main(int argc,char* argv[])
         const bool jointOuterMix=config.getOrDefault<bool>("jointOuterMix",false);
         const label jointOuterHistory=config.getOrDefault<label>("jointOuterHistory",1);
         const bool jointSparseTransfer=config.getOrDefault<bool>("jointSparseTransfer",false);
+        const word jointReconstruction=config.getOrDefault<word>("jointReconstruction","trilinear");
+        if(jointReconstruction!="trilinear"&&jointReconstruction!="fluidCubicAdaptive")
+            throw std::runtime_error("Unknown joint reconstruction");
+        const bool fluidCubic=jointReconstruction=="fluidCubicAdaptive";
         if(jointOuterHistory<1||jointOuterHistory>4)
             throw std::runtime_error("Outer history outside1..4");
         if(jointOuterMix&&(!jointConstraint||momentumTolerance<=0))
@@ -172,7 +176,14 @@ int main(int argc,char* argv[])
         if(jointConstraint)
         {
             mesh.setFluxRequired("jointDeltaP");
-            joint.reset(new lpbfM2::JointSphere(mesh,*surface,asFoamVector(particles[0].x),particles[0].radius,h,jointSparseTransfer));
+            joint.reset(new lpbfM2::JointSphere(mesh,*surface,asFoamVector(particles[0].x),particles[0].radius,h,jointSparseTransfer,fluidCubic));
+            if(fluidCubic&&rank==0)
+            {
+                const auto stats=joint->reconstructionStats();Info.stream().precision(17);
+                Info<<"M2A_RECONSTRUCTION scheme="<<jointReconstruction<<" moment="<<stats[0]
+                    <<" l1="<<stats[1]<<" supportMin="<<stats[2]<<" supportMax="<<stats[3]
+                    <<" expanded="<<stats[4]<<endl;
+            }
             if(rank==0) Info<<"M2A_JOINT markers="<<joint->count()<<" minPivot="<<joint->minPivot()<<endl;
             if(rank==0) Info<<"M2A_JOINT_ALGORITHM warmStart="<<jointWarmStart
                 <<" fullPredictor="<<jointFullPredictor<<" responseReuse=1"<<endl;
@@ -326,9 +337,10 @@ int main(int argc,char* argv[])
         }
         U.correctBoundaryConditions();
         if(runTime.value()==0) phi=fvc::flux(U);
-        if(config.getOrDefault<bool>("spatialAuditOnly",false))
+        const bool spatialOnly=config.getOrDefault<bool>("spatialAuditOnly",false);
+        if(spatialOnly||(fluidCubic&&runTime.value()==0))
         {
-            if(!joint||runTime.value()!=0||runTime.endTime().value()!=0)
+            if(!joint||runTime.value()!=0||(spatialOnly&&runTime.endTime().value()!=0))
                 throw std::runtime_error("Spatial reference requires joint mode and start/end zero");
             // Initial fields are the analytic Stokes solution; do not solve or
             // advance CFD/DEM. Exercise the actual J and stress code as-is.
@@ -347,6 +359,18 @@ int main(int argc,char* argv[])
             if(rank==0) Info<<"M2A_SPATIAL_REFERENCE markers="<<joint->count()
                 <<" wallRms="<<error[0]<<" wallMax="<<error[1]
                 <<" stressRatio="<<load/reference<<endl;
+            if(fluidCubic)
+            {
+                const double scale=mode=="fixed" ? .01:.001;
+                const double rms=readScalar(config.lookup("referenceWallRms"));
+                const double maximum=readScalar(config.lookup("referenceWallMax"));
+                const double ratio=readScalar(config.lookup("referenceStressRatio"));
+                if(!std::isfinite(rms)||!std::isfinite(maximum)||!std::isfinite(ratio)
+                    ||!std::isfinite(error[0])||!std::isfinite(error[1])||!std::isfinite(load/reference)
+                    ||std::abs(error[0]-rms)/scale>1e-8||std::abs(error[1]-maximum)/scale>1e-8
+                    ||std::abs(load/reference-ratio)>1e-8)
+                    throw std::runtime_error("Native fluid reconstruction reference differs from Python oracle");
+            }
         }
         mapGeometry();
         IOdictionary restore(IOobject("couplingState",runTime.timeName(),mesh,IOobject::READ_IF_PRESENT,IOobject::NO_WRITE,false));
@@ -371,6 +395,8 @@ int main(int argc,char* argv[])
                     throw std::runtime_error("Restart outer history differs from checkpoint");
                 if(restore.getOrDefault<bool>("jointSparseTransfer",false)!=jointSparseTransfer)
                     throw std::runtime_error("Restart transfer mode differs from checkpoint");
+                if(restore.getOrDefault<word>("jointReconstruction","trilinear")!=jointReconstruction)
+                    throw std::runtime_error("Restart reconstruction differs from checkpoint");
                 if(jointWarmStart)
                 {
                     scalarList seed(restore.lookup("jointLoadSeed"));
@@ -915,6 +941,7 @@ int main(int argc,char* argv[])
                     checkpoint.add("jointOuterMix",jointOuterMix);
                     checkpoint.add("jointOuterHistory",jointOuterHistory);
                     checkpoint.add("jointSparseTransfer",jointSparseTransfer);
+                    checkpoint.add("jointReconstruction",jointReconstruction);
                     if(jointWarmStart)
                     {
                         scalarList seed(jointPreviousLoads.size());

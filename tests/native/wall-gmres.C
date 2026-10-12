@@ -2,9 +2,25 @@
 #include "WallGMRES.H"
 #include "JointResponseAudit.H"
 #include "JointOuterMix.H"
+#include "PolynomialStencil.H"
 #include <iostream>
 int main()
 {
+    std::vector<std::array<double,3>> cube,layers;
+    for(double x:{-1.5,-.5,.5,1.5}) for(double y:{-1.5,-.5,.5,1.5})
+    {
+        for(double z:{-1.5,-.5,.5,1.5}) cube.push_back({x,y,z});
+        for(double z:{1.,2.,3.}) layers.push_back({x,y,z});
+    }
+    const auto polynomial=lpbfM2::cubicWeights(cube);
+    double value=0;
+    for(std::size_t i=0;i<cube.size();++i)
+    {const auto& p=cube[i];value+=polynomial.weights[i]*(5+2*p[0]-3*p[1]+p[0]*p[2]+4*p[1]*p[1]+7*p[2]*p[2]*p[2]);}
+    if(std::abs(value-5)>1e-10||polynomial.moment>1e-10) return 80;
+    bool deficient=false;
+    try {lpbfM2::cubicWeights(layers);} catch(const std::runtime_error&) {deficient=true;}
+    if(!deficient) return 81;
+    std::cout<<"FLUID_CUBIC_NATIVE_KERNEL_PASS\n";
     auto apply=[](const std::vector<double>& x)
     {return std::vector<double>{3*x[0]+2*x[1],x[0]+4*x[1]+x[2],2*x[1]+5*x[2]};};
     const std::vector<double> exact{1,-2,3};int iterations=0;

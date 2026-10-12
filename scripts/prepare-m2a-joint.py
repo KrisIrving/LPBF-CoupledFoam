@@ -10,7 +10,8 @@ surface=importlib.util.module_from_spec(spec);spec.loader.exec_module(surface)
 CASES=surface.CASES
 
 
-def prepare(root,selection,ranks=None,spatial_only=False):
+def prepare(root,selection,ranks=None,spatial_only=False,reconstruction='trilinear'):
+    if reconstruction not in ('trilinear','fluidCubicAdaptive'):raise ValueError('Unknown reconstruction')
     if spatial_only and selection in ('fixed-restart','fixed-mpi2'):
         raise ValueError('Spatial reference uses twelve geometry cases only')
     if ranks is not None and ranks not in (1,2,4,8):
@@ -88,10 +89,23 @@ jointSparseTransfer true;
     meta['scope']='Static single noncontact sphere; paired trilinear J and integrated-force transpose spread. '
     meta['scope']+='FV face-flux pressure-projected GMRES correction plus residual-controlled PISO. '
     meta['scope']+='No ghost penalty. q4 inventory retained; no moving GCL/contact/heat/scalable mapping validation.'
-    if spatial_only:
+    if spatial_only or reconstruction!='trilinear':
         reference_spec=importlib.util.spec_from_file_location('spatial_reference',Path(__file__).with_name('audit-m2a-spatial-consistency.py'))
         reference=importlib.util.module_from_spec(reference_spec);reference_spec.loader.exec_module(reference)
-        meta['spatial_reference']=reference.fixture(meta['mode'],meta['mesh_n'],meta['centre_phase_h'])
+        expected=reference.fixture(meta['mode'],meta['mesh_n'],meta['centre_phase_h'])
+        if reconstruction!='trilinear':
+            fluid_spec=importlib.util.spec_from_file_location('fluid_reference',Path(__file__).with_name('audit-m2a-fluid-stencil.py'))
+            fluid=importlib.util.module_from_spec(fluid_spec);fluid_spec.loader.exec_module(fluid)
+            geometry=fluid.fixture(meta['mesh_n'],meta['centre_phase_h'],3,True)
+            expected['wall_rms_m_s']=geometry[meta['mode']+'_wall_rms_m_s']
+            expected['wall_max_m_s']=geometry[meta['mode']+'_wall_max_m_s']
+            meta['joint_reconstruction']={'scheme':reconstruction,'moment_tolerance':1e-10,'coefficient_l1_max':8,'geometry':geometry,'reference':expected}
+            with p.open('a') as stream:stream.write('jointReconstruction fluidCubicAdaptive;\n')
+            with p.open('a') as stream:
+                stream.write(f'referenceWallRms {expected["wall_rms_m_s"]:.17g};\nreferenceWallMax {expected["wall_max_m_s"]:.17g};\nreferenceStressRatio {expected["stress_load_ratio"]:.17g};\n')
+            meta['scope']=meta['scope'].replace('paired trilinear J','paired fluid-side cubic J')
+        if spatial_only:meta['spatial_reference']=expected
+    if spatial_only:
         surface.baseline.control(root,end=0)
         with p.open('a') as stream:stream.write('spatialAuditOnly true;\n')
         meta['scope']='Analytic-field native J/stress consistency only; no CFD/DEM time advancement or physical pass.'
@@ -105,6 +119,7 @@ if __name__=='__main__':
     parser.add_argument('--selection',choices=CASES)
     parser.add_argument('--ranks',type=int,choices=(1,2,4,8))
     parser.add_argument('--spatial-only',action='store_true')
+    parser.add_argument('--reconstruction',choices=('trilinear','fluidCubicAdaptive'),default='trilinear')
     parser.add_argument('--half',action='store_true')
     parser.add_argument('--restart',action='store_true')
     args=parser.parse_args()
@@ -113,5 +128,5 @@ if __name__=='__main__':
         surface.baseline.control(args.case,start=.002)
         surface.baseline.write_dem(args.case,meta['mode'],restart=True)
     elif args.half:surface.baseline.control(args.case,end=.002)
-    elif args.selection:prepare(args.case,args.selection,args.ranks,args.spatial_only)
+    elif args.selection:prepare(args.case,args.selection,args.ranks,args.spatial_only,args.reconstruction)
     else:parser.error('Provide selection, half or restart')

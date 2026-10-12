@@ -1,5 +1,7 @@
 # 测试台账与阶段结论
 
+2026-10-12开发端记录（没有新增用户反馈）：revision12自适应2.5h/3.5h三次流体模板六几何离线通过；矩残差≤1.46e−15、L1≤6.98、最小归一化JJ转置枢轴约0.216。59项M2A离线、3项模拟队列及脚本语法通过，8历史joint及最新空间摘要精确回归。新增原生内核/求解器/CFD尚未运行，不记物理通过；历史失败与最新已测eca9860f保持。见[revision12](m2a-joint-revision12.zh-CN.md)。
+
 2026-10-12：m2a-spatial-20261012-142054-1321235.tar.gz测试eca9860f，SHA256见JSON；build/共享内核/12空间参照全部通过，complete/exit0，摘要精确复算，最大归一化差4.25e−14。该包没有CFD/DEM时间推进或载荷物理通过结论。新增流体多项式离线预审及58项检查通过，两个候选未接入原生（粗网格误差增加/三层几何缺秩），见[revision11](m2a-joint-revision11.zh-CN.md)。
 
 2026-10-12：m2a-spatial-20261012-115215-1290406.tar.gz（e738951c；SHA256见JSON）last_stage=build、exit2。共享内核通过，Info.precision不存在导致原生构建失败，空间算例0/12执行、参照not_evaluated。依据实际v2512消息流/输出流头文件修正Info.stream().precision(17)；新构建仍待测，不能宣称精度问题解决。

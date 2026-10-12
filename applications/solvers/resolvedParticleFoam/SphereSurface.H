@@ -7,6 +7,7 @@
 #include <vector>
 #include <cmath>
 #include <stdexcept>
+#include "PolynomialStencil.H"
 
 namespace lpbfM2
 {
@@ -48,7 +49,7 @@ class SphereSurface
     {return Foam::vector(v[0],v[1],v[2]);}
 
 public:
-    struct Stencil {std::array<int,8> cells;std::array<double,8> weights;};
+    struct Stencil {std::vector<int> cells;std::vector<double> weights;double moment=0,l1=1;bool expanded=false;};
     Stencil stencil(const Foam::vector& point) const
     {
         int lower[3];double fraction[3];
@@ -59,13 +60,47 @@ public:
             if(lower[a]<0||lower[a]+1>=size_[a])
                 throw std::runtime_error("Wall stencil outside Cartesian grid");
         }
-        Stencil result;int q=0;
+        Stencil result;result.cells.resize(8);result.weights.resize(8);int q=0;
         for(int i=0;i<2;++i) for(int j=0;j<2;++j) for(int k=0;k<2;++k,++q)
         {
             result.cells[q]=index(lower[0]+i,lower[1]+j,lower[2]+k);
             result.weights[q]=(i?fraction[0]:1-fraction[0])*(j?fraction[1]:1-fraction[1])
                 *(k?fraction[2]:1-fraction[2]);
         }
+        return result;
+    }
+    Stencil fluidStencil(const Foam::vector& point,const Foam::vector& centre,double radius) const
+    {
+        int lower[3];for(int a=0;a<3;++a) lower[a]=std::floor((point[a]-origin_[a])/h_);
+        for(double support:{2.5,3.5})
+        {
+            Stencil result;std::vector<std::array<double,3>> offsets;
+            const int width=std::ceil(support);
+            for(int i=1-width;i<=width;++i) for(int j=1-width;j<=width;++j) for(int k=1-width;k<=width;++k)
+            {
+                const int a=lower[0]+i,b=lower[1]+j,c=lower[2]+k;
+                const Foam::vector cell(origin_[0]+a*h_,origin_[1]+b*h_,origin_[2]+c*h_);
+                const Foam::vector offset=(cell-point)/h_;
+                if(Foam::magSqr(offset)>support*support||Foam::magSqr(cell-centre)<=radius*radius) continue;
+                if(a<0||b<0||c<0||a>=size_[0]||b>=size_[1]||c>=size_[2])
+                    throw std::runtime_error("Fluid stencil outside Cartesian grid");
+                result.cells.push_back(index(a,b,c));offsets.push_back({offset.x(),offset.y(),offset.z()});
+            }
+            try
+            {
+                const auto weights=cubicWeights(offsets);result.weights=weights.weights;
+                result.moment=weights.moment;result.l1=weights.l1;result.expanded=support>2.5;
+                return result;
+            }
+            catch(const std::runtime_error&) {if(support>2.5) throw;}
+        }
+        throw std::runtime_error("No admissible fluid cubic stencil");
+    }
+    Foam::vector interpolateStencil(const Stencil& stencil) const
+    {
+        Foam::vector result=Foam::vector::zero;
+        for(std::size_t k=0;k<stencil.cells.size();++k) for(int a=0;a<3;++a)
+            result[a]+=stencil.weights[k]*velocity_[3*stencil.cells[k]+a];
         return result;
     }
     int globalCells() const {return count_;}

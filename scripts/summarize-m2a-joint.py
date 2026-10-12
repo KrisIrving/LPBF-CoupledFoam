@@ -28,6 +28,8 @@ def summarize(root):
                                         ('commit',r'M2A_OPERATOR_COMMIT [^\n]+'),
                                         ('outer_mix',r'M2A_OUTER_MIX [^\n]+'),
                                         ('transfer',r'M2A_TRANSFER_AUDIT [^\n]+'),
+                                        ('reconstruction',r'M2A_RECONSTRUCTION [^\n]+'),
+                                        ('spatial_reference',r'M2A_SPATIAL_REFERENCE [^\n]+'),
                                         ('response_cost',r'M2A_RESPONSE_COST [^\n]+'),
                                         ('last_correction',r'M2A_CORRECTION [^\n]+')]:
                         matches=re.findall(pattern,text)

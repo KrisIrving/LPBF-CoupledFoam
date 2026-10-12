@@ -15,6 +15,7 @@ def load(name,filename):
 
 baseline=load('mechanical_audit','summarize-m2a.py')
 prepare=load('surface_prepare','prepare-m2a-surface.py')
+spatial=load('spatial_reference_gates','summarize-m2a-spatial.py')
 
 
 def evaluate(case):
@@ -22,6 +23,13 @@ def evaluate(case):
     logs=('log.first','log.restart') if meta['restart'] else ('log.solver',)
     for filename in logs:
         text=(case/filename).read_text(errors='replace')
+        if 'joint_reconstruction' in meta:
+            controls=meta['joint_reconstruction']
+            evidence=spatial.reconstruction_values(text,controls)
+            if filename!='log.restart':
+                reference=spatial.reference_values(text,controls['reference'])
+                if not reference['passed']:raise ValueError('Failed native reconstruction reference')
+            entry.setdefault('reconstruction',{})[filename]=evidence
         if 'execution' in meta:
             ranks=re.search(r'^nProcs\s*:\s*(\d+)\s*$',text,re.M)
             if not ranks or int(ranks.group(1))!=meta['execution']['ranks']:
@@ -189,6 +197,8 @@ def evaluate(case):
                         r'jointOuterHistory\s+'+str(meta['outer_mix']['history_depth'])+r'\s*;',checkpoint))
             if 'transfer' in meta:
                 checks['joint_transfer_checkpoint']=bool(re.search(r'jointSparseTransfer\s+(?:1|true|on)\s*;',checkpoint))
+            if 'joint_reconstruction' in meta:
+                checks['joint_reconstruction_checkpoint']=bool(re.search(r'jointReconstruction\s+'+meta['joint_reconstruction']['scheme']+r'\s*;',checkpoint))
             match=re.search(r'jointLoadSeed\s+(?:(\d+)\s*)?\(([^)]*)\)\s*;',checkpoint,re.S)
             uniform=re.search(r'jointLoadSeed\s+(\d+)\s*\{\s*([^}]+)\}\s*;',checkpoint,re.S)
             size=3*joint['markers']

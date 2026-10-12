@@ -218,12 +218,43 @@ class JointPackageTests(unittest.TestCase):
         text=checkpoint.read_text()
         checkpoint.write_text(text.replace('(0 ','(nan ',1))
         self.assertFalse(summary.audit.evaluate(case)[0]['checks']['joint_warm_checkpoint'])
+
         checkpoint.write_text(text.replace('jointWarmStart true;','jointWarmStart false;'))
         self.assertFalse(summary.audit.evaluate(case)[0]['checks']['joint_warm_checkpoint'])
         checkpoint.write_text('jointWarmStart true; jointFullPredictor false; jointLoadSeed 153{0};')
         self.assertTrue(summary.audit.evaluate(case)[0]['checks']['joint_warm_checkpoint'])
         checkpoint.write_text('jointWarmStart true; jointFullPredictor true; jointLoadSeed 153{0};')
         self.assertFalse(summary.audit.evaluate(case)[0]['checks']['joint_warm_checkpoint'])
+
+    def test_adaptive_reconstruction_reference_mode_and_restart_evidence(self):
+        for name in ('fixed-coarse','fixed-restart'):
+            case,rows,_=self.fixture(name)
+            meta=prepare.prepare(case,name,reconstruction='fluidCubicAdaptive')
+            controls=meta['joint_reconstruction'];g=controls['geometry'];r=controls['reference']
+            self.assertIn('jointReconstruction fluidCubicAdaptive;',(case/'constant/mechanicalProperties').read_text())
+            for filename in (('log.first','log.restart') if meta['restart'] else ('log.solver',)):
+                log=case/filename;text=log.read_text()
+                text+=f'M2A_RECONSTRUCTION scheme=fluidCubicAdaptive moment=1e-15 l1={g["coefficient_l1_max"]} supportMin={g["support_min"]} supportMax={g["support_max"]} expanded={g["expanded_markers"]}\n'
+                if filename!='log.restart':text+=f'M2A_SPATIAL_REFERENCE markers={g["markers"]} wallRms={r["wall_rms_m_s"]} wallMax={r["wall_max_m_s"]} stressRatio={r["stress_load_ratio"]}\n'
+                log.write_text(text)
+            if meta['restart']:
+                checkpoint=case/'0.002/couplingState';checkpoint.write_text(checkpoint.read_text()+'\njointReconstruction fluidCubicAdaptive;\n')
+            self.assertTrue(summary.audit.evaluate(case)[0]['passed'])
+            log=case/('log.restart' if meta['restart'] else 'log.solver');text=log.read_text()
+            log.write_text(text.replace('scheme=fluidCubicAdaptive','scheme=trilinear'))
+            with self.assertRaisesRegex(ValueError,'reconstruction evidence'):summary.audit.evaluate(case)
+            log.write_text(text)
+            for bad in (text.replace('moment=1e-15','moment=nan'),re.sub(r'l1=\S+','l1=9',text)):
+                log.write_text(bad)
+                with self.assertRaisesRegex(ValueError,'reconstruction geometry'):summary.audit.evaluate(case)
+            log.write_text(text)
+            if meta['restart']:
+                checkpoint.write_text(checkpoint.read_text().replace('jointReconstruction fluidCubicAdaptive;','jointReconstruction trilinear;'))
+                self.assertFalse(summary.audit.evaluate(case)[0]['checks']['joint_reconstruction_checkpoint'])
+            else:
+                log.write_text(re.sub(r'wallRms=\S+','wallRms=nan',text))
+                with self.assertRaisesRegex(ValueError,'Nonfinite'):summary.audit.evaluate(case)
+
 
 
 if __name__=='__main__':unittest.main()
