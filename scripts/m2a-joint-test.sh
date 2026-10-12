@@ -27,7 +27,12 @@ source scripts/case-queue.sh
 # Case concurrency is opt-in; obtain the resources actually visible to Linux.
 cpu_count="$(nproc)"
 memory_kib="$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)"
-auto_jobs=$(( (cpu_count > 1 ? cpu_count-1 : 1) / 2 ))
+fine_ranks="${JOINT_FINE_RANKS:-1}"
+case "$fine_ranks" in 1|2|4|8) ;; *) echo 'JOINT_FINE_RANKS must be 1, 2, 4 or 8'; exit 1;; esac
+rank_reservation="$fine_ranks"
+if [ "$rank_reservation" -lt 2 ]; then rank_reservation=2; fi
+if [ "$cpu_count" -lt "$rank_reservation" ]; then echo 'Insufficient visible CPUs for requested MPI ranks'; exit 1; fi
+auto_jobs=$(( (cpu_count > 1 ? cpu_count-1 : 1) / rank_reservation ))
 memory_jobs=$(( memory_kib / (3*1024*1024) ))
 if [ "$auto_jobs" -gt "$memory_jobs" ]; then auto_jobs="$memory_jobs"; fi
 if [ "$auto_jobs" -gt 4 ]; then auto_jobs=4; fi
@@ -46,7 +51,7 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 {
     printf 'linux_cpus=%s\nmem_available_kib=%s\ncase_jobs=%s\nauto_case_limit=%s\nbuild_jobs=%s\n' \
         "$cpu_count" "$memory_kib" "$case_jobs" "$auto_jobs" "$build_jobs"
-    printf 'ordinary_case_ranks=1\nmpi_comparison_ranks=2\nOMP_NUM_THREADS=1\n'
+    printf 'coarse_and_fine_case_ranks=1\nfiner_case_ranks=%s\nmpi_comparison_ranks=2\nreserved_ranks_per_worker=%s\nOMP_NUM_THREADS=1\n' "$fine_ranks" "$rank_reservation"
     lscpu
     free -h
 } > "$report/resources.txt" 2>&1
@@ -114,12 +119,12 @@ if [ "$(realpath "$dem_mpi")" != "$(realpath "$app_mpi")" ]; then
     exit 1
 fi
 run_case() {
-    local case_dir="$1" selection="$2"
+    local case_dir="$1" selection="$2" ranks="$3"
     cd "$case_dir" || return
     blockMesh > log.blockMesh 2>&1 || return
-    if [ "$selection" = fixed-mpi2 ]; then
+    if [ "$ranks" -gt 1 ]; then
         decomposePar > log.decomposePar 2>&1 || return
-        timeout --signal=TERM --kill-after=10 "$case_timeout" mpirun -np 2 "$app" -parallel > log.solver 2>&1 || return
+        timeout --signal=TERM --kill-after=10 "$case_timeout" mpirun -np "$ranks" "$app" -parallel > log.solver 2>&1 || return
     elif [ "$selection" = fixed-restart ]; then
         python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --half || return
         timeout --signal=TERM --kill-after=10 "$case_timeout" "$app" > log.first 2>&1 || return
@@ -138,10 +143,11 @@ case_timeout="${JOINT_CASE_TIMEOUT:-900}"
 if ! [[ "$case_timeout" =~ ^[1-9][0-9]*$ ]]; then echo "Invalid JOINT_CASE_TIMEOUT"; exit 1; fi
 command -v timeout >/dev/null
 run_selection() {
-    local selection="$1" case_dir="$report/$1" rc
+    local selection="$1" case_dir="$report/$1" rc ranks=1
+    case "$selection" in *-finer|*-finer-offset) ranks="$fine_ranks";; fixed-mpi2) ranks=2;; esac
     # Include generation errors in the worker result, without dropping others.
-    if python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --selection "$selection" \
-        && (run_case "$case_dir" "$selection"); then
+    if python3 "$repo/scripts/prepare-m2a-joint.py" "$case_dir" --selection "$selection" --ranks "$ranks" \
+        && (run_case "$case_dir" "$selection" "$ranks"); then
         printf 'exit_status=0\n' > "$case_dir/result.txt"
         return 0
     else
@@ -158,7 +164,7 @@ launch_selection() {
     run_selection "$selection"
 }
 stage=case-matrix
-echo "Running up to $case_jobs independent cases concurrently; ordinary cases remain serial, MPI comparison uses 2 ranks."
+echo "Running up to $case_jobs cases concurrently; 64^3 cases use $fine_ranks ranks, other ordinary cases serial, MPI comparison 2 ranks."
 matrix_started=$SECONDS
 failures=0
 if lpbf_run_case_queue "$case_jobs" launch_selection \
@@ -167,6 +173,7 @@ if lpbf_run_case_queue "$case_jobs" launch_selection \
     fixed-restart fixed-mpi2; then :; else failures=1; fi
 printf 'matrix_wall_seconds=%s\n' "$((SECONDS-matrix_started))" >> "$report/resources.txt"
 stage=summary
+python3 "$repo/scripts/joint-cost-report.py" "$report" --output "$report/progress-cost.json"
 python3 "$repo/scripts/summarize-m2a-joint.py" "$report" --output "$report/summary.json"
 test "$failures" -eq 0
 stage=complete

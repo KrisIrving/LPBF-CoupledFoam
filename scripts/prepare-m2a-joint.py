@@ -10,8 +10,22 @@ surface=importlib.util.module_from_spec(spec);spec.loader.exec_module(surface)
 CASES=surface.CASES
 
 
-def prepare(root,selection):
+def prepare(root,selection,ranks=None):
+    if ranks is not None and ranks not in (1,2,4,8):
+        raise ValueError('Joint ranks must be 1, 2, 4 or 8')
+    if ranks is not None and selection=='fixed-restart' and ranks!=1:
+        raise ValueError('Common restart remains serial')
+    if ranks is not None and selection=='fixed-mpi2' and ranks!=2:
+        raise ValueError('MPI comparison requires 2 ranks')
     meta=surface.prepare(root,selection)
+    if ranks is not None:
+        split={1:(1,1,1),2:(2,1,1),4:(2,2,1),8:(2,2,2)}[ranks]
+        (root/'system/decomposeParDict').write_text(
+            surface.baseline.foam_header('dictionary','decomposeParDict')+
+            f'numberOfSubdomains {ranks};\nmethod simple;\n'
+            f'simpleCoeffs {{ n ({split[0]} {split[1]} {split[2]}); delta 0.001; }}\n')
+        meta['execution']={'ranks':ranks,'decomposition':list(split)}
+        meta['nprocs']=ranks
     p=root/'constant/mechanicalProperties'
     text=p.read_text().split('constraintScheme surfaceExtension;')[0]
     p.write_text(text+'''constraintScheme jointSurface;
@@ -80,6 +94,7 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('case',type=Path)
     parser.add_argument('--selection',choices=CASES)
+    parser.add_argument('--ranks',type=int,choices=(1,2,4,8))
     parser.add_argument('--half',action='store_true')
     parser.add_argument('--restart',action='store_true')
     args=parser.parse_args()
@@ -88,5 +103,5 @@ if __name__=='__main__':
         surface.baseline.control(args.case,start=.002)
         surface.baseline.write_dem(args.case,meta['mode'],restart=True)
     elif args.half:surface.baseline.control(args.case,end=.002)
-    elif args.selection:prepare(args.case,args.selection)
+    elif args.selection:prepare(args.case,args.selection,args.ranks)
     else:parser.error('Provide selection, half or restart')

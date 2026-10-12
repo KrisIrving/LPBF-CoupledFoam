@@ -1,5 +1,7 @@
 # Development and verification record
 
+2026-10-12: Reviewed user-tested0fd9e979; independent summary exact. Sparse/dense15 audits and14319 pressure solves pass,10 complete trajectories plus MPI/restart; four64^3 timeout with6/8/35/35 windows. Projection99.33..99.56% of recorded response;1829s vs1837s not material speedup. Revision9 retains C++ revision8, adds optional fine MPI1/2/4/8 with decomposition/owner/coverage/native rank evidence, resource rank reservations, and diagnostic progress-cost report for failures.53 offline M2A tests,3 Windows Git Bash mock queue tests and shell syntax pass; native fine MPI pending. No gate/budget relaxation or developer WSL execution. See docs/m2a-joint-revision9.zh-CN.md.
+
 ## 2026-10-11：revision7改善收束但最细超时；revision8传递成本包待测
 
 用户测试f3c5785b，归档m2a-joint-20261011-225310-1119407.tar.gz，构建/共享内核通过，10组全程/单例通过及MPI/共同重启通过。固定64³首窗均33次收束，推进6/7窗；转动64³推进34/34窗。四组最细均超时，未完整验收。原固定48³最大校正70→26，子空间有实质迭代改善，保留depth4，不再系数/深度调参。1837秒包含更多有效最细轨迹，不是通用加速比。部分转矩误差12.9/12.3%仅诊断，不能补写最细通过；M2A未关闭。

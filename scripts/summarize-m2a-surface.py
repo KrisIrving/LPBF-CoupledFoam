@@ -22,6 +22,10 @@ def evaluate(case):
     logs=('log.first','log.restart') if meta['restart'] else ('log.solver',)
     for filename in logs:
         text=(case/filename).read_text(errors='replace')
+        if 'execution' in meta:
+            ranks=re.search(r'^nProcs\s*:\s*(\d+)\s*$',text,re.M)
+            if not ranks or int(ranks.group(1))!=meta['execution']['ranks']:
+                raise ValueError('Missing or mismatched native MPI rank evidence')
         scheme=meta['surface_controls'].get('scheme','surfaceExtension')
         if 'M2A_CONSTRAINT scheme='+scheme not in text:
             raise ValueError('Missing native '+scheme+' scheme marker')

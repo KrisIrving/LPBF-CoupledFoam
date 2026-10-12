@@ -1,6 +1,7 @@
 """Generator/gate regressions using synthetic histories, not CFD evidence."""
 import importlib.util
 import json
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -13,6 +14,7 @@ def load(name,path):
 prepare=load('joint_package_prepare',root/'scripts/prepare-m2a-joint.py')
 summary=load('joint_package_summary',root/'scripts/summarize-m2a-joint.py')
 geometry=load('joint_package_geometry',root/'scripts/audit-m2a-joint-stencils.py')
+cost_report=load('joint_cost_report',root/'scripts/joint-cost-report.py')
 synthetic=load('joint_legacy_fixture',root/'tests/test_m2a_surface.py')
 
 
@@ -60,6 +62,33 @@ class JointPackageTests(unittest.TestCase):
             self.assertNotIn('constraintScheme surfaceExtension;',properties)
             self.assertEqual(meta['package'],'M2A-02C')
         self.assertTrue(summary.summarize(self.root)['passed'])
+
+    def test_mpi_decomposition_and_native_rank_mismatch(self):
+        case,rows,meta=self.fixture('fixed-finer')
+        for ranks,split in ((1,'1 1 1'),(2,'2 1 1'),(4,'2 2 1'),(8,'2 2 2')):
+            prepare.prepare(case,'fixed-finer',ranks)
+            for row in rows:row['covered_ranks']=ranks
+            self.writer.write(case,rows)
+            self.assertIn('n ('+split+');',(case/'system/decomposeParDict').read_text())
+            log=case/'log.solver';text=re.sub(r'^nProcs.*\n','',log.read_text(),flags=re.M)
+            log.write_text('nProcs : '+str(ranks)+'\n'+text)
+            self.assertTrue(summary.audit.evaluate(case)[0]['checks'].get('multi_rank_coverage',True))
+            log.write_text('nProcs : 16\n'+text)
+            with self.assertRaisesRegex(ValueError,'MPI rank evidence'):summary.audit.evaluate(case)
+        with self.assertRaises(ValueError):prepare.prepare(case,'fixed-finer',3)
+        with self.assertRaises(ValueError):prepare.prepare(case,'fixed-restart',8)
+        with self.assertRaises(ValueError):prepare.prepare(case,'fixed-mpi2',8)
+
+    def test_timeout_progress_is_diagnostic_and_nonfinite_cost_rejected(self):
+        case,rows,meta=self.fixture('fixed-coarse')
+        (case/'result.txt').write_text('exit_status=124\n')
+        log=case/'log.solver';log.write_text(log.read_text()+'M2A_RESPONSE_COST response=nan spread=0 projection=0 interpolation=0 scaling=0\n')
+        entry=cost_report.collect(self.root)['cases']['fixed-coarse']
+        self.assertEqual(entry['completed_windows'],len(rows))
+        self.assertEqual(entry['logs']['log.solver']['cost_windows'],1)
+        self.assertEqual(entry['logs']['log.solver']['invalid_cost_records'],1)
+        self.assertAlmostEqual(entry['logs']['log.solver']['projection_fraction_of_response'],.8)
+        self.assertFalse(summary.summarize(self.root)['cases']['fixed-coarse']['passed'])
 
     def test_legacy_runs_cannot_masquerade_as_joint(self):
         for name in prepare.CASES:self.writer.fixture(name)
