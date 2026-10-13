@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "updated_on": "2026-10-13",
-  "latest_user_tested_commit": "3f1aa0243a7ae9594786005b738c356c2036ee79",
+  "latest_user_tested_commit": "dbe4726b9aa9c154ac5fc9afef5a9439a9ce854c",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -10065,6 +10065,28 @@
       "physical_validation": false,
       "scope": "Static single sphere; current vector-Laplacian FV control-volume identities; no symmetric Cauchy face probe in tested commit, moving GCL, heat or LPBF validation",
       "next": "Native independent symmetric-stress face probe, then structural interface formulation decision; preserve original physical gates"
+    },
+    {
+      "report": "m2a-joint-20261013-150615-1622478.tar.gz",
+      "archive_sha256": "1630fde82c48ed0a56f30a8dcfcbf3dceb379b65e24eb4db89c7e8dc28e26c91",
+      "tested_commit": "dbe4726b9aa9c154ac5fc9afef5a9439a9ce854c",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "native_build": true,
+      "native_shared_kernels": true,
+      "reconstruction": "completeWallBasis",
+      "symmetric_stress_probe": true,
+      "case_count": 14,
+      "completed_cases": 0,
+      "case_exits": {"abort_134": 9, "other_1": 5},
+      "complete_control_volume_windows": 0,
+      "comparisons": "not_evaluated",
+      "physical_validation": "not_evaluated",
+      "matrix_wall_seconds": 248,
+      "summary_exact_recomputed": true,
+      "observed_error": "OpenFOAM dimension mismatch [0 2 -1 0 0 0 0] versus [0 4 -2 0 0 0 0] in symmetricDiffusion-diffusion before first complete window",
+      "root_cause": "Symmetric viscous face diagnostic used a C++ scalar viscosity, which removed viscosity dimensions; the solved diffusion flux retained dimensionedScalar nu",
+      "next": "Use dimensionedScalar auditNu in diagnostic and one-window native preflight before original fourteen-case matrix; physical stress remains untested"
     }
   ],
   "development_packages": [
@@ -18933,25 +18955,25 @@
       "next": "Single concentrated user package with completeWallBasis and symmetric stress CV; use result to decide interface FV route",
       "offline_m2a_tests": 74,
       "historical_native_summary_exact": 2
-    }
-  ],
-  "related_artifact_reviews": [
+    },
     {
-      "report": "M247_m247-powder-dem-20261013-140626_review.tar.gz",
-      "archive_sha256": "0092c62e575e036ef228b5ff8da413395f0d4d02aaf2069c7cf2bb738f7c3bf4",
-      "manifest_hashes_match": true,
-      "file_count": 10,
-      "liggghts_exit_code": 0,
-      "raw_particle_count": 460,
-      "trimmed_particle_count": 119,
-      "final_particle_count": 341,
-      "target_nominal_layer_packing": 0.58,
-      "actual_nominal_layer_packing": 0.6140623887946514,
-      "preflight_packing": false,
-      "ready_for_review": false,
-      "production_approved": false,
-      "experimental_psd_basis": "unconfirmed",
-      "scope": "Separate M247 powder bed candidate; no CFD/DEM coupling or LPBF validation; does not replace 316L baseline"
+      "date": "2026-10-13",
+      "revision": 19,
+      "kind": "symmetric_stress_dimension_fix_and_one_window_preflight",
+      "tested_commit": "dbe4726b9aa9c154ac5fc9afef5a9439a9ce854c",
+      "native_build_in_feedback": true,
+      "native_complete_windows_in_feedback": 0,
+      "new_diagnostic_runtime": "failed_dimension_check",
+      "offline_m2a_tests": 75,
+      "git_bash_mock_queue_tests": 3,
+      "bash_syntax_check": true,
+      "dimension_fix_native": "not_evaluated",
+      "preflight_native": "not_evaluated",
+      "physical_validation": false,
+      "changes_numerical_operator": false,
+      "physical_gate_relaxation": false,
+      "budget_increase": false,
+      "next": "One original user native package; preflight one window first and retain short feedback on failure"
     }
   ]
 }

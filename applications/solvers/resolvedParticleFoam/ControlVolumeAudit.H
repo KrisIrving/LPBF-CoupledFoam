@@ -24,14 +24,15 @@ inline void controlVolumeAudit
     // Reconstruct the explicit form of the ACTUAL Euler/Gauss-linear equation.
     // This is checked against the retained final coupled matrix residual.
     const volVectorField convection(fvc::div(advecting,U));
-    const volVectorField viscous(fvc::laplacian(dimensionedScalar("auditNu",dimViscosity,viscosity),U));
+    const dimensionedScalar auditNu("auditNu",dimViscosity,viscosity);
+    const volVectorField viscous(fvc::laplacian(auditNu,U));
     const volVectorField gradient(fvc::grad(p));
     const surfaceVectorField net(diffusion-faceP*mesh.Sf()-advecting*faceU);
     // A second, diagnostic traction uses the symmetric viscous stress. Its
     // difference from the solved vector-Laplacian flux is NOT a second source.
     const surfaceVectorField symmetricDiffusion
     (
-        2.0*viscosity*(fvc::interpolate(symm(fvc::grad(U)))&mesh.Sf())
+        2.0*auditNu*(fvc::interpolate(symm(fvc::grad(U)))&mesh.Sf())
     );
     const surfaceVectorField symmetricExtra(symmetricDiffusion-diffusion);
     vectorField storage(mesh.nCells()), cellNet(mesh.nCells()), imbalance(mesh.nCells());

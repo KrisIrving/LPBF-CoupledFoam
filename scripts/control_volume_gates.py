@@ -1,5 +1,6 @@
 """Additional static FV ledger identities; never replace original physical gates."""
 import csv
+import json
 import math
 
 
@@ -46,3 +47,14 @@ def evaluate(case, meta):
     # use a cancelling control-volume sum to supersede it.
     return {'passed': all(checks.values()), 'checks': checks, 'metrics': maxima,
             'rows': len(rows), 'scope': __doc__}
+
+
+if __name__ == '__main__':
+    import argparse
+    from pathlib import Path
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('case', type=Path)
+    args = parser.parse_args()
+    result = evaluate(args.case, json.loads((args.case/'M2A_META.json').read_text()))
+    print(json.dumps(result, indent=2, allow_nan=False))
+    raise SystemExit(0 if result['passed'] else 1)

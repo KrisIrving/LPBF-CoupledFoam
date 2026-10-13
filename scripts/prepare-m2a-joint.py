@@ -138,6 +138,16 @@ jointSparseTransfer true;
     return meta
 
 
+def one_window(root):
+    meta=json.loads((root/'M2A_META.json').read_text())
+    if 'control_volume_audit' not in meta or meta.get('restart'):
+        raise ValueError('One-window preflight requires a fresh control-volume case')
+    surface.baseline.control(root,end=meta['delta_t'])
+    meta['expected_rows']=1
+    meta['preflight_only']=True
+    (root/'M2A_META.json').write_text(json.dumps(meta,indent=2)+'\n')
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('case',type=Path)
@@ -147,10 +157,12 @@ if __name__=='__main__':
     parser.add_argument('--reconstruction',choices=('trilinear','fluidCubicAdaptive','completeWallBasis'),default='trilinear')
     parser.add_argument('--communication-audit',action='store_true')
     parser.add_argument('--control-volume-audit',action='store_true')
+    parser.add_argument('--one-window',action='store_true')
     parser.add_argument('--half',action='store_true')
     parser.add_argument('--restart',action='store_true')
     args=parser.parse_args()
-    if args.restart:
+    if args.one_window:one_window(args.case)
+    elif args.restart:
         meta=json.loads((args.case/'M2A_META.json').read_text())
         surface.baseline.control(args.case,start=.002)
         surface.baseline.write_dem(args.case,meta['mode'],restart=True)

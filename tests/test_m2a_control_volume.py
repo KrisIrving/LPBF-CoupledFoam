@@ -82,5 +82,14 @@ class ControlVolumeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             prepare.prepare(self.case, 'fixed-coarse', spatial_only=True, control_volume_audit=True)
 
+    def test_preflight_stops_after_one_window(self):
+        prepare.prepare(self.case, 'fixed-coarse', control_volume_audit=True)
+        prepare.one_window(self.case)
+        import json
+        meta = json.loads((self.case/'M2A_META.json').read_text())
+        self.assertEqual(meta['expected_rows'], 1)
+        self.assertTrue(meta['preflight_only'])
+        self.assertIn('endTime 0.0001;', (self.case/'system/controlDict').read_text())
+
 
 if __name__ == '__main__': unittest.main()

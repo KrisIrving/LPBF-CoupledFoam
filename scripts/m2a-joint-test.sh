@@ -178,6 +178,25 @@ launch_selection() {
     echo "Running $selection (per solver invocation budget: ${case_timeout}s)"
     run_selection "$selection"
 }
+if [ "$control_volume_audit" -eq 1 ] && [ "$spatial_only" -eq 0 ]; then
+    stage=control-volume-preflight
+    preflight_dir="$report/.preflight/fixed-coarse"
+    mkdir -p "$preflight_dir"
+    echo 'Checking one complete CFD/DEM window and the control-volume ledger before the full case matrix.'
+    preflight_extra=(--control-volume-audit)
+    if [ "$communication_audit" -eq 1 ]; then preflight_extra+=(--communication-audit); fi
+    if python3 "$repo/scripts/prepare-m2a-joint.py" "$preflight_dir" --selection fixed-coarse --ranks 1 \
+        --reconstruction "$reconstruction" "${preflight_extra[@]}" \
+        && python3 "$repo/scripts/prepare-m2a-joint.py" "$preflight_dir" --one-window \
+        && (run_case "$preflight_dir" fixed-coarse 1) \
+        && python3 "$repo/scripts/control_volume_gates.py" "$preflight_dir" > "$preflight_dir/log.control-audit" 2>&1; then
+        printf 'exit_status=0\n' > "$preflight_dir/result.txt"
+    else
+        printf 'exit_status=1\n' > "$preflight_dir/result.txt"
+        echo 'Control-volume preflight failed; full case matrix was not started.'
+        exit 1
+    fi
+fi
 stage=case-matrix
 echo "Running up to $case_jobs cases concurrently; 64^3 cases use $fine_ranks ranks, other ordinary cases serial, MPI comparison 2 ranks."
 matrix_started=$SECONDS
