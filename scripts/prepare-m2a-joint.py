@@ -95,6 +95,7 @@ jointSparseTransfer true;
         meta['control_volume_audit']={'padding_h':[6,8],'matrix_match_impulse_N_s':1e-12,
             'face_match_impulse_N_s':1e-12,'angular_match_impulse_N_m_s':meta['radius']*1e-12,
             'source_force_N':1e-12,'source_torque_N_m':1e-14,
+            'symmetric_stress_audit':True,
             'scope':'Static Euler/Gauss-linear mesh-face ledger; torque arm correction explicit; diagnostic only'}
     if communication_audit:
         with p.open('a') as stream:stream.write('jointCommunicationAudit true;\n')

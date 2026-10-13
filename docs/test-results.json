@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "updated_on": "2026-10-12",
-  "latest_user_tested_commit": "e77c7289e84bcc8de094a2cf0da54b85487cb4fb",
+  "updated_on": "2026-10-13",
+  "latest_user_tested_commit": "3f1aa0243a7ae9594786005b738c356c2036ee79",
   "scope": "Curated M1 and v2512/LIGGGHTS communication evidence. Historical failures preserved; communication pass is not resolved CFD/heat/restart validation. Raw files stay outside Git.",
   "records": [
     {
@@ -10008,6 +10008,63 @@
         }
       },
       "next": "Conservative nested mesh-face control-volume momentum/angular ledger plus retained independent traction; no unchanged rerun or tolerance tuning"
+    },
+    {
+      "report": "m2a-joint-20261013-140653-1607739.tar.gz",
+      "archive_sha256": "117959788df760fdba70d1bd7642106118b99d31e50f34fad20997b370558a2d",
+      "tested_commit": "3f1aa0243a7ae9594786005b738c356c2036ee79",
+      "last_stage": "summary",
+      "exit_status": 1,
+      "native_build": true,
+      "native_kernels": true,
+      "reconstruction": "completeWallBasis",
+      "control_volume_audit": true,
+      "case_count": 14,
+      "completed_cases": 14,
+      "windows_per_case": 40,
+      "control_volume_rows_per_case": 80,
+      "control_volume_cases_pass": 14,
+      "individual_cases_pass": 4,
+      "comparisons_pass": 12,
+      "comparisons_total": 16,
+      "pressure_solves": 17287,
+      "matrix_wall_seconds": 1976,
+      "max_explicit_matrix_impulse_N_s": 2.5876927313926094e-20,
+      "max_face_operator_impulse_N_s": 2.927798713984129e-22,
+      "max_angular_face_impulse_N_m_s": 4.672981894420176e-24,
+      "max_source_force_error_N": 0.0,
+      "max_source_torque_error_N_m": 0.0,
+      "mpi_comparison": true,
+      "common_restart_comparison": true,
+      "communication_breadcrumbs_agreed": 43,
+      "summary_exact_recomputed": true,
+      "fine64": {
+        "fixed": {
+          "load_to_reference": 1.085331119444181,
+          "surface_to_reference": 0.8170584414251882,
+          "r6_face_to_reference": 1.084371412888382
+        },
+        "fixed_offset": {
+          "load_to_reference": 1.0765490782601732,
+          "surface_to_reference": 0.8394512213445668,
+          "r6_face_to_reference": 1.0755227913617762
+        },
+        "rotate": {
+          "load_to_reference": 1.1542184883716031,
+          "surface_to_reference": 0.7451924472016933,
+          "r6_face_torque_to_reference": 0.7733264569623418,
+          "r6_arm_correction_to_reference": 0.3769344152654632
+        },
+        "rotate_offset": {
+          "load_to_reference": 1.1365376784620704,
+          "surface_to_reference": 0.7692556718796911,
+          "r6_face_torque_to_reference": 0.7614513071692611,
+          "r6_arm_correction_to_reference": 0.37135681023541345
+        }
+      },
+      "physical_validation": false,
+      "scope": "Static single sphere; current vector-Laplacian FV control-volume identities; no symmetric Cauchy face probe in tested commit, moving GCL, heat or LPBF validation",
+      "next": "Native independent symmetric-stress face probe, then structural interface formulation decision; preserve original physical gates"
     }
   ],
   "development_packages": [
@@ -18861,6 +18918,40 @@
       "next": "One original14-case completeWallBasis user matrix with JOINT_CONTROL_VOLUME_AUDIT=1; inspect ledgers before any traction/interface change",
       "standalone_joint_tests": 22,
       "standalone_summary_module_import": "fixed_relative_path_loader; standalone and full rerun passed"
+    },
+    {
+      "date": "2026-10-13",
+      "revision": 18,
+      "kind": "independent_symmetric_cauchy_control_volume_probe",
+      "native_solver_change": true,
+      "changes_numerical_operator": false,
+      "physical_gate_relaxation": false,
+      "budget_increase": false,
+      "native_build": "not_evaluated",
+      "native_symmetric_face_stress": "not_evaluated",
+      "native_mpi_restart": "not_evaluated",
+      "next": "Single concentrated user package with completeWallBasis and symmetric stress CV; use result to decide interface FV route",
+      "offline_m2a_tests": 74,
+      "historical_native_summary_exact": 2
+    }
+  ],
+  "related_artifact_reviews": [
+    {
+      "report": "M247_m247-powder-dem-20261013-140626_review.tar.gz",
+      "archive_sha256": "0092c62e575e036ef228b5ff8da413395f0d4d02aaf2069c7cf2bb738f7c3bf4",
+      "manifest_hashes_match": true,
+      "file_count": 10,
+      "liggghts_exit_code": 0,
+      "raw_particle_count": 460,
+      "trimmed_particle_count": 119,
+      "final_particle_count": 341,
+      "target_nominal_layer_packing": 0.58,
+      "actual_nominal_layer_packing": 0.6140623887946514,
+      "preflight_packing": false,
+      "ready_for_review": false,
+      "production_approved": false,
+      "experimental_psd_basis": "unconfirmed",
+      "scope": "Separate M247 powder bed candidate; no CFD/DEM coupling or LPBF validation; does not replace 316L baseline"
     }
   ]
 }

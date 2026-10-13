@@ -27,6 +27,13 @@ inline void controlVolumeAudit
     const volVectorField viscous(fvc::laplacian(dimensionedScalar("auditNu",dimViscosity,viscosity),U));
     const volVectorField gradient(fvc::grad(p));
     const surfaceVectorField net(diffusion-faceP*mesh.Sf()-advecting*faceU);
+    // A second, diagnostic traction uses the symmetric viscous stress. Its
+    // difference from the solved vector-Laplacian flux is NOT a second source.
+    const surfaceVectorField symmetricDiffusion
+    (
+        2.0*viscosity*(fvc::interpolate(symm(fvc::grad(U)))&mesh.Sf())
+    );
+    const surfaceVectorField symmetricExtra(symmetricDiffusion-diffusion);
     vectorField storage(mesh.nCells()), cellNet(mesh.nCells()), imbalance(mesh.nCells());
     scalar match=0;
     forAll(storage,cell)
@@ -67,13 +74,17 @@ inline void controlVolumeAudit
         if(exteriorCells) throw std::runtime_error("Control volume touches physical outer boundary");
         vector faceNet=vector::zero, faceTorque=vector::zero, armCorrection=vector::zero;
         vector convective=vector::zero, pressure=vector::zero, diffusive=vector::zero;
+        vector symmetricExtraForce=vector::zero, symmetricExtraTorque=vector::zero;
         auto side=[&](label cell,const vector& face,const vector& flux,
-                      const vector& conv,const vector& press,const vector& diff)
+                      const vector& conv,const vector& press,const vector& diff,
+                      const vector& symmetricCorrection)
         {
             if(!inside[cell]) return;
             faceNet+=rho*flux; faceTorque+=rho*((face-centre)^flux);
             armCorrection+=rho*((mesh.C()[cell]-face)^flux);
             convective+=rho*conv; pressure+=rho*press; diffusive+=rho*diff;
+            symmetricExtraForce+=rho*symmetricCorrection;
+            symmetricExtraTorque+=rho*((face-centre)^symmetricCorrection);
         };
         // Cell-side enumeration: internal faces cancel if both cells selected.
         // Processor faces are visited on each local cell side; opposing outward
@@ -84,8 +95,8 @@ inline void controlVolumeAudit
         {
             const vector conv=-advecting[face]*faceU[face];
             const vector press=-faceP[face]*mesh.Sf()[face];
-            side(owner[face],mesh.Cf()[face],net[face],conv,press,diffusion[face]);
-            side(neighbour[face],mesh.Cf()[face],-net[face],-conv,-press,-diffusion[face]);
+            side(owner[face],mesh.Cf()[face],net[face],conv,press,diffusion[face],symmetricExtra[face]);
+            side(neighbour[face],mesh.Cf()[face],-net[face],-conv,-press,-diffusion[face],-symmetricExtra[face]);
         }
         forAll(mesh.boundary(),patch)
         {
@@ -95,12 +106,15 @@ inline void controlVolumeAudit
                      net.boundaryField()[patch][face],
                      -advecting.boundaryField()[patch][face]*faceU.boundaryField()[patch][face],
                      -faceP.boundaryField()[patch][face]*mesh.Sf().boundaryField()[patch][face],
-                     diffusion.boundaryField()[patch][face]);
+                     diffusion.boundaryField()[patch][face],symmetricExtra.boundaryField()[patch][face]);
         }
         reduce(cells,sumOp<label>());reduce(impulseL1,sumOp<scalar>());
         for(vector* value:{&inventory,&inventoryTorque,&integratedSource,&sourceTorque,
             &operatorNet,&operatorTorque,&residual,&residualTorque,&faceNet,&faceTorque,
-            &armCorrection,&convective,&pressure,&diffusive}) reduce(*value,sumOp<vector>());
+            &armCorrection,&convective,&pressure,&diffusive,&symmetricExtraForce,
+            &symmetricExtraTorque}) reduce(*value,sumOp<vector>());
+        const vector symmetricFaceNet(faceNet+symmetricExtraForce);
+        const vector symmetricFaceTorque(faceTorque+symmetricExtraTorque);
         const scalar faceError=mag(faceNet-operatorNet)*dt;
         const scalar angularError=mag(faceTorque+armCorrection-operatorTorque)*dt;
         const scalar sourceError=mag(integratedSource-fullSource);
@@ -110,12 +124,14 @@ inline void controlVolumeAudit
             history<<mesh.time().value()<<','<<padding<<','<<cells<<','<<match<<','<<impulseL1
                 <<','<<faceError<<','<<angularError<<','<<sourceError<<','<<torqueError;
             for(const vector& value:{inventory,inventoryTorque,integratedSource,sourceTorque,
-                convective,pressure,diffusive,faceNet,faceTorque,armCorrection,residual,residualTorque})
+                convective,pressure,diffusive,faceNet,faceTorque,armCorrection,residual,residualTorque,
+                symmetricExtraForce,symmetricExtraTorque,symmetricFaceNet,symmetricFaceTorque})
                 for(int a=0;a<3;++a) history<<','<<value[a];
             history<<'\n';history.flush();
         }
         if(cells==0||!std::isfinite(faceError)||!std::isfinite(angularError)
             ||!std::isfinite(sourceError)||!std::isfinite(torqueError)||!std::isfinite(impulseL1)
+            ||!std::isfinite(mag(symmetricFaceNet))||!std::isfinite(mag(symmetricFaceTorque))
             ||faceError>1e-12||angularError>radius*1e-12||sourceError>1e-12||torqueError>1e-14)
             throw std::runtime_error("Control volume face/operator/source identity failed");
     }

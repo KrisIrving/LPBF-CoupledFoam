@@ -454,7 +454,7 @@ int main(int argc,char* argv[])
             if(runTime.value()==0)
             {
                 controlHistory<<"time,padding_h,cells,matrix_match_impulse,cell_impulse_L1,face_match_impulse,angular_face_match_impulse,source_force_error,source_torque_error";
-                for(const char* name:{"inventory","inventory_torque","source","source_torque","convection","pressure","diffusion","face_net","face_torque","arm_correction","residual","residual_torque"})
+                for(const char* name:{"inventory","inventory_torque","source","source_torque","convection","pressure","diffusion","face_net","face_torque","arm_correction","residual","residual_torque","symmetric_extra_force","symmetric_extra_torque","symmetric_face_net","symmetric_face_torque"})
                     for(const char* axis:{"x","y","z"}) controlHistory<<','<<name<<'_'<<axis;
                 controlHistory<<'\n';
             }

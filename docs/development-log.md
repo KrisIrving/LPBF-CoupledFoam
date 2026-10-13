@@ -1,5 +1,7 @@
 # Development and verification record
 
+2026-10-13用户原生3f1aa024：14组均完成40窗，控制体14/14过；最大显式/矩阵差2.59e−20 N·s，面/FV差2.93e−22 N·s，角动量面/单元修正差4.67e−24 N·m·s，MPI/重启通过。但仅4/14单例与12/16比较通过，最细固定球表面牵引低于账本23.71–26.83%解析载荷，旋转力矩仍高13.65–15.42%。旋转R+6h原面矩约0.77解析值，单元/面力臂修正约0.37；不能把该修正解释成物理应力。revision18增加只读对称黏性应力面探针，原生待测，不改方程/门槛。另审M247粉床DEM归档：哈希/运行成功，但名义粉层装填0.614对目标0.58，清单packing=false/productionApproved=false，独立于316L主对照。见[revision18](m2a-joint-revision18.zh-CN.md)与[M247审查](m247-powder-review-20261013.zh-CN.md)。
+
 2026-10-12开发更新revision17：新增默认关闭的静态双控制体FV账，使用最终状态/冻结对流通量，逐单元显式算子与最终矩阵残差核对；保存源、库存、压力/黏性/对流与角动量力臂修正，接入MPI面侧归约、共同重启及汇总完整性守护。原物理离散/门槛/预算不变，M2A仍开放。73项离线、3 Git Bash队列及3历史原生摘要回归通过；新C++编译/面收支/MPI原生待测。集中入口JOINT_CONTROL_VOLUME_AUDIT=1，见[revision17](m2a-joint-revision17.zh-CN.md)。
 
 ## 2026-10-12 — revision16 native feedback and conservative-load contract

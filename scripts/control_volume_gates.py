@@ -31,6 +31,15 @@ def evaluate(case, meta):
         angular = max(angular, math.sqrt(sum((row['inventory_torque_'+a]-row['source_torque_'+a]-row['face_torque_'+a]-row['arm_correction_'+a]-row['residual_torque_'+a])**2 for a in 'xyz'))*meta['delta_t'])
     checks['linear_identity'] = linear <= controls['face_match_impulse_N_s']
     checks['angular_identity_with_arm_correction'] = angular <= controls['angular_match_impulse_N_m_s']
+    if controls.get('symmetric_stress_audit', False):
+        force_error = torque_error = 0.
+        for row in rows:
+            force_error = max(force_error, math.sqrt(sum((row['symmetric_face_net_'+a]-row['face_net_'+a]-row['symmetric_extra_force_'+a])**2 for a in 'xyz')))
+            torque_error = max(torque_error, math.sqrt(sum((row['symmetric_face_torque_'+a]-row['face_torque_'+a]-row['symmetric_extra_torque_'+a])**2 for a in 'xyz')))
+        checks['symmetric_stress_components'] = (force_error <= controls['source_force_N']
+                                                 and torque_error <= controls['source_torque_N_m'])
+        maxima.update(symmetric_force_component_error=force_error,
+                      symmetric_torque_component_error=torque_error)
     maxima.update(linear_identity_impulse=linear, angular_identity_impulse=angular,
                   cell_impulse_L1=max(row['cell_impulse_L1'] for row in rows))
     # The old full-equation gate already limits L1; this diagnostic does not

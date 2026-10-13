@@ -62,6 +62,18 @@ class ControlVolumeTests(unittest.TestCase):
         self.assertFalse(entry['checks']['source_force_error'])
         self.assertFalse(entry['checks']['matrix_match_impulse'])
 
+    def test_symmetric_traction_remains_a_separate_diagnostic(self):
+        self.meta['control_volume_audit']['symmetric_stress_audit'] = True
+        for row in self.rows:
+            for name in ('symmetric_extra_force', 'symmetric_extra_torque',
+                         'symmetric_face_net', 'symmetric_face_torque'):
+                for axis in 'xyz': row[name+'_'+axis] = 0.
+            row.update(symmetric_face_net_y=1., symmetric_face_torque_z=3.4,
+                       symmetric_extra_torque_z=.4)
+        self.assertTrue(self.evaluate()['passed'])
+        self.rows[1]['symmetric_extra_torque_z'] = 0.
+        self.assertFalse(self.evaluate()['checks']['symmetric_stress_components'])
+
     def test_opt_in_preserves_original_physical_controls(self):
         meta = prepare.prepare(self.case, 'fixed-coarse', control_volume_audit=True)
         self.assertEqual(meta['control_volume_audit']['padding_h'], [6, 8])
